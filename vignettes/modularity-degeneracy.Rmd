@@ -52,8 +52,9 @@ in the top band on the larger/diffuse networks, and the mean pairwise NMI sits
 below 1 --- so the reported leader-community configuration is *one of several*
 near-equivalent ones. This does not invalidate the method, but it bounds the
 interpretability claim about "named leaders": the names can shift across seeds.
-The paper acknowledges the resolution limit but not this degeneracy; it is now
-flagged in the manuscript's Limitations (see `artigo/CHANGES.md`).
+Beyond the well-known resolution limit, this near-optimum degeneracy
+(Good, de Montjoye & Clauset, 2010) is a genuine caveat for any
+modularity-maximising leader assignment and is worth reporting alongside it.
 
 # References
 

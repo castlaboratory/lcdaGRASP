@@ -19,7 +19,7 @@ has_gg <- requireNamespace("ggplot2", quietly = TRUE) &&
 
 ```{r nodata, echo = FALSE, results = "asis", eval = !have}
 cat("> **Note.** The precomputed DoE datasets are not installed. Generate them",
-    "with `Rscript lcdaGRASP/data-raw/run_all_data.R` and rebuild this article.\n")
+    "with `Rscript data-raw/run_all_data.R` and rebuild this article.\n")
 ```
 
 # Why a design of experiments?

@@ -19,7 +19,7 @@ has_gg  <- requireNamespace("ggplot2", quietly = TRUE) &&
 
 ```{r nodata, echo = FALSE, results = "asis", eval = !have}
 cat("> **Note.** The precomputed dataset is not installed. Generate it with",
-    "`Rscript lcdaGRASP/data-raw/run_all_data.R` and rebuild this article.\n")
+    "`Rscript data-raw/run_all_data.R` and rebuild this article.\n")
 ```
 
 # What this article shows
@@ -27,8 +27,7 @@ cat("> **Note.** The precomputed dataset is not installed. Generate it with",
 The paper reports only **means** and **maxima**. Here we reproduce its
 headline modularity numbers on the five benchmark networks while keeping the
 **whole distribution** over replications, and we compare against `igraph`'s
-Louvain *and* Leiden under a like-for-like multi-restart protocol. This is the
-evidence behind erratum **E3** in the companion critical review.
+Louvain *and* Leiden under a like-for-like multi-restart protocol.
 
 ```{r meta, echo = FALSE, eval = have, results = "asis"}
 m <- summ$meta
@@ -59,11 +58,12 @@ best <- res |>
 knitr::kable(best, caption = "Best LCDA Q over reps vs multi-restart Louvain/Leiden and literature best-known Q.")
 ```
 
-# Erratum E3: Louvain on Karate reaches the optimum
+# Louvain on Karate reaches the optimum under multi-restart
 
-The paper's Table 10 lists Louvain on Karate at `Q = 0.3715` and claims a
-`+12.9%` gain. With 30 restarts the current `igraph` Louvain reaches the exact
-optimum:
+A *single-run* Louvain can report `Q ≈ 0.3715` on Karate, which would suggest a
+large advantage for any competing method. But this is an artefact of the
+single run: with 30 restarts the current `igraph` Louvain reaches the exact
+optimum, so a like-for-like comparison tells a different story:
 
 ```{r e3, eval = have}
 res |>
@@ -72,14 +72,14 @@ res |>
     LCDA_best   = round(max(Q_max), 4),
     Louvain_max = round(dplyr::first(Q_louvain_max), 4),
     Leiden_max  = round(dplyr::first(Q_leiden_max), 4),
-    paper_Louvain = 0.3715,
+    single_run_Louvain = 0.3715,
     exact_optimum = 0.4198
   ) |>
-  knitr::kable(caption = "Karate: the LCDA advantage over Louvain is an artefact of a single-run baseline.")
+  knitr::kable(caption = "Karate: an apparent advantage over Louvain is an artefact of a single-run baseline.")
 ```
 
 So on Karate the proposed methods **match** a properly tuned Louvain/Leiden
-rather than beating it by 12.9%.
+rather than beating it.
 
 # Distribution of Q across replications (Tukey)
 
@@ -111,8 +111,8 @@ bench$results |>
 # Takeaways
 
 1. **LCDA-GR reproduces "match best known"** on the four small networks.
-2. **E3 confirmed**: Louvain on Karate reaches 0.4198 (the optimum), so the
-   `+12.9%` claim does not survive a like-for-like comparison.
+2. **Multi-restart matters**: Louvain on Karate reaches 0.4198 (the optimum)
+   over 30 restarts, so single-run baselines overstate any advantage.
 3. **Wald gap**: on the only large network the methods trail Louvain/Leiden by
    ~2% --- the advantage is benchmark-dependent.
 
