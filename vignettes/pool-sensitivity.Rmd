@@ -1,8 +1,8 @@
 ---
-title: "Pool and refresh sensitivity (von Neumann)"
+title: "Pool and refresh sensitivity"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Pool and refresh sensitivity (von Neumann)}
+  %\VignetteIndexEntry{Pool and refresh sensitivity}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

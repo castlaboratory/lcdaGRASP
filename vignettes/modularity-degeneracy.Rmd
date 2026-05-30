@@ -1,8 +1,8 @@
 ---
-title: "Modularity degeneracy (Box)"
+title: "Modularity degeneracy"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Modularity degeneracy (Box)}
+  %\VignetteIndexEntry{Modularity degeneracy}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,7 +20,7 @@ cat("> **Note.** Dataset not installed. Run `data-raw/run_all_data.R` and rebuil
 
 # Every model is a simplification
 
-Box's lens: modularity is an approximation, and one of its known pathologies
+Modularity is an approximation, and one of its known pathologies
 is *degeneracy* --- many structurally distinct partitions can have $Q$ within
 $\varepsilon$ of the maximum [Good, de Montjoye & Clauset, 2010]. For a
 multi-start metaheuristic this is double-edged: lots of optima to find, but the

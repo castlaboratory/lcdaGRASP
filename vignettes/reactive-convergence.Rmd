@@ -1,8 +1,8 @@
 ---
-title: "Reactive update convergence (von Neumann)"
+title: "Reactive update convergence"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Reactive update convergence (von Neumann)}
+  %\VignetteIndexEntry{Reactive update convergence}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

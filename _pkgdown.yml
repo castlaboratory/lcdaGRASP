@@ -32,21 +32,21 @@ navbar:
       - text: "Benchmarks & tuning"
       - text: Reproducing the paper's benchmarks
         href: articles/benchmark-reproduction.html
-      - text: "DoE parameter tuning (George Box)"
+      - text: "DoE parameter tuning"
         href: articles/doe-parameter-tuning.html
       - text: "-------"
-      - text: "Critical review (by reasoning lens)"
-      - text: "Robustness across regimes (Wald)"
+      - text: "Robustness & analysis"
+      - text: "Robustness across regimes"
         href: articles/robustness-lfr.html
-      - text: "Reactive convergence (von Neumann)"
+      - text: "Reactive convergence"
         href: articles/reactive-convergence.html
-      - text: "Pool sensitivity (von Neumann)"
+      - text: "Pool sensitivity"
         href: articles/pool-sensitivity.html
-      - text: "Distributions / EDA (Tukey)"
+      - text: "Distributions / EDA"
         href: articles/eda-distributions.html
-      - text: "Modularity degeneracy (Box)"
+      - text: "Modularity degeneracy"
         href: articles/modularity-degeneracy.html
-      - text: "Leader score: NCE alternatives (Box)"
+      - text: "Leader score: NCE alternatives"
         href: articles/nce-leader-score.html
 
 reference:

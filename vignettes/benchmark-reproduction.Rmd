@@ -34,7 +34,7 @@ m <- summ$meta
 cat(sprintf("**Source.** %s\n\n", m$network_source))
 cat(sprintf("**Generated.** %s with lcdaGRASP %s, %s (seed %s, %s reps).\n\n",
             m$generated_on, m$pkg_version, m$R_version, m$seed, m$extra$nrep))
-cat("**Limitations (Box lens).**\n\n")
+cat("**Limitations.**\n\n")
 cat(paste0("- ", m$limitations, collapse = "\n"), "\n")
 ```
 
@@ -81,7 +81,7 @@ res |>
 So on Karate the proposed methods **match** a properly tuned Louvain/Leiden
 rather than beating it.
 
-# Distribution of Q across replications (Tukey)
+# Distribution of Q across replications
 
 Means alone hide that the advertised diversification produces a *degenerate*
 Q distribution on the small networks (sd ~ 0) and only spreads on the one
@@ -105,7 +105,7 @@ bench$results |>
   dplyr::group_by(algo) |>
   dplyr::summarise(Q_mean = round(mean(Q), 4), Q_sd = round(sd(Q), 4),
                    Q_max = round(max(Q), 4), .groups = "drop") |>
-  knitr::kable(caption = "Political Blogs: all four variants trail the best baseline by ~2% (Wald gap).")
+  knitr::kable(caption = "Political Blogs: all four variants trail the best baseline by ~2%.")
 ```
 
 # Takeaways
@@ -113,7 +113,7 @@ bench$results |>
 1. **LCDA-GR reproduces "match best known"** on the four small networks.
 2. **Multi-restart matters**: Louvain on Karate reaches 0.4198 (the optimum)
    over 30 restarts, so single-run baselines overstate any advantage.
-3. **Wald gap**: on the only large network the methods trail Louvain/Leiden by
+3. **Coverage gap**: on the only large network the methods trail Louvain/Leiden by
    ~2% --- the advantage is benchmark-dependent.
 
 # References

@@ -55,20 +55,20 @@ print(res_e)
 Precomputed simulation results back the articles and are listed with
 `lcda_data()`; load one with `lcda_data("repro_summary")`.
 
-## Articles (by reasoning lens)
+## Articles
 
-| Article | Lens | What it shows |
-|---|---|---|
-| Getting started | — | API tour |
-| Benchmark reproduction | Wald | Reproduces the benchmark modularity; a multi-restart Louvain/Leiden reaches the exact optimum (0.4198) on Karate |
-| Ensemble consensus (LCDA-ECG) | — | Consensus over the GRASP pool: recovery, overlap, node confidence |
-| **DoE parameter tuning** | Box | Factorial screening → response surface (CCD) → canonical optimum for `(α_c, α_s)` |
-| Robustness (LFR) | Wald | Q **and** ARI across the mixing sweep |
-| Reactive convergence | von Neumann | Proposition 6 empirically (entropy decay) |
-| Pool sensitivity | von Neumann | `(m, y, B)` grid + lex-decisive audit |
-| Modularity degeneracy | Box | Near-best partition counts + NMI |
-| EDA distributions | Tukey | Boxplots / ECDFs / (Q, H) scatter |
-| Leader score | Box | Global vs community-conditioned NCE |
+| Article | What it shows |
+|---|---|
+| Getting started | API tour |
+| Benchmark reproduction | Reproduces the benchmark modularity; a multi-restart Louvain/Leiden reaches the exact optimum (0.4198) on Karate |
+| Ensemble consensus (LCDA-ECG) | Consensus over the GRASP pool: recovery, overlap, node confidence |
+| **DoE parameter tuning** | Factorial screening → response surface (CCD) → canonical optimum for `(α_c, α_s)` |
+| Robustness (LFR) | Q **and** ARI across the mixing sweep |
+| Reactive convergence | Proposition 6 empirically (entropy decay) |
+| Pool sensitivity | `(m, y, B)` grid + lex-decisive audit |
+| Modularity degeneracy | Near-best partition counts + NMI |
+| EDA distributions | Boxplots / ECDFs / (Q, H) scatter |
+| Leader score | Global vs community-conditioned NCE |
 
 ## Rebuild the data and the site
 
