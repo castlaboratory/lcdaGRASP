@@ -92,8 +92,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // vnmi_local_search_cpp
-List vnmi_local_search_cpp(IntegerVector adj_indptr, IntegerVector adj_indices, IntegerVector membership_in, int d, NumericVector adj_weights, int n_prime, double eps, int max_passes, int seed);
-RcppExport SEXP _lcdaGRASP_vnmi_local_search_cpp(SEXP adj_indptrSEXP, SEXP adj_indicesSEXP, SEXP membership_inSEXP, SEXP dSEXP, SEXP adj_weightsSEXP, SEXP n_primeSEXP, SEXP epsSEXP, SEXP max_passesSEXP, SEXP seedSEXP) {
+List vnmi_local_search_cpp(IntegerVector adj_indptr, IntegerVector adj_indices, IntegerVector membership_in, int d, NumericVector adj_weights, int n_prime, double eps, int max_passes);
+RcppExport SEXP _lcdaGRASP_vnmi_local_search_cpp(SEXP adj_indptrSEXP, SEXP adj_indicesSEXP, SEXP membership_inSEXP, SEXP dSEXP, SEXP adj_weightsSEXP, SEXP n_primeSEXP, SEXP epsSEXP, SEXP max_passesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -105,8 +105,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_prime(n_primeSEXP);
     Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
     Rcpp::traits::input_parameter< int >::type max_passes(max_passesSEXP);
-    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(vnmi_local_search_cpp(adj_indptr, adj_indices, membership_in, d, adj_weights, n_prime, eps, max_passes, seed));
+    rcpp_result_gen = Rcpp::wrap(vnmi_local_search_cpp(adj_indptr, adj_indices, membership_in, d, adj_weights, n_prime, eps, max_passes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -235,7 +234,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lcdaGRASP_delta_modularity_cpp", (DL_FUNC) &_lcdaGRASP_delta_modularity_cpp, 6},
     {"_lcdaGRASP_update_affinities_inplace_cpp", (DL_FUNC) &_lcdaGRASP_update_affinities_inplace_cpp, 9},
     {"_lcdaGRASP_local_search_cpp", (DL_FUNC) &_lcdaGRASP_local_search_cpp, 7},
-    {"_lcdaGRASP_vnmi_local_search_cpp", (DL_FUNC) &_lcdaGRASP_vnmi_local_search_cpp, 9},
+    {"_lcdaGRASP_vnmi_local_search_cpp", (DL_FUNC) &_lcdaGRASP_vnmi_local_search_cpp, 8},
     {"_lcdaGRASP_similarity_hpi_cpp", (DL_FUNC) &_lcdaGRASP_similarity_hpi_cpp, 4},
     {"_lcdaGRASP_similarity_dice_cpp", (DL_FUNC) &_lcdaGRASP_similarity_dice_cpp, 4},
     {"_lcdaGRASP_similarity_jaccard_cpp", (DL_FUNC) &_lcdaGRASP_similarity_jaccard_cpp, 4},

@@ -65,6 +65,11 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
                      variant = 1, centrality = "eigen", similarity = "hpi",
                      overlap = FALSE, tau = 0.7,
                      verbose = FALSE, seed = NA_integer_) {
+  .check_graph(g)
+  .check_pos_int(B, "B")
+  .check_unit(w_min, "w_min"); .check_unit(tau, "tau", lower = 1e-9)
+  .check_range(alpha_c_range, "alpha_c_range"); .check_range(alpha_s_range, "alpha_s_range")
+  if (!variant %in% c(1, 2)) cli::cli_abort("{.arg variant} must be 1 or 2.")
   if (!is.na(seed)) set.seed(seed)
   csr <- .as_csr(g)
   g   <- csr$igraph                                   # simplified, undirected

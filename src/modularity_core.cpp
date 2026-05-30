@@ -292,8 +292,8 @@ List local_search_cpp(IntegerVector adj_indptr,
 // Restricts evaluation to a random subset V' of size `n_prime`, and
 // accepts *all* profitable moves in a single pass before recomputing
 // affinities. Repeats passes until no profitable move exceeds `eps`.
-//
-// @param seed integer for reproducibility of the V' sample.
+// The V' sample uses R's RNG, so reproducibility is controlled by set.seed()
+// at the R level (no separate seed argument).
 // [[Rcpp::export]]
 List vnmi_local_search_cpp(IntegerVector adj_indptr,
                            IntegerVector adj_indices,
@@ -302,8 +302,7 @@ List vnmi_local_search_cpp(IntegerVector adj_indptr,
                            NumericVector adj_weights,
                            int n_prime = 300,
                            double eps = 1e-4,
-                           int max_passes = 200,
-                           int seed = 1) {
+                           int max_passes = 200) {
   const int n = adj_indptr.size() - 1;
   IntegerVector membership = clone(membership_in);
   std::vector<double> deg = strength_from_csr(adj_indptr, adj_weights);
