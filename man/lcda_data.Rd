@@ -34,6 +34,20 @@ Available datasets (name -> contents):
   \item{`degeneracy`}{Near-best partition counts and pairwise NMI.}
   \item{`eda_replicates`}{Replicated `(Q, H)` for exploratory analysis.}
   \item{`nce_alternatives`}{Global vs community-conditioned NCE leaders.}
+  \item{`lcda_ecg`, `overlap_lcda_ecg`, `stability_pool`,
+    `consensus_leader_test`}{LCDA-ECG ensemble consensus: LFR recovery,
+    overlapping/bridge nodes, pool-stability stopping rule, and the
+    consensus-vs-central leader comparison.}
+  \item{`largescale`}{Recovery and runtime up to n = 5e4.}
+  \item{`gnn_baseline`}{Graph-auto-encoder baseline (true-k and auto-k) vs
+    classical methods on LFR.}
+  \item{`weighted_demo`}{Weighted-graph demonstration (weights aid recovery).}
+  \item{`blogs_table9`, `blogs_timing`}{Weighted Political Blogs reproduction
+    (mean/max Q, timings).}
+  \item{`doe_lfr_recovery`}{DoE screening/RSM scored by LFR recovery.}
+  \item{`leader_utility`, `leader_vs_twostage`,
+    `leader_vs_twostage_lfr`}{Downstream leader utility (IC/LT spread,
+    coverage) vs two-stage detect-then-centrality pipelines.}
 }
 }
 \examples{

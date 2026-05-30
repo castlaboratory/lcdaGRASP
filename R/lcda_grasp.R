@@ -307,6 +307,11 @@ lex_dominates <- function(Q_new, H_new, Q_old, H_old, tol = 1e-12) {
 
 #' LCDA-GRASP: fixed-parameter variant.
 #'
+#' @details
+#' Weighted graphs: a numeric `weight` edge attribute is honoured by the
+#' modularity objective and the local search, but the construction (similarity
+#' and centrality) and the NCE leader score remain *structural* (unweighted).
+#'
 #' @param g an igraph object (undirected, simple).
 #' @param alpha_c,alpha_s RCL parameters.
 #' @param variant 1 or 2.
@@ -367,6 +372,11 @@ lcda_grasp <- function(g,
 
 #' LCDA-GR: Reactive variant with self-tuning of (alpha_c, alpha_s).
 #' Implements Algorithm 4 of the paper.
+#'
+#' @details
+#' Weighted graphs: a numeric `weight` edge attribute is honoured by the
+#' modularity objective and the local search, but the construction (similarity
+#' and centrality) and the NCE leader score remain *structural* (unweighted).
 #'
 #' @param g an igraph object (undirected, simple).
 #' @param variant construction variant, 1 or 2.

@@ -50,7 +50,11 @@ an object of class \code{lcda_ecg_result}: the consensus
   \code{membership} (1-based), \code{leaders} (consensus-derived, 1-based),
   \code{leaders_central} (top-eigenvector per community, for comparison), a
   per-node \code{confidence} vector, the leader-designation counts
-  \code{lead_count}, and modularity \code{Q}. When \code{overlap = TRUE} it
+  \code{lead_count}, the input-graph modularity \code{Q} (weight-aware;
+  comparable to \code{lcda_grasp}/\code{lcda_gr}), and
+  \code{Q_consensus_weighted} (modularity under the ECG co-association
+  weights, i.e. the objective the consensus optimised). When
+  \code{overlap = TRUE} it
   additionally carries \code{overlap_membership} (a length-n list of the
   community ids each node belongs to) and \code{is_overlap} (logical, the
   bridge nodes).
@@ -59,8 +63,16 @@ an object of class \code{lcda_ecg_result}: the consensus
 Builds a pool of \code{B} randomised LCDA constructions, turns it into edge
 co-association weights (ECG-style), re-clusters the reweighted graph for the
 consensus partition, and designates one leader per community from the pool's
-leader-designation frequencies. Recovers planted structure at the level of
-Leiden/ECG while retaining the joint leader output and a node-confidence map.
+leader-designation frequencies. Recovers planted structure on par with ECG
+and outperforms Leiden (advantage concentrated at high mixing), while
+retaining the joint leader output and a node-confidence map.
+}
+\details{
+Weighted graphs: a numeric \code{weight} edge attribute is honoured by the
+modularity objective and the local search inside each pool construction, but
+the similarity, centrality and NCE leader score remain \emph{structural}
+(unweighted). The consensus re-clustering uses the ECG co-association weights,
+not the input weights.
 }
 \examples{
 g <- igraph::make_graph("Zachary")

@@ -15,9 +15,13 @@ Description: Implements the LCDA-GRASP and LCDA-GR (Reactive GRASP) algorithms
     in Ospina et al. (2026). Performance-critical kernels (incremental
     modularity, community affinities, VNMI local search, power-iteration
     eigenvector centrality, HPI/Dice/Jaccard similarities) are implemented
-    in C++ via Rcpp. The package also includes the Node-Connection Entropy
-    (NCE) leader score and its community-conditioned variant, statistical
-    comparison utilities (Kruskal-Wallis + pairwise permutation). Reproducible
+    in C++ via Rcpp. An ensemble-consensus variant (LCDA-ECG) aggregates the
+    GRASP pool into a consensus partition with overlapping communities and a
+    per-node confidence map, and weighted graphs are supported through the
+    modularity objective and local search. The package also includes the
+    Node-Connection Entropy (NCE) leader score and its community-conditioned
+    variant, statistical comparison utilities (Kruskal-Wallis + pairwise
+    permutation). Reproducible
     analysis scripts (LFR robustness, pool sensitivity, Proposition 6 empirical
     convergence, and modularity-degeneracy analyses) are provided in the source
     repository.

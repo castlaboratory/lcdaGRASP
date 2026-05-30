@@ -53,6 +53,11 @@ an object of class `lcda_gr_result`: best partition, traces, the
 LCDA-GR: Reactive variant with self-tuning of (alpha_c, alpha_s).
 Implements Algorithm 4 of the paper.
 }
+\details{
+Weighted graphs: a numeric `weight` edge attribute is honoured by the
+modularity objective and the local search, but the construction (similarity
+and centrality) and the NCE leader score remain *structural* (unweighted).
+}
 \examples{
 g <- igraph::make_graph("Zachary")
 res <- lcda_gr(g, B = 30, seed = 1)

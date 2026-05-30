@@ -38,6 +38,11 @@ an object of class `lcda_grasp_result`: best partition, Q/H traces,
 \description{
 LCDA-GRASP: fixed-parameter variant.
 }
+\details{
+Weighted graphs: a numeric `weight` edge attribute is honoured by the
+modularity objective and the local search, but the construction (similarity
+and centrality) and the NCE leader score remain *structural* (unweighted).
+}
 \examples{
 g <- igraph::make_graph("Zachary")
 res <- lcda_grasp(g, B = 20, seed = 1)
