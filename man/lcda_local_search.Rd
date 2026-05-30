@@ -7,6 +7,7 @@
 lcda_local_search(
   csr,
   construction,
+  centrality = "eigen",
   n_threshold = 300,
   vnmi_n_prime = 300,
   vnmi_eps = 1e-04,
@@ -17,6 +18,9 @@ lcda_local_search(
 \item{csr}{a CSR list (indptr, indices, igraph) from the internal converter.}
 
 \item{construction}{a list as returned by [lcda_construct()]/[lcda_repair()].}
+
+\item{centrality}{leader-selection centrality passed on to [lcda_repair()]
+so the re-validated leader matches the chosen measure.}
 
 \item{n_threshold}{node count above which VNMI is used instead of full search.}
 

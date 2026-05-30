@@ -6,8 +6,12 @@
 On a disconnected graph, plain closeness is ill-defined across components
 (nodes in tiny components score spuriously high, distorting leader selection);
 we fall back to harmonic centrality, the robust generalisation that handles
-unreachable pairs (Boldi & Vigna 2014). On connected graphs the two coincide
-in ranking, so this changes nothing for the standard benchmarks.}
+unreachable pairs (Boldi & Vigna 2014). Note the two are NOT identical even
+on a connected graph -- closeness inverts the mean distance, harmonic averages
+the inverse distances -- so on disconnected inputs (e.g. PolBlogs, and the
+frequently-disconnected induced subgraphs of variant 2) the selected leader
+may differ from a per-component closeness; this is a deliberate robustness
+choice, recorded here so benchmark results are interpreted accordingly.}
 \usage{
 centrality_closeness(csr)
 }
@@ -22,6 +26,10 @@ Closeness centrality - delegates to igraph::closeness.
 On a disconnected graph, plain closeness is ill-defined across components
 (nodes in tiny components score spuriously high, distorting leader selection);
 we fall back to harmonic centrality, the robust generalisation that handles
-unreachable pairs (Boldi & Vigna 2014). On connected graphs the two coincide
-in ranking, so this changes nothing for the standard benchmarks.
+unreachable pairs (Boldi & Vigna 2014). Note the two are NOT identical even
+on a connected graph -- closeness inverts the mean distance, harmonic averages
+the inverse distances -- so on disconnected inputs (e.g. PolBlogs, and the
+frequently-disconnected induced subgraphs of variant 2) the selected leader
+may differ from a per-component closeness; this is a deliberate robustness
+choice, recorded here so benchmark results are interpreted accordingly.
 }

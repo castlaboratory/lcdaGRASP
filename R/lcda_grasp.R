@@ -173,11 +173,15 @@ lcda_construct <- function(csr,
 #' centrality within the community and designating the top-scoring node.
 #' @param csr a CSR list (indptr, indices, igraph) from the internal converter.
 #' @param construction a list as returned by [lcda_construct()].
+#' @param centrality leader-selection centrality (`"eigen"`, `"betweenness"`,
+#'   or `"closeness"`); should match the one used in construction so the final
+#'   leader is consistent with the chosen measure.
 #' @param verbose logical; emit a cli trace.
 #' @return the input `construction` with its `leaders` field rebuilt.
 #' @export
-lcda_repair <- function(csr, construction, verbose = FALSE) {
+lcda_repair <- function(csr, construction, centrality = "eigen", verbose = FALSE) {
   mem <- construction$membership          # 1-based community ids
+  cent_fn <- .dispatch_centrality(centrality)
   # Iterate the community ids actually present (iterating 0..d-1 would mix
   # 0-based ids against the 1-based `mem` and hit empty communities).
   comms <- sort(unique(mem))
@@ -189,7 +193,7 @@ lcda_repair <- function(csr, construction, verbose = FALSE) {
       next
     }
     sub <- igraph::induced_subgraph(csr$igraph, members_1based)
-    cent_local <- centrality_eigen(.as_csr(sub))
+    cent_local <- cent_fn(.as_csr(sub))
     # Edgeless community => degenerate centrality; fall back to the first member.
     idx <- if (length(cent_local) == 0L || !any(is.finite(cent_local))) 1L else which.max(cent_local)
     new_leaders <- c(new_leaders, members_1based[idx])
@@ -204,13 +208,16 @@ lcda_repair <- function(csr, construction, verbose = FALSE) {
 #' First-improvement local search, with automatic VNMI dispatch for n > 300.
 #' @param csr a CSR list (indptr, indices, igraph) from the internal converter.
 #' @param construction a list as returned by [lcda_construct()]/[lcda_repair()].
+#' @param centrality leader-selection centrality passed on to [lcda_repair()]
+#'   so the re-validated leader matches the chosen measure.
 #' @param n_threshold node count above which VNMI is used instead of full search.
 #' @param vnmi_n_prime size of the sampled subset V' used by VNMI.
 #' @param vnmi_eps minimum per-move modularity gain accepted by VNMI.
 #' @param verbose logical; emit a cli trace.
 #' @return the input `construction` with updated `membership`, `Q`, and leaders.
 #' @export
-lcda_local_search <- function(csr, construction, n_threshold = 300,
+lcda_local_search <- function(csr, construction, centrality = "eigen",
+                              n_threshold = 300,
                               vnmi_n_prime = 300, vnmi_eps = 1e-4,
                               verbose = FALSE) {
   mem0 <- as.integer(construction$membership - 1L)   # 0-based for C++
@@ -224,7 +231,7 @@ lcda_local_search <- function(csr, construction, n_threshold = 300,
   }
   construction$membership <- as.integer(res$membership) + 1L
   construction$Q          <- res$modularity
-  construction <- lcda_repair(csr, construction)       # leaders re-validated
+  construction <- lcda_repair(csr, construction, centrality = centrality)  # leaders re-validated
   if (verbose) cli::cli_alert_info(
     "local search ({if (use_vnmi) 'VNMI' else 'first-improvement'}): Q = {round(res$modularity, 6)}")
   construction
@@ -332,8 +339,8 @@ lcda_grasp <- function(g,
   for (it in seq_len(B)) {
     sol <- lcda_construct(csr, alpha_c, alpha_s, variant = variant,
                           centrality = centrality, similarity = similarity)
-    sol <- lcda_repair(csr, sol)
-    sol <- lcda_local_search(csr, sol)
+    sol <- lcda_repair(csr, sol, centrality = centrality)
+    sol <- lcda_local_search(csr, sol, centrality = centrality)
     Q <- sol$Q
     H <- nce_score_cpp(as.integer(igraph::degree(g, v = sol$leaders)), igraph::vcount(g))
     trace_Q[it] <- Q
@@ -368,6 +375,11 @@ lcda_grasp <- function(g,
 #' @param m pool size (default 20, per paper).
 #' @param y refresh period (default 3m).
 #' @param alpha_c_range,alpha_s_range bounds for the uniform initial pool.
+#' @param p_floor minimum probability mass reserved across the pool at each
+#'   refresh, spread uniformly so every pair keeps `p_k >= p_floor/m > 0`. This
+#'   prevents a pair that happened not to be sampled in a block from being
+#'   permanently excluded (and matches the `p_k >= delta > 0` premise of
+#'   Proposition 6). Set to 0 to recover the raw proportional rule.
 #' @param verbose logical; show a cli progress bar and a final summary.
 #' @param seed integer RNG seed, or `NA` to leave the RNG untouched.
 #' @return an object of class `lcda_gr_result`: best partition, traces, the
@@ -384,6 +396,7 @@ lcda_gr <- function(g,
                     m = 20, y = NULL,
                     alpha_c_range = c(0.1, 0.9),
                     alpha_s_range = c(0.1, 0.5),
+                    p_floor = 0.05,
                     verbose = FALSE,
                     seed = NA_integer_) {
   if (!is.na(seed)) set.seed(seed)
@@ -411,8 +424,8 @@ lcda_gr <- function(g,
 
     sol <- lcda_construct(csr, a_c, a_s, variant = variant,
                           centrality = centrality, similarity = similarity)
-    sol <- lcda_repair(csr, sol)
-    sol <- lcda_local_search(csr, sol)
+    sol <- lcda_repair(csr, sol, centrality = centrality)
+    sol <- lcda_local_search(csr, sol, centrality = centrality)
     Q <- sol$Q
     H <- nce_score_cpp(as.integer(igraph::degree(g, v = sol$leaders)), igraph::vcount(g))
     trace_Q[it] <- Q; trace_H[it] <- H; trace_k[it] <- k
@@ -431,6 +444,10 @@ lcda_gr <- function(g,
     if (it %% y == 0 && Q_star > 0) {
       qk <- pmax(mu_k, 0) / Q_star
       p_k <- if (sum(qk) > 0) qk / sum(qk) else rep(1 / m, m)
+      # Epsilon floor: keep every pair reachable (p_k >= p_floor/m > 0) so a
+      # pair not sampled in a block is not excluded forever; also restores the
+      # p_k >= delta > 0 premise of Proposition 6.
+      if (p_floor > 0) p_k <- (1 - p_floor) * p_k + p_floor / m
     }
     pk_history[it, ] <- p_k
     if (verbose) cli::cli_progress_update()

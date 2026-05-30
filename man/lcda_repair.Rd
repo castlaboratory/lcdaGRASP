@@ -5,12 +5,16 @@
 \title{Repair: ensure every community has exactly one leader by recomputing
 centrality within the community and designating the top-scoring node.}
 \usage{
-lcda_repair(csr, construction, verbose = FALSE)
+lcda_repair(csr, construction, centrality = "eigen", verbose = FALSE)
 }
 \arguments{
 \item{csr}{a CSR list (indptr, indices, igraph) from the internal converter.}
 
 \item{construction}{a list as returned by [lcda_construct()].}
+
+\item{centrality}{leader-selection centrality (`"eigen"`, `"betweenness"`,
+or `"closeness"`); should match the one used in construction so the final
+leader is consistent with the chosen measure.}
 
 \item{verbose}{logical; emit a cli trace.}
 }
