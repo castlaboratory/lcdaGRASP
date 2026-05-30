@@ -1,4 +1,4 @@
-# Static linting via lintr. Package lives in lcdaGRASP/.
+# Static linting via lintr. Package lives at the repository root.
 on:
   push:
     branches: [main, master]
@@ -22,9 +22,8 @@ jobs:
         with:
           extra-packages: any::lintr
           needs: lint
-          working-directory: lcdaGRASP
       - name: Lint
-        run: lintr::lint_package("lcdaGRASP")
+        run: lintr::lint_package(".")
         shell: Rscript {0}
         env:
           LINTR_ERROR_ON_LINT: false
