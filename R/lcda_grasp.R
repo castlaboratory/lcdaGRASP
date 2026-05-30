@@ -20,6 +20,11 @@
   # (weighted modularity / strength); otherwise weights are all 1 and the
   # kernels reduce exactly to the unweighted case.
   has_w <- "weight" %in% igraph::edge_attr_names(g)
+  if (has_w) {
+    w_attr <- igraph::edge_attr(g, "weight")
+    if (!is.numeric(w_attr) || anyNA(w_attr) || any(!is.finite(w_attr)) || any(w_attr < 0))
+      cli::cli_abort("Edge attribute {.field weight} must be numeric, finite, and non-negative.")
+  }
   A <- igraph::as_adjacency_matrix(g, type = "both",
                                    attr = if (has_w) "weight" else NULL, sparse = TRUE)
   A <- methods::as(A, "CsparseMatrix")
@@ -30,6 +35,32 @@
     weights = as.numeric(A@x),   # length 2m, edge weights (all 1 if unweighted)
     igraph  = g
   )
+}
+
+# --- input validation helpers ----------------------------------------
+
+.check_pos_int <- function(x, nm) {
+  if (!is.numeric(x) || length(x) != 1L || !is.finite(x) || x < 1 || x != as.integer(x))
+    cli::cli_abort("{.arg {nm}} must be a single positive integer.")
+  invisible(as.integer(x))
+}
+.check_unit <- function(x, nm, lower = 0, upper = 1) {
+  if (!is.numeric(x) || length(x) != 1L || !is.finite(x) || x < lower || x > upper)
+    cli::cli_abort("{.arg {nm}} must be a single number in [{lower}, {upper}].")
+  invisible(x)
+}
+.check_range <- function(x, nm) {
+  if (!is.numeric(x) || length(x) != 2L || any(!is.finite(x)) ||
+      any(x < 0) || any(x > 1) || x[1] > x[2])
+    cli::cli_abort("{.arg {nm}} must be two values in [0, 1] with lower <= upper.")
+  invisible(x)
+}
+.check_graph <- function(g) {
+  if (!inherits(g, "igraph")) cli::cli_abort("{.arg g} must be an {.cls igraph} object.")
+  if (igraph::is_directed(g)) cli::cli_abort("Only undirected graphs are supported.")
+  if (igraph::vcount(g) < 2L) cli::cli_abort("{.arg g} must have at least 2 vertices.")
+  if (igraph::ecount(g) == 0L) cli::cli_abort("{.arg g} has no edges; community detection is undefined.")
+  invisible(g)
 }
 
 # --- centralities -----------------------------------------------------
@@ -229,7 +260,12 @@ lcda_local_search <- function(csr, construction, centrality = "eigen",
   } else {
     res <- local_search_cpp(csr$indptr, csr$indices, mem0, d, csr$weights)
   }
-  construction$membership <- as.integer(res$membership) + 1L
+  # Renumber to dense, contiguous community ids: local search can empty a
+  # community, leaving gaps that would mislead downstream consumers and `d`.
+  mem1 <- as.integer(res$membership) + 1L
+  mem1 <- match(mem1, sort(unique(mem1)))
+  construction$membership <- mem1
+  construction$d          <- max(mem1)
   construction$Q          <- res$modularity
   construction <- lcda_repair(csr, construction, centrality = centrality)  # leaders re-validated
   if (verbose) cli::cli_alert_info(
@@ -333,6 +369,10 @@ lcda_grasp <- function(g,
                        centrality = "eigen", similarity = "hpi",
                        verbose = FALSE,
                        seed = NA_integer_) {
+  .check_graph(g)
+  .check_pos_int(B, "B")
+  .check_unit(alpha_c, "alpha_c"); .check_unit(alpha_s, "alpha_s")
+  if (!variant %in% c(1, 2)) cli::cli_abort("{.arg variant} must be 1 or 2.")
   if (!is.na(seed)) set.seed(seed)
   csr <- .as_csr(g)
   g <- csr$igraph   # use the simplified graph so H (degree/n) matches the CSR
@@ -409,8 +449,14 @@ lcda_gr <- function(g,
                     p_floor = 0.05,
                     verbose = FALSE,
                     seed = NA_integer_) {
+  .check_graph(g)
+  .check_pos_int(B, "B"); .check_pos_int(m, "m")
+  .check_range(alpha_c_range, "alpha_c_range"); .check_range(alpha_s_range, "alpha_s_range")
+  .check_unit(p_floor, "p_floor")
+  if (!variant %in% c(1, 2)) cli::cli_abort("{.arg variant} must be 1 or 2.")
   if (!is.na(seed)) set.seed(seed)
   if (is.null(y)) y <- 3L * m
+  .check_pos_int(y, "y")
   csr <- .as_csr(g)
   g <- csr$igraph   # use the simplified graph so H (degree/n) matches the CSR
 

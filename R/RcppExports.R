@@ -21,8 +21,8 @@ local_search_cpp <- function(adj_indptr, adj_indices, membership_in, d, adj_weig
     .Call(`_lcdaGRASP_local_search_cpp`, adj_indptr, adj_indices, membership_in, d, adj_weights, tol, max_iter)
 }
 
-vnmi_local_search_cpp <- function(adj_indptr, adj_indices, membership_in, d, adj_weights, n_prime = 300L, eps = 1e-4, max_passes = 200L, seed = 1L) {
-    .Call(`_lcdaGRASP_vnmi_local_search_cpp`, adj_indptr, adj_indices, membership_in, d, adj_weights, n_prime, eps, max_passes, seed)
+vnmi_local_search_cpp <- function(adj_indptr, adj_indices, membership_in, d, adj_weights, n_prime = 300L, eps = 1e-4, max_passes = 200L) {
+    .Call(`_lcdaGRASP_vnmi_local_search_cpp`, adj_indptr, adj_indices, membership_in, d, adj_weights, n_prime, eps, max_passes)
 }
 
 similarity_hpi_cpp <- function(adj_indptr, adj_indices, L, pool) {
