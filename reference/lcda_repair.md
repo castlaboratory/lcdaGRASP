@@ -6,7 +6,7 @@ centrality within the community and designating the top-scoring node.
 ## Usage
 
 ``` r
-lcda_repair(csr, construction, verbose = FALSE)
+lcda_repair(csr, construction, centrality = "eigen", verbose = FALSE)
 ```
 
 ## Arguments
@@ -18,6 +18,12 @@ lcda_repair(csr, construction, verbose = FALSE)
 - construction:
 
   a list as returned by \[lcda_construct()\].
+
+- centrality:
+
+  leader-selection centrality (\`"eigen"\`, \`"betweenness"\`, or
+  \`"closeness"\`); should match the one used in construction so the
+  final leader is consistent with the chosen measure.
 
 - verbose:
 

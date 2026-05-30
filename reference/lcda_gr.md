@@ -16,6 +16,7 @@ lcda_gr(
   y = NULL,
   alpha_c_range = c(0.1, 0.9),
   alpha_s_range = c(0.1, 0.5),
+  p_floor = 0.05,
   verbose = FALSE,
   seed = NA_integer_
 )
@@ -50,6 +51,14 @@ lcda_gr(
 - alpha_c_range, alpha_s_range:
 
   bounds for the uniform initial pool.
+
+- p_floor:
+
+  minimum probability mass reserved across the pool at each refresh,
+  spread uniformly so every pair keeps \`p_k \>= p_floor/m \> 0\`. This
+  prevents a pair that happened not to be sampled in a block from being
+  permanently excluded (and matches the \`p_k \>= delta \> 0\` premise
+  of Proposition 6). Set to 0 to recover the raw proportional rule.
 
 - verbose:
 

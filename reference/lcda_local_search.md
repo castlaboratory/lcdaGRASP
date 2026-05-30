@@ -9,6 +9,7 @@ First-improvement local search, with automatic VNMI dispatch for n \>
 lcda_local_search(
   csr,
   construction,
+  centrality = "eigen",
   n_threshold = 300,
   vnmi_n_prime = 300,
   vnmi_eps = 1e-04,
@@ -25,6 +26,11 @@ lcda_local_search(
 - construction:
 
   a list as returned by \[lcda_construct()\]/\[lcda_repair()\].
+
+- centrality:
+
+  leader-selection centrality passed on to \[lcda_repair()\] so the
+  re-validated leader matches the chosen measure.
 
 - n_threshold:
 

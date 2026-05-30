@@ -69,6 +69,7 @@ Implements Algorithm 4 of the paper.</p>
 <span>  y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  alpha_c_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.9</span><span class="op">)</span>,</span>
 <span>  alpha_s_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  p_floor <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NA_integer_</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -104,6 +105,14 @@ Implements Algorithm 4 of the paper.</p>
 
 <dt id="arg-alpha-c-range-alpha-s-range">alpha_c_range, alpha_s_range<a class="anchor" aria-label="anchor" href="#arg-alpha-c-range-alpha-s-range"></a></dt>
 <dd><p>bounds for the uniform initial pool.</p></dd>
+
+
+<dt id="arg-p-floor">p_floor<a class="anchor" aria-label="anchor" href="#arg-p-floor"></a></dt>
+<dd><p>minimum probability mass reserved across the pool at each
+refresh, spread uniformly so every pair keeps `p_k &gt;= p_floor/m &gt; 0`. This
+prevents a pair that happened not to be sampled in a block from being
+permanently excluded (and matches the `p_k &gt;= delta &gt; 0` premise of
+Proposition 6). Set to 0 to recover the raw proportional rule.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
