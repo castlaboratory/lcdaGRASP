@@ -51,10 +51,11 @@ navbar:
 
 reference:
 - title: Algorithms
-  desc: The four LCDA variants proposed in the paper.
+  desc: The LCDA variants proposed in the paper, plus the ensemble-consensus variant.
   contents:
   - lcda_grasp
   - lcda_gr
+  - lcda_ecg
 - title: Construction phases
   desc: Building blocks of a single GRASP iteration (construct, repair, local search).
   contents:
