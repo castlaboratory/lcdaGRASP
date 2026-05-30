@@ -24,11 +24,12 @@ res <- d$results |> mutate(config = paste(centrality, similarity, sep = "/"))
 
 ``` r
 
-ggplot(res, aes(config, Q, fill = algorithm)) +
-  geom_boxplot(outlier.size = 0.5, alpha = 0.65) +
-  facet_wrap(~ graph, scales = "free_y") + coord_flip() +
+# Q on x directly (coord_flip would silently disable the facet free scale).
+ggplot(res, aes(Q, config, fill = algorithm)) +
+  geom_boxplot(outlier.size = 0.5, alpha = 0.65, orientation = "y") +
+  facet_wrap(~ graph, scales = "free_x") +
   labs(title = "Best-Q by configuration (each box = replications)",
-       subtitle = "Means alone hide this picture", x = NULL, y = "best Q") +
+       subtitle = "Means alone hide this picture", y = NULL, x = "best Q") +
   theme_minimal(base_size = 9)
 ```
 
@@ -47,11 +48,13 @@ ggplot(res, aes(Q, colour = config)) +
 
 ``` r
 
+# Common Q scale (free_y), so the near-fixed Q reads as narrow vertical clouds
+# instead of being auto-zoomed apart per panel.
 ggplot(res, aes(Q, H, colour = algorithm, shape = similarity)) +
   geom_point(alpha = 0.6, size = 1.4) +
-  facet_wrap(~ graph, scales = "free") +
+  facet_wrap(~ graph, scales = "free_y") +
   labs(title = "Joint (Q, H) across replicates",
-       subtitle = "Vertical clouds => H varies freely at fixed Q (lex order has bite)") +
+       subtitle = "H varies within a narrow Q band: the near-tie regime where a lexicographic Q-then-H order can act") +
   theme_minimal(base_size = 9)
 ```
 

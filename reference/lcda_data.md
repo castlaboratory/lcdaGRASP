@@ -62,6 +62,40 @@ Available datasets (name -\> contents):
 
   Global vs community-conditioned NCE leaders.
 
+- \`lcda_ecg\`, \`overlap_lcda_ecg\`, \`stability_pool\`,
+  \`consensus_leader_test\`:
+
+  LCDA-ECG ensemble consensus: LFR recovery, overlapping/bridge nodes,
+  pool-stability stopping rule, and the consensus-vs-central leader
+  comparison.
+
+- \`largescale\`:
+
+  Recovery and runtime up to n = 5e4.
+
+- \`gnn_baseline\`:
+
+  Graph-auto-encoder baseline (true-k and auto-k) vs classical methods
+  on LFR.
+
+- \`weighted_demo\`:
+
+  Weighted-graph demonstration (weights aid recovery).
+
+- \`blogs_table9\`, \`blogs_timing\`:
+
+  Weighted Political Blogs reproduction (mean/max Q, timings).
+
+- \`doe_lfr_recovery\`:
+
+  DoE screening/RSM scored by LFR recovery.
+
+- \`leader_utility\`, \`leader_vs_twostage\`,
+  \`leader_vs_twostage_lfr\`:
+
+  Downstream leader utility (IC/LT spread, coverage) vs two-stage
+  detect-then-centrality pipelines.
+
 ## Examples
 
 ``` r

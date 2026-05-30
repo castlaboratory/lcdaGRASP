@@ -53,6 +53,13 @@ lcda_grasp(
 an object of class \`lcda_grasp_result\`: best partition, Q/H traces,
 and the parameters used.
 
+## Details
+
+Weighted graphs: a numeric \`weight\` edge attribute is honoured by the
+modularity objective and the local search, but the construction
+(similarity and centrality) and the NCE leader score remain
+\*structural\* (unweighted).
+
 ## Examples
 
 ``` r

@@ -21,7 +21,8 @@ res
 #> 
 #> ── LCDA-ECG (ensemble consensus) result ────────────────────────────────────────
 #> communities: 4
-#> modularity Q: 0.41979
+#> modularity Q (input): 0.41979
+#> Q (consensus weights): 0.588951
 #> pool size B: 32
 #> mean node confidence: 0.83
 #> overlap nodes: 6 (tau = 0.6)
@@ -48,7 +49,7 @@ rec$results$summary |>
   ggplot(aes(mu, NMI, colour = method, shape = method)) +
   geom_line(linewidth = 0.9) + geom_point(size = 2) +
   labs(title = "Recovery vs the planted LFR partition",
-       subtitle = "LCDA-ECG matches Leiden/ECG and wins at high mixing",
+       subtitle = "LCDA-ECG matches ECG and outperforms Leiden (advantage at high mixing)",
        x = expression(mu), y = "NMI") +
   theme_minimal(base_size = 10) + theme(legend.position = "bottom")
 ```
@@ -56,10 +57,11 @@ rec$results$summary |>
 ![](ensemble-consensus_files/figure-html/recovery-1.png)
 
 The fixed/Reactive variants trail Leiden and ECG on recovery; the
-ensemble-consensus variant **LCDA-ECG** matches them and overtakes them
-in the high-mixing regime, where consensus is most valuable.
+ensemble-consensus variant **LCDA-ECG** matches ECG and overtakes Leiden
+in the high-mixing regime, where consensus is most valuable. (It stays
+on par with ECG rather than beating it.)
 
-## Overlapping communities are real bridges
+## Overlapping nodes show bridge-like connectivity
 
 ``` r
 
@@ -79,8 +81,10 @@ ov$results$per_graph |>
 
 Nodes that LCDA-ECG places in more than one community have a
 significantly higher participation coefficient (their edges spread
-across communities), i.e. they are structural bridges — a capability
-single-output methods lack.
+across communities), i.e. bridge-like connectivity. Because both the
+participation coefficient and the overlap-assignment rule read the same
+node-to-community edge distribution, this is a consistency check rather
+than an independent validation.
 
 ## The pool stabilises (so the pool size is principled)
 

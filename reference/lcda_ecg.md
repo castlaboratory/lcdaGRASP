@@ -3,9 +3,10 @@
 Builds a pool of `B` randomised LCDA constructions, turns it into edge
 co-association weights (ECG-style), re-clusters the reweighted graph for
 the consensus partition, and designates one leader per community from
-the pool's leader-designation frequencies. Recovers planted structure at
-the level of Leiden/ECG while retaining the joint leader output and a
-node-confidence map.
+the pool's leader-designation frequencies. Recovers planted structure on
+par with ECG and outperforms Leiden (advantage concentrated at high
+mixing), while retaining the joint leader output and a node-confidence
+map.
 
 ## Usage
 
@@ -78,10 +79,21 @@ lcda_ecg(
 an object of class `lcda_ecg_result`: the consensus `membership`
 (1-based), `leaders` (consensus-derived, 1-based), `leaders_central`
 (top-eigenvector per community, for comparison), a per-node `confidence`
-vector, the leader-designation counts `lead_count`, and modularity `Q`.
-When `overlap = TRUE` it additionally carries `overlap_membership` (a
-length-n list of the community ids each node belongs to) and
-`is_overlap` (logical, the bridge nodes).
+vector, the leader-designation counts `lead_count`, the input-graph
+modularity `Q` (weight-aware; comparable to `lcda_grasp`/`lcda_gr`), and
+`Q_consensus_weighted` (modularity under the ECG co-association weights,
+i.e. the objective the consensus optimised). When `overlap = TRUE` it
+additionally carries `overlap_membership` (a length-n list of the
+community ids each node belongs to) and `is_overlap` (logical, the
+bridge nodes).
+
+## Details
+
+Weighted graphs: a numeric `weight` edge attribute is honoured by the
+modularity objective and the local search inside each pool construction,
+but the similarity, centrality and NCE leader score remain *structural*
+(unweighted). The consensus re-clustering uses the ECG co-association
+weights, not the input weights.
 
 ## Examples
 

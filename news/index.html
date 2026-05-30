@@ -54,7 +54,7 @@
 <div class="section level3">
 <h3 id="new-features-0-3-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-3-0"></a></h3>
 <ul><li>
-<code><a href="../reference/lcda_ecg.html">lcda_ecg()</a></code> — <strong>ensemble-consensus community and leader detection</strong>. Turns the GRASP pool (the diverse partitions produced across iterations, previously discarded) into edge co-association weights in the spirit of Ensemble Clustering for Graphs (Poulin &amp; Théberge, 2019), re-clusters for a consensus partition, and designates one leader per community from the pool’s leader-designation frequencies. On canonical LFR benchmarks it recovers the planted structure as well as Leiden/ECG (and better at high mixing), while retaining the joint leader output and adding a per-node confidence map. With <code>overlap = TRUE</code> it additionally returns overlapping community memberships (and the bridge nodes) derived from the soft co-association. Returns an <code>lcda_ecg_result</code> object with a <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method.</li>
+<code><a href="../reference/lcda_ecg.html">lcda_ecg()</a></code> — <strong>ensemble-consensus community and leader detection</strong>. Turns the GRASP pool (the diverse partitions produced across iterations, previously discarded) into edge co-association weights in the spirit of Ensemble Clustering for Graphs (Poulin &amp; Théberge, 2019), re-clusters for a consensus partition, and designates one leader per community from the pool’s leader-designation frequencies. On canonical LFR benchmarks it recovers the planted structure on par with ECG and outperforms Leiden, with its advantage concentrated at high mixing, while retaining the joint leader output and adding a per-node confidence map. With <code>overlap = TRUE</code> it additionally returns overlapping community memberships (and the bridge nodes) derived from the soft co-association. Returns an <code>lcda_ecg_result</code> object with a <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="notes-0-3-0">Notes<a class="anchor" aria-label="anchor" href="#notes-0-3-0"></a></h3>
@@ -66,7 +66,7 @@
 <ul><li>tidyverse-style refactor with <code>cli</code> logging and a <code>verbose</code> argument throughout; statistics return tibbles.</li>
 <li>
 <code><a href="../reference/lcda_data.html">lcda_data()</a></code> accessor for precomputed datasets under <code>inst/extdata/</code>.</li>
-<li>pkgdown site with nine vignettes organised by reasoning lens.</li>
+<li>pkgdown site with nine vignettes.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="lcdagrasp-010">lcdaGRASP 0.1.0<a class="anchor" aria-label="anchor" href="#lcdagrasp-010"></a></h2>
