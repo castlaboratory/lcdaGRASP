@@ -1,15 +1,15 @@
-# Modularity degeneracy (Box)
+# Modularity degeneracy
 
 ## Every model is a simplification
 
-Box’s lens: modularity is an approximation, and one of its known
-pathologies is *degeneracy* — many structurally distinct partitions can
-have $`Q`$ within $`\varepsilon`$ of the maximum \[Good, de Montjoye &
-Clauset, 2010\]. For a multi-start metaheuristic this is double-edged:
-lots of optima to find, but the single partition you report (and
-therefore the leaders you name) is somewhat arbitrary. We audit how many
-**distinct near-best partitions** LCDA-GRASP finds and their mean
-pairwise NMI (low NMI = high degeneracy).
+Modularity is an approximation, and one of its known pathologies is
+*degeneracy* — many structurally distinct partitions can have $`Q`$
+within $`\varepsilon`$ of the maximum \[Good, de Montjoye & Clauset,
+2010\]. For a multi-start metaheuristic this is double-edged: lots of
+optima to find, but the single partition you report (and therefore the
+leaders you name) is somewhat arbitrary. We audit how many **distinct
+near-best partitions** LCDA-GRASP finds and their mean pairwise NMI (low
+NMI = high degeneracy).
 
 ``` r
 

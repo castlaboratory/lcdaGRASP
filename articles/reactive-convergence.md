@@ -1,4 +1,4 @@
-# Reactive update convergence (von Neumann)
+# Reactive update convergence
 
 ## From an asymptotic theorem to a finite-budget question
 

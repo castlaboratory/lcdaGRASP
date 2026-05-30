@@ -1,13 +1,13 @@
-# The leader score: global vs community-conditioned NCE (Box)
+# The leader score: global vs community-conditioned NCE
 
 ## Is the NCE measuring the right thing?
 
 The paper’s Node-Connection Entropy uses the **global** connection
 probability $`p_1(v) = k_v / n`$. But a hub whose degree is spread
 across *all* communities can maximise this score while being a poor
-*community* leader. The Box lens — a model is a simplification, so check
-what it actually does — motivates a **community-conditioned**
-alternative:
+*community* leader. Since a score is a simplification, it is worth
+checking what it actually rewards — which motivates a
+**community-conditioned** alternative:
 
 ``` math
  I_{\text{local}}(v) = H_b\!\left(\frac{|\Gamma(v) \cap C(v)|}{|C(v)| - 1}\right), 

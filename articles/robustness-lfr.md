@@ -1,11 +1,11 @@
-# Robustness across community-strength regimes (Wald)
+# Robustness across community-strength regimes
 
-## The Wald gap
+## The coverage gap
 
-The paper evaluates on five well-behaved networks. Wald’s principle
-warns against concluding only from where there is data: we sweep the
-**mixing parameter** $`\mu \in [0.1, 0.8]`$ on **canonical LFR**
-networks (Lancichinetti–Fortunato–Radicchi 2008) — from strong community
+The paper evaluates on five well-behaved networks; one should not
+conclude only from where there is data. We sweep the **mixing
+parameter** $`\mu \in [0.1, 0.8]`$ on **canonical LFR** networks
+(Lancichinetti–Fortunato–Radicchi 2008) — from strong community
 structure ($`\mu \to 0`$) into the regime where the planted communities
 dissolve — and measure $`Q`$, the adjusted Rand index (ARI) **and**
 normalized mutual information (NMI) against the planted partition. $`Q`$

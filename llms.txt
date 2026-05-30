@@ -53,20 +53,20 @@ Precomputed simulation results back the articles and are listed with
 [`lcda_data()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_data.md);
 load one with `lcda_data("repro_summary")`.
 
-## Articles (by reasoning lens)
+## Articles
 
-| Article | Lens | What it shows |
-|----|----|----|
-| Getting started | — | API tour |
-| Benchmark reproduction | Wald | Reproduces the benchmark modularity; a multi-restart Louvain/Leiden reaches the exact optimum (0.4198) on Karate |
-| Ensemble consensus (LCDA-ECG) | — | Consensus over the GRASP pool: recovery, overlap, node confidence |
-| **DoE parameter tuning** | Box | Factorial screening → response surface (CCD) → canonical optimum for `(α_c, α_s)` |
-| Robustness (LFR) | Wald | Q **and** ARI across the mixing sweep |
-| Reactive convergence | von Neumann | Proposition 6 empirically (entropy decay) |
-| Pool sensitivity | von Neumann | `(m, y, B)` grid + lex-decisive audit |
-| Modularity degeneracy | Box | Near-best partition counts + NMI |
-| EDA distributions | Tukey | Boxplots / ECDFs / (Q, H) scatter |
-| Leader score | Box | Global vs community-conditioned NCE |
+| Article | What it shows |
+|----|----|
+| Getting started | API tour |
+| Benchmark reproduction | Reproduces the benchmark modularity; a multi-restart Louvain/Leiden reaches the exact optimum (0.4198) on Karate |
+| Ensemble consensus (LCDA-ECG) | Consensus over the GRASP pool: recovery, overlap, node confidence |
+| **DoE parameter tuning** | Factorial screening → response surface (CCD) → canonical optimum for `(α_c, α_s)` |
+| Robustness (LFR) | Q **and** ARI across the mixing sweep |
+| Reactive convergence | Proposition 6 empirically (entropy decay) |
+| Pool sensitivity | `(m, y, B)` grid + lex-decisive audit |
+| Modularity degeneracy | Near-best partition counts + NMI |
+| EDA distributions | Boxplots / ECDFs / (Q, H) scatter |
+| Leader score | Global vs community-conditioned NCE |
 
 ## Rebuild the data and the site
 
@@ -177,21 +177,21 @@ The non-parametric procedure used in the paper’s experiments.
 
 - [Reproducing the paper's benchmark
   numbers](https://castlaboratory.github.io/lcdaGRASP/articles/benchmark-reproduction.md):
-- [Tuning LCDA-GRASP by Design of Experiments (a la George
-  Box)](https://castlaboratory.github.io/lcdaGRASP/articles/doe-parameter-tuning.md):
-- [Exploratory distributions of Q and H
-  (Tukey)](https://castlaboratory.github.io/lcdaGRASP/articles/eda-distributions.md):
+- [Tuning LCDA-GRASP by Design of
+  Experiments](https://castlaboratory.github.io/lcdaGRASP/articles/doe-parameter-tuning.md):
+- [Exploratory distributions of Q and
+  H](https://castlaboratory.github.io/lcdaGRASP/articles/eda-distributions.md):
 - [Ensemble consensus over the GRASP pool
   (LCDA-ECG)](https://castlaboratory.github.io/lcdaGRASP/articles/ensemble-consensus.md):
 - [Getting started with
   lcdaGRASP](https://castlaboratory.github.io/lcdaGRASP/articles/lcdaGRASP-intro.md):
-- [Modularity degeneracy
-  (Box)](https://castlaboratory.github.io/lcdaGRASP/articles/modularity-degeneracy.md):
-- [The leader score: global vs community-conditioned NCE
-  (Box)](https://castlaboratory.github.io/lcdaGRASP/articles/nce-leader-score.md):
-- [Pool and refresh sensitivity (von
-  Neumann)](https://castlaboratory.github.io/lcdaGRASP/articles/pool-sensitivity.md):
-- [Reactive update convergence (von
-  Neumann)](https://castlaboratory.github.io/lcdaGRASP/articles/reactive-convergence.md):
-- [Robustness across community-strength regimes
-  (Wald)](https://castlaboratory.github.io/lcdaGRASP/articles/robustness-lfr.md):
+- [Modularity
+  degeneracy](https://castlaboratory.github.io/lcdaGRASP/articles/modularity-degeneracy.md):
+- [The leader score: global vs community-conditioned
+  NCE](https://castlaboratory.github.io/lcdaGRASP/articles/nce-leader-score.md):
+- [Pool and refresh
+  sensitivity](https://castlaboratory.github.io/lcdaGRASP/articles/pool-sensitivity.md):
+- [Reactive update
+  convergence](https://castlaboratory.github.io/lcdaGRASP/articles/reactive-convergence.md):
+- [Robustness across community-strength
+  regimes](https://castlaboratory.github.io/lcdaGRASP/articles/robustness-lfr.md):

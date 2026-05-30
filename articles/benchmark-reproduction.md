@@ -14,7 +14,7 @@ igraph::make_graph(‘Zachary’)
 **Generated.** 2026-05-28 with lcdaGRASP 0.2.0, R version 4.6.0
 (2026-04-24) (seed 20260527, 30 reps).
 
-**Limitations (Box lens).**
+**Limitations.**
 
 - alpha_c/alpha_s use package defaults (0.1, 0.3), not the paper’s exact
   RCL parameters.
@@ -87,7 +87,7 @@ single-run baseline. {.table}
 So on Karate the proposed methods **match** a properly tuned
 Louvain/Leiden rather than beating it.
 
-## Distribution of Q across replications (Tukey)
+## Distribution of Q across replications
 
 Means alone hide that the advertised diversification produces a
 *degenerate* Q distribution on the small networks (sd ~ 0) and only
@@ -115,7 +115,7 @@ bench$results |>
   dplyr::group_by(algo) |>
   dplyr::summarise(Q_mean = round(mean(Q), 4), Q_sd = round(sd(Q), 4),
                    Q_max = round(max(Q), 4), .groups = "drop") |>
-  knitr::kable(caption = "Political Blogs: all four variants trail the best baseline by ~2% (Wald gap).")
+  knitr::kable(caption = "Political Blogs: all four variants trail the best baseline by ~2%.")
 ```
 
 | algo         | Q_mean |   Q_sd |  Q_max |
@@ -125,8 +125,8 @@ bench$results |>
 | LCDA-GRASP 1 | 0.4156 | 0.0011 | 0.4184 |
 | LCDA-GRASP 2 | 0.4149 | 0.0009 | 0.4168 |
 
-Political Blogs: all four variants trail the best baseline by ~2% (Wald
-gap). {.table}
+Political Blogs: all four variants trail the best baseline by ~2%.
+{.table}
 
 ## Takeaways
 
@@ -135,7 +135,7 @@ gap). {.table}
 2.  **Multi-restart matters**: Louvain on Karate reaches 0.4198 (the
     optimum) over 30 restarts, so single-run baselines overstate any
     advantage.
-3.  **Wald gap**: on the only large network the methods trail
+3.  **Coverage gap**: on the only large network the methods trail
     Louvain/Leiden by ~2% — the advantage is benchmark-dependent.
 
 ## References

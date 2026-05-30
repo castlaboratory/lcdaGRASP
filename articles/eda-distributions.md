@@ -1,11 +1,12 @@
-# Exploratory distributions of Q and H (Tukey)
+# Exploratory distributions of Q and H
 
 ## Show the distribution, not just the mean
 
-Tukey’s lens privileges exploratory analysis. The paper reports means
-and significance letters; here we draw the **boxplots, ECDFs and (Q, H)
-scatter** that those tables hide, over replications per (graph
-$`\times`$ algorithm $`\times`$ centrality $`\times`$ similarity).
+Exploratory analysis privileges the distribution over the summary. Where
+means and significance letters are reported, here we draw the
+**boxplots, ECDFs and (Q, H) scatter** that those tables hide, over
+replications per (graph $`\times`$ algorithm $`\times`$ centrality
+$`\times`$ similarity).
 
 ``` r
 

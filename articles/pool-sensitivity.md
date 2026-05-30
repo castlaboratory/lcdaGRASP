@@ -1,4 +1,4 @@
-# Pool and refresh sensitivity (von Neumann)
+# Pool and refresh sensitivity
 
 ## Were the pool hyperparameters ever varied?
 

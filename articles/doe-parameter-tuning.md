@@ -1,18 +1,18 @@
-# Tuning LCDA-GRASP by Design of Experiments (a la George Box)
+# Tuning LCDA-GRASP by Design of Experiments
 
 ## Why a design of experiments?
 
 The paper tunes `(alpha_c, alpha_s)` with a $`5\times5`$ grid on a
 single network and fixes `(0.1, 0.3)`. A grid answers *where is the best
 cell*, but not *which factors actually matter*, *how they interact*, or
-*where the true continuous optimum lies*. We follow George Box’s
-sequential strategy \[Box & Wilson, 1951\]:
+*where the true continuous optimum lies*. We follow the sequential
+response-surface strategy of \[Box & Wilson, 1951\]:
 
 1.  **Screening** — a factorial experiment over the categorical/discrete
     factors (`variant`, `centrality`, `similarity`) crossed with a
     2-level coding of `(alpha_c, alpha_s)`, analysed by ANOVA and an
     effects (Pareto) plot, to find what matters. Replicated and run on
-    several networks (coverage — the Wald lens).
+    several networks for coverage.
 2.  **Response surface** — a rotatable central composite design (CCD) in
     `(alpha_c, alpha_s)`, fitted with a second-order model and analysed
     canonically to locate the optimum.
@@ -21,7 +21,7 @@ The response is modularity $`Q`$ (best over $`B=50`$ GRASP iterations).
 
 **Generated.** 2026-05-27 with lcdaGRASP 0.2.0 (seed 424242).
 
-**Screening limitations (Box lens).**
+**Screening limitations.**
 
 - PolBlogs excluded from screening for cost; confirmed separately in RSM
   phase.
@@ -143,7 +143,7 @@ fit_rsm <- function(df) {
 }
 
 rr <- rsmd$results |> dplyr::filter(variant == 1)
-# Standardise Q within network so the pooled surface is comparable (Wald).
+# Standardise Q within network so the pooled surface is comparable.
 rr <- rr |>
   dplyr::group_by(network) |>
   dplyr::mutate(y = (Q - min(Q)) / (max(Q) - min(Q) + 1e-9)) |>
@@ -227,19 +227,19 @@ rr |>
 
 Canonical optimum per network (CCD, variant 1). {.table}
 
-## Conclusions (with a Box caveat)
+## Conclusions
 
 - **`alpha_s` and the similarity measure dominate**; `alpha_c` and
   centrality are second-order, matching the paper’s theory.
 - The canonical optimum sits at a **modest `alpha_s`** (avoiding the
   over-fragmentation the paper warns about beyond `alpha_s = 0.5`), and
   the paper’s default `(0.1, 0.3)` lies inside the near-optimal plateau.
-- **Box’s caveat** (“all models are wrong, some are useful”): on the
-  small networks the standardised-$`Q`$ surface is *very flat* near the
-  top, and several stationary points are ridges rather than sharp maxima
-  — a direct manifestation of modularity degeneracy (see the *Modularity
-  degeneracy* article). The recommendation is therefore a *region*, not
-  a point.
+- **A modelling caveat** (“all models are wrong, some are useful”): on
+  the small networks the standardised-$`Q`$ surface is *very flat* near
+  the top, and several stationary points are ridges rather than sharp
+  maxima — a direct manifestation of modularity degeneracy (see the
+  *Modularity degeneracy* article). The recommendation is therefore a
+  *region*, not a point.
 
 ## References
 
