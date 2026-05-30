@@ -1,0 +1,129 @@
+---
+title: "Reproducing the paper's benchmark numbers"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reproducing the paper's benchmark numbers}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7.2, fig.height = 4.5)
+library(lcdaGRASP)
+bench   <- lcda_data("repro_benchmarks")
+summ    <- lcda_data("repro_summary")
+have    <- !is.null(bench) && !is.null(summ)
+has_gg  <- requireNamespace("ggplot2", quietly = TRUE) &&
+           requireNamespace("dplyr",   quietly = TRUE)
+```
+
+```{r nodata, echo = FALSE, results = "asis", eval = !have}
+cat("> **Note.** The precomputed dataset is not installed. Generate it with",
+    "`Rscript lcdaGRASP/data-raw/run_all_data.R` and rebuild this article.\n")
+```
+
+# What this article shows
+
+The paper reports only **means** and **maxima**. Here we reproduce its
+headline modularity numbers on the five benchmark networks while keeping the
+**whole distribution** over replications, and we compare against `igraph`'s
+Louvain *and* Leiden under a like-for-like multi-restart protocol. This is the
+evidence behind erratum **E3** in the companion critical review.
+
+```{r meta, echo = FALSE, eval = have, results = "asis"}
+m <- summ$meta
+cat(sprintf("**Source.** %s\n\n", m$network_source))
+cat(sprintf("**Generated.** %s with lcdaGRASP %s, %s (seed %s, %s reps).\n\n",
+            m$generated_on, m$pkg_version, m$R_version, m$seed, m$extra$nrep))
+cat("**Limitations (Box lens).**\n\n")
+cat(paste0("- ", m$limitations, collapse = "\n"), "\n")
+```
+
+# Best modularity vs baselines and literature
+
+```{r table, eval = have}
+res <- summ$results
+best <- res |>
+  dplyr::group_by(network) |>
+  dplyr::slice_max(Q_max, n = 1, with_ties = FALSE) |>
+  dplyr::ungroup() |>
+  dplyr::transmute(
+    network,
+    best_algo = algo,
+    Q_best = round(Q_max, 4),
+    Louvain_max = round(Q_louvain_max, 4),
+    Leiden_max  = round(Q_leiden_max, 4),
+    Q_literature = round(Q_ref, 4),
+    kind
+  )
+knitr::kable(best, caption = "Best LCDA Q over reps vs multi-restart Louvain/Leiden and literature best-known Q.")
+```
+
+# Erratum E3: Louvain on Karate reaches the optimum
+
+The paper's Table 10 lists Louvain on Karate at `Q = 0.3715` and claims a
+`+12.9%` gain. With 30 restarts the current `igraph` Louvain reaches the exact
+optimum:
+
+```{r e3, eval = have}
+res |>
+  dplyr::filter(network == "karate") |>
+  dplyr::summarise(
+    LCDA_best   = round(max(Q_max), 4),
+    Louvain_max = round(dplyr::first(Q_louvain_max), 4),
+    Leiden_max  = round(dplyr::first(Q_leiden_max), 4),
+    paper_Louvain = 0.3715,
+    exact_optimum = 0.4198
+  ) |>
+  knitr::kable(caption = "Karate: the LCDA advantage over Louvain is an artefact of a single-run baseline.")
+```
+
+So on Karate the proposed methods **match** a properly tuned Louvain/Leiden
+rather than beating it by 12.9%.
+
+# Distribution of Q across replications (Tukey)
+
+Means alone hide that the advertised diversification produces a *degenerate*
+Q distribution on the small networks (sd ~ 0) and only spreads on the one
+large/diffuse network, Political Blogs.
+
+```{r dist, eval = have && has_gg, fig.height = 5}
+library(ggplot2)
+ggplot(bench$results, aes(algo, Q)) +
+  geom_boxplot(outlier.size = 0.6, fill = "#1f4e79", alpha = 0.25) +
+  facet_wrap(~ network, scales = "free_y") +
+  coord_flip() +
+  labs(title = "Best-Q distribution over replications",
+       subtitle = "Flat boxes on small nets; real spread only on Political Blogs",
+       x = NULL, y = "best Q") +
+  theme_minimal(base_size = 10)
+```
+
+```{r polblogs, eval = have}
+bench$results |>
+  dplyr::filter(network == "polblogs") |>
+  dplyr::group_by(algo) |>
+  dplyr::summarise(Q_mean = round(mean(Q), 4), Q_sd = round(sd(Q), 4),
+                   Q_max = round(max(Q), 4), .groups = "drop") |>
+  knitr::kable(caption = "Political Blogs: all four variants trail the best baseline by ~2% (Wald gap).")
+```
+
+# Takeaways
+
+1. **LCDA-GR reproduces "match best known"** on the four small networks.
+2. **E3 confirmed**: Louvain on Karate reaches 0.4198 (the optimum), so the
+   `+12.9%` claim does not survive a like-for-like comparison.
+3. **Wald gap**: on the only large network the methods trail Louvain/Leiden by
+   ~2% --- the advantage is benchmark-dependent.
+
+# References
+
+- Blondel, V. D., Guillaume, J.-L., Lambiotte, R., & Lefebvre, E. (2008).
+  Fast unfolding of communities in large networks. *J. Stat. Mech.*, P10008.
+  [doi:10.1088/1742-5468/2008/10/P10008](https://doi.org/10.1088/1742-5468/2008/10/P10008)
+- Traag, V. A., Waltman, L., & van Eck, N. J. (2019). From Louvain to Leiden.
+  *Scientific Reports*, 9, 5233.
+  [doi:10.1038/s41598-019-41695-z](https://doi.org/10.1038/s41598-019-41695-z)
+- Newman, M. E. J., & Girvan, M. (2004). Finding and evaluating community
+  structure in networks. *Phys. Rev. E*, 69, 026113.
+  [doi:10.1103/PhysRevE.69.026113](https://doi.org/10.1103/PhysRevE.69.026113)

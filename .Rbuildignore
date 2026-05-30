@@ -1,0 +1,15 @@
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^data-raw$
+^\.github$
+^.*\.log$
+^\.DS_Store$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.lintr$
+^cran-comments\.md$
+^paper$
+^\.gitignore$
+^\.git$
+^LICENSE\.md$

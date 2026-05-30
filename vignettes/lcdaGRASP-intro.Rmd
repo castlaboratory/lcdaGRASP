@@ -1,0 +1,120 @@
+---
+title: "Getting started with lcdaGRASP"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with lcdaGRASP}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.5)
+```
+
+# Overview
+
+`lcdaGRASP` implements the four algorithms of Ospina, Silva, Matos Junior,
+Leite and Ochi (2026) for **joint community-and-leader detection**:
+
+- `lcda_grasp()` --- fixed-parameter GRASP, variants 1 (static centrality)
+  and 2 (adaptive centrality recomputed each iteration).
+- `lcda_gr()` --- Reactive GRASP, variants 1 and 2, with a bivariate
+  self-tuning mechanism over a pool of `(alpha_c, alpha_s)` pairs.
+
+The performance-critical kernels (incremental modularity, community
+affinities, similarity vectors, the VNMI multi-improvement extension, and
+power-iteration eigenvector centrality) are implemented in C++ via Rcpp.
+The package follows a tidyverse style: snake_case throughout, `tibble`
+outputs where tabular, `cli` for logging, and a `verbose` flag on every
+substantive function.
+
+# Quick start
+
+```{r quick}
+library(lcdaGRASP)
+library(igraph)
+
+g <- make_graph("Zachary")           # 34-node karate club
+res <- lcda_grasp(g,
+                  alpha_c = 0.1, alpha_s = 0.3, B = 30,
+                  centrality = "eigen", similarity = "hpi",
+                  seed = 1)
+print(res)
+```
+
+Set `verbose = TRUE` for a `cli` progress bar and a one-line summary:
+
+```{r verbose}
+invisible(lcda_grasp(g, B = 10, seed = 1, verbose = TRUE))
+```
+
+# Inspecting the GRASP trajectory
+
+```{r traj}
+plot_grasp_trajectory(res)
+```
+
+# Switching to the Reactive variant
+
+```{r reactive}
+res_r <- lcda_gr(g, variant = 1, B = 100, seed = 1)
+print(res_r)
+plot_reactive_pk(res_r)
+```
+
+The print method reports the fraction of iterations in which the
+lexicographic tie-break on `H` (Node-Connection Entropy) was decisive ---
+iterations where `Q` was tied with the running best and `H` made the
+difference. In typical networks this fraction is small; see the
+*Reactive convergence* and *Pool sensitivity* articles.
+
+# Statistical comparison
+
+The paper uses a Kruskal--Wallis omnibus test followed by pairwise
+permutation tests with Bonferroni correction. `kruskal_then_permute()`
+returns a tibble of pairwise contrasts and a compact-letter display:
+
+```{r kw}
+set.seed(1)
+df <- data.frame(
+  Q = c(rnorm(20, 0.40, 0.01), rnorm(20, 0.42, 0.01), rnorm(20, 0.42, 0.01)),
+  cfg = rep(c("a", "b", "c"), each = 20)
+)
+out <- kruskal_then_permute(df$Q, df$cfg, B_perm = 2000)
+out$letters
+```
+
+# Community-conditioned NCE
+
+The paper's NCE uses the *global* connection probability `k_v / n`. The
+package also exposes a community-conditioned alternative
+`nce_local_score()` measuring within-community connectivity entropy; the
+two can differ materially (see the *Leader score* article).
+
+```{r nce}
+H_global <- nce_score(g, res_r$best$leaders)
+H_local  <- nce_local_score(g, res_r$best$membership, res_r$best$leaders)
+cat("H (global, paper):", round(H_global, 4),
+    " | H (community-conditioned):", round(H_local, 4), "\n")
+```
+
+# Precomputed simulation datasets
+
+The companion *Articles* render from precomputed results shipped under
+`inst/extdata/`, so they never re-run a simulation. List them with:
+
+```{r data}
+lcda_data()
+```
+
+# References
+
+- Ospina, R., Silva, G., Matos Junior, F. J., Leite, A., & Ochi, L. S.
+  (2026). *A GRASP Framework for Community and Leader Detection in Complex
+  Networks.* Preprint submitted to *Knowledge-Based Systems*.
+- Feo, T. A., & Resende, M. G. C. (1995). Greedy Randomized Adaptive Search
+  Procedures. *Journal of Global Optimization*, 6(2), 109--133.
+  [doi:10.1007/BF01096763](https://doi.org/10.1007/BF01096763)
+- Prais, M., & Ribeiro, C. C. (2000). Reactive GRASP. *INFORMS Journal on
+  Computing*, 12(3), 164--176.
+  [doi:10.1287/ijoc.12.3.164.12639](https://doi.org/10.1287/ijoc.12.3.164.12639)

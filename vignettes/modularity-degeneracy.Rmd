@@ -1,0 +1,62 @@
+---
+title: "Modularity degeneracy (Box)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Modularity degeneracy (Box)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7.2, fig.height = 4.4)
+library(lcdaGRASP)
+d <- lcda_data("degeneracy"); have <- !is.null(d)
+has_gg <- requireNamespace("ggplot2", quietly = TRUE)
+```
+
+```{r nodata, echo = FALSE, results = "asis", eval = !have}
+cat("> **Note.** Dataset not installed. Run `data-raw/run_all_data.R` and rebuild.\n")
+```
+
+# Every model is a simplification
+
+Box's lens: modularity is an approximation, and one of its known pathologies
+is *degeneracy* --- many structurally distinct partitions can have $Q$ within
+$\varepsilon$ of the maximum [Good, de Montjoye & Clauset, 2010]. For a
+multi-start metaheuristic this is double-edged: lots of optima to find, but the
+single partition you report (and therefore the leaders you name) is somewhat
+arbitrary. We audit how many **distinct near-best partitions** LCDA-GRASP
+finds and their mean pairwise NMI (low NMI = high degeneracy).
+
+```{r table, eval = have}
+knitr::kable(
+  dplyr::transmute(d$results, graph, epsilon,
+                   Q_star = round(Q_star, 4),
+                   runs_in_band = n_runs_in_band,
+                   distinct_partitions = n_distinct_partitions,
+                   mean_NMI = round(mean_pairwise_NMI, 3)),
+  caption = "Distinct near-best partitions and their similarity, per network and tolerance.")
+```
+
+```{r plot, eval = have && has_gg}
+library(ggplot2)
+ggplot(d$results, aes(factor(epsilon), n_distinct_partitions, fill = graph)) +
+  geom_col(position = "dodge") +
+  labs(title = "Distinct near-best partitions within Q* - epsilon",
+       x = expression(epsilon), y = "number of distinct partitions") +
+  theme_minimal(base_size = 10)
+```
+
+**Reading.** Even at small $\varepsilon$, several distinct partitions coexist
+in the top band on the larger/diffuse networks, and the mean pairwise NMI sits
+below 1 --- so the reported leader-community configuration is *one of several*
+near-equivalent ones. This does not invalidate the method, but it bounds the
+interpretability claim about "named leaders": the names can shift across seeds.
+The paper acknowledges the resolution limit but not this degeneracy; it is now
+flagged in the manuscript's Limitations (see `artigo/CHANGES.md`).
+
+# References
+
+- Good, B. H., de Montjoye, Y.-A., & Clauset, A. (2010). Performance of
+  modularity maximization in practical contexts. *Phys. Rev. E*, 81, 046106.
+  [doi:10.1103/PhysRevE.81.046106](https://doi.org/10.1103/PhysRevE.81.046106)

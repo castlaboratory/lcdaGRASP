@@ -1,0 +1,23 @@
+# R build artifacts
+*.o
+*.so
+*.dll
+*.a
+*.tar.gz
+*.Rcheck/
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+# pkgdown rendered site (deployed via GitHub Actions, not committed)
+docs/
+# OS / editor cruft
+.DS_Store
+# run logs and checkpoints from data-raw
+*.log
+.t9_ckpt/
+.lfr_ckpt/
+# python venv (data-raw generators run against an external venv)
+.venv*/
+__pycache__/
+*.pyc

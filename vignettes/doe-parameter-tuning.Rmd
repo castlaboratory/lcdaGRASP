@@ -1,0 +1,194 @@
+---
+title: "Tuning LCDA-GRASP by Design of Experiments (a la George Box)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tuning LCDA-GRASP by Design of Experiments (a la George Box)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7.2, fig.height = 4.6)
+library(lcdaGRASP)
+scr  <- lcda_data("doe_screening")
+rsmd <- lcda_data("doe_rsm")
+have <- !is.null(scr) && !is.null(rsmd)
+has_gg <- requireNamespace("ggplot2", quietly = TRUE) &&
+          requireNamespace("dplyr",   quietly = TRUE)
+```
+
+```{r nodata, echo = FALSE, results = "asis", eval = !have}
+cat("> **Note.** The precomputed DoE datasets are not installed. Generate them",
+    "with `Rscript lcdaGRASP/data-raw/run_all_data.R` and rebuild this article.\n")
+```
+
+# Why a design of experiments?
+
+The paper tunes `(alpha_c, alpha_s)` with a $5\times5$ grid on a single
+network and fixes `(0.1, 0.3)`. A grid answers *where is the best cell*, but
+not *which factors actually matter*, *how they interact*, or *where the true
+continuous optimum lies*. We follow George Box's sequential strategy
+[Box & Wilson, 1951]:
+
+1. **Screening** --- a factorial experiment over the categorical/discrete
+   factors (`variant`, `centrality`, `similarity`) crossed with a 2-level
+   coding of `(alpha_c, alpha_s)`, analysed by ANOVA and an effects
+   (Pareto) plot, to find what matters. Replicated and run on several
+   networks (coverage --- the Wald lens).
+2. **Response surface** --- a rotatable central composite design (CCD) in
+   `(alpha_c, alpha_s)`, fitted with a second-order model and analysed
+   canonically to locate the optimum.
+
+The response is modularity $Q$ (best over $B=50$ GRASP iterations).
+
+```{r meta, echo = FALSE, eval = have, results = "asis"}
+m <- scr$meta
+cat(sprintf("**Generated.** %s with lcdaGRASP %s (seed %s).\n\n", m$generated_on, m$pkg_version, m$seed))
+cat("**Screening limitations (Box lens).**\n\n")
+cat(paste0("- ", m$limitations, collapse = "\n"), "\n")
+```
+
+# Phase 1 --- Screening: which factors matter?
+
+We fit a main-effects-plus-two-factor-interaction model with the network as
+a blocking factor, pooled across networks.
+
+```{r screen-anova, eval = have}
+d <- scr$results
+d$variant    <- factor(d$variant)
+d$centrality <- factor(d$centrality)
+d$similarity <- factor(d$similarity)
+d$network    <- factor(d$network)
+
+fit <- lm(Q ~ network + (ac_code + as_code + variant + centrality + similarity)^2, data = d)
+av <- as.data.frame(anova(fit))
+av <- av[order(-av[["F value"]]), ]
+knitr::kable(round(av, 4), caption = "Pooled ANOVA (factors ranked by F). 'network' is a block.")
+```
+
+```{r screen-pareto, eval = have && has_gg, fig.height = 5}
+library(ggplot2); library(dplyr)
+eff <- summary(fit)$coefficients |> as.data.frame()
+eff$term <- rownames(eff); eff <- eff[eff$term != "(Intercept)" & !grepl("^network", eff$term), ]
+eff |>
+  mutate(abs_t = abs(`t value`)) |>
+  slice_max(abs_t, n = 15) |>
+  ggplot(aes(reorder(term, abs_t), abs_t)) +
+  geom_col(fill = "#1f4e79") + coord_flip() +
+  labs(title = "Pareto of standardised effects on Q (screening)",
+       subtitle = "Larger |t| = more influential factor/interaction",
+       x = NULL, y = "|t value|") +
+  theme_minimal(base_size = 10)
+```
+
+**Reading.** The dominant effects are the similarity measure and `alpha_s`
+(the community-formation parameter), confirming the paper's Lemma on
+granularity; `alpha_c` and `centrality` move $Q$ much less, consistent with
+the paper's claim that `alpha_c` mainly diversifies *leader* selection. The
+best categorical cell is reported below.
+
+```{r screen-best, eval = have}
+d |>
+  dplyr::group_by(centrality, similarity, variant) |>
+  dplyr::summarise(Q = mean(Q), .groups = "drop") |>
+  dplyr::slice_max(Q, n = 5) |>
+  knitr::kable(digits = 4, caption = "Top categorical configurations by mean Q (pooled).")
+```
+
+# Phase 2 --- Response surface in (alpha_c, alpha_s)
+
+We use the rotatable CCD at the paper construction (`eigen`/`hpi`,
+variant 1) and fit a second-order model in the **coded** factors
+$x_1=\widehat{\alpha_c}$, $x_2=\widehat{\alpha_s}$.
+
+```{r rsm-fit, eval = have}
+cod <- rsmd$meta$extra$coding
+to_actual <- function(code, p) p[["center"]] + code * p[["half_range"]]
+
+fit_rsm <- function(df) {
+  m <- lm(y ~ ac + as + I(ac^2) + I(as^2) + ac:as, data = df)
+  co <- coef(m)
+  b  <- c(co[["ac"]], co[["as"]])
+  B  <- matrix(c(co[["I(ac^2)"]], co[["ac:as"]] / 2,
+                 co[["ac:as"]] / 2, co[["I(as^2)"]]), 2, 2)
+  xs <- tryCatch(as.numeric(-0.5 * solve(B) %*% b), error = function(e) c(NA, NA))
+  list(model = m, stationary = xs, eigen = eigen(B, only.values = TRUE)$values)
+}
+
+rr <- rsmd$results |> dplyr::filter(variant == 1)
+# Standardise Q within network so the pooled surface is comparable (Wald).
+rr <- rr |>
+  dplyr::group_by(network) |>
+  dplyr::mutate(y = (Q - min(Q)) / (max(Q) - min(Q) + 1e-9)) |>
+  dplyr::ungroup() |>
+  dplyr::rename(ac = ac_code, as = as_code)
+
+f_pool <- fit_rsm(rr)
+xs <- f_pool$stationary
+cat(sprintf("Stationary point (coded):  alpha_c* = %.3f,  alpha_s* = %.3f\n", xs[1], xs[2]))
+cat(sprintf("Stationary point (actual): alpha_c* = %.3f,  alpha_s* = %.3f\n",
+            to_actual(xs[1], cod$alpha_c), to_actual(xs[2], cod$alpha_s)))
+cat("Eigenvalues of the quadratic form:", paste(round(f_pool$eigen, 4), collapse = ", "),
+    if (all(f_pool$eigen < 0)) "=> maximum" else "=> saddle/ridge", "\n")
+```
+
+```{r rsm-anova, eval = have}
+broom_ok <- requireNamespace("broom", quietly = TRUE)
+if (broom_ok) knitr::kable(broom::tidy(f_pool$model), digits = 4,
+  caption = "Second-order model coefficients (pooled, standardised Q).") else
+  print(summary(f_pool$model))
+```
+
+```{r rsm-contour, eval = have && has_gg, fig.height = 5}
+grid <- expand.grid(ac = seq(-1.6, 1.6, 0.05), as = seq(-1.6, 1.6, 0.05))
+grid$yhat <- predict(f_pool$model, newdata = grid)
+grid$alpha_c <- to_actual(grid$ac, cod$alpha_c)
+grid$alpha_s <- to_actual(grid$as, cod$alpha_s)
+ggplot(grid, aes(alpha_c, alpha_s, z = yhat)) +
+  geom_contour_filled(bins = 10) +
+  annotate("point", x = to_actual(xs[1], cod$alpha_c), y = to_actual(xs[2], cod$alpha_s),
+           shape = 4, size = 4, stroke = 1.3, colour = "white") +
+  annotate("point", x = 0.1, y = 0.3, shape = 21, size = 3, fill = "red", colour = "white") +
+  labs(title = "Fitted response surface (standardised Q)",
+       subtitle = "X = canonical optimum; red dot = the paper's default (0.1, 0.3)",
+       fill = "std Q") +
+  theme_minimal(base_size = 10)
+```
+
+# Per-network optima
+
+```{r rsm-pernet, eval = have}
+rr |>
+  dplyr::group_split(network) |>
+  lapply(function(df) {
+    f <- fit_rsm(df)
+    data.frame(network = df$network[1],
+               alpha_c_opt = round(to_actual(f$stationary[1], cod$alpha_c), 3),
+               alpha_s_opt = round(to_actual(f$stationary[2], cod$alpha_s), 3),
+               shape = if (all(f$eigen < 0)) "maximum" else "saddle/ridge")
+  }) |>
+  dplyr::bind_rows() |>
+  knitr::kable(caption = "Canonical optimum per network (CCD, variant 1).")
+```
+
+# Conclusions (with a Box caveat)
+
+- **`alpha_s` and the similarity measure dominate**; `alpha_c` and centrality
+  are second-order, matching the paper's theory.
+- The canonical optimum sits at a **modest `alpha_s`** (avoiding the
+  over-fragmentation the paper warns about beyond `alpha_s = 0.5`), and the
+  paper's default `(0.1, 0.3)` lies inside the near-optimal plateau.
+- **Box's caveat** ("all models are wrong, some are useful"): on the small
+  networks the standardised-$Q$ surface is *very flat* near the top, and
+  several stationary points are ridges rather than sharp maxima --- a direct
+  manifestation of modularity degeneracy (see the *Modularity degeneracy*
+  article). The recommendation is therefore a *region*, not a point.
+
+# References
+
+- Box, G. E. P., & Wilson, K. B. (1951). On the Experimental Attainment of
+  Optimum Conditions. *J. R. Stat. Soc. B*, 13(1), 1--38.
+  [doi:10.1111/j.2517-6161.1951.tb00067.x](https://doi.org/10.1111/j.2517-6161.1951.tb00067.x)
+- Box, G. E. P., & Behnken, D. W. (1960). Some New Three Level Designs for
+  the Study of Quantitative Variables. *Technometrics*, 2(4), 455--475.
+  [doi:10.1080/00401706.1960.10489912](https://doi.org/10.1080/00401706.1960.10489912)

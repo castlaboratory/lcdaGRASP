@@ -1,0 +1,52 @@
+Package: lcdaGRASP
+Type: Package
+Title: GRASP and Reactive GRASP Algorithms for Joint Community and Leader Detection
+Version: 0.3.0
+Date: 2026-05-29
+Authors@R: c(
+    person("Andre", "Leite", email = "leite@de.ufpe.br", role = c("aut", "cre")),
+    person("Raydonal", "Ospina", role = "aut"),
+    person("Geiza", "Silva", role = "aut"),
+    person("Francisco Jucelino", "Matos Junior", role = "aut"),
+    person("Luiz Satoru", "Ochi", role = "aut")
+    )
+Description: Implements the LCDA-GRASP and LCDA-GR (Reactive GRASP) algorithms
+    for joint community-and-leader detection in complex networks, as proposed
+    in Ospina et al. (2026). Performance-critical kernels (incremental
+    modularity, community affinities, VNMI local search, power-iteration
+    eigenvector centrality, HPI/Dice/Jaccard similarities) are implemented
+    in C++ via Rcpp. The package also includes the Node-Connection Entropy
+    (NCE) leader score and its community-conditioned variant, statistical
+    comparison utilities (Kruskal-Wallis + pairwise permutation). Reproducible
+    analysis scripts (LFR robustness, pool sensitivity, Proposition 6 empirical
+    convergence, and modularity-degeneracy analyses) are provided in the source
+    repository.
+License: MIT + file LICENSE
+URL: https://github.com/castlaboratory/lcdaGRASP, https://castlaboratory.github.io/lcdaGRASP/
+BugReports: https://github.com/castlaboratory/lcdaGRASP/issues
+Encoding: UTF-8
+Depends: R (>= 4.1)
+Imports:
+    Rcpp (>= 1.0.10),
+    igraph (>= 1.5),
+    Matrix,
+    cli,
+    tibble,
+    stats,
+    methods,
+    graphics,
+    grDevices,
+    utils
+LinkingTo: Rcpp, RcppArmadillo
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    ggplot2,
+    dplyr,
+    tidyr,
+    broom,
+    pkgdown
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0

@@ -1,0 +1,96 @@
+url: https://castlaboratory.github.io/lcdaGRASP/
+
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#1f4e79"
+    base_font: {google: "Source Sans 3"}
+    code_font: {google: "JetBrains Mono"}
+
+home:
+  title: lcdaGRASP - GRASP and Reactive GRASP for community and leader detection
+  description: >
+    Companion R package for Ospina et al. (2026): GRASP / Reactive-GRASP
+    algorithms for joint community-and-leader detection, with C++ kernels via
+    Rcpp, a publication-grade simulation panel, and a design-of-experiments
+    parameter study.
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: "Getting started"
+      - text: Introduction to lcdaGRASP
+        href: articles/lcdaGRASP-intro.html
+      - text: "Ensemble consensus (LCDA-ECG)"
+        href: articles/ensemble-consensus.html
+      - text: "-------"
+      - text: "Benchmarks & tuning"
+      - text: Reproducing the paper's benchmarks
+        href: articles/benchmark-reproduction.html
+      - text: "DoE parameter tuning (George Box)"
+        href: articles/doe-parameter-tuning.html
+      - text: "-------"
+      - text: "Critical review (by reasoning lens)"
+      - text: "Robustness across regimes (Wald)"
+        href: articles/robustness-lfr.html
+      - text: "Reactive convergence (von Neumann)"
+        href: articles/reactive-convergence.html
+      - text: "Pool sensitivity (von Neumann)"
+        href: articles/pool-sensitivity.html
+      - text: "Distributions / EDA (Tukey)"
+        href: articles/eda-distributions.html
+      - text: "Modularity degeneracy (Box)"
+        href: articles/modularity-degeneracy.html
+      - text: "Leader score: NCE alternatives (Box)"
+        href: articles/nce-leader-score.html
+
+reference:
+- title: Algorithms
+  desc: The four LCDA variants proposed in the paper.
+  contents:
+  - lcda_grasp
+  - lcda_gr
+- title: Construction phases
+  desc: Building blocks of a single GRASP iteration (construct, repair, local search).
+  contents:
+  - lcda_construct
+  - lcda_repair
+  - lcda_local_search
+- title: Quality scores
+  desc: Modularity, the NCE leader score (global and community-conditioned), and the lexicographic objective.
+  contents:
+  - modularity_score
+  - nce_score
+  - nce_local_score
+  - lex_dominates
+- title: Centrality measures
+  desc: Leader-selection centralities.
+  contents:
+  - centrality_eigen
+  - centrality_betweenness
+  - centrality_closeness
+- title: Statistical comparison
+  desc: The non-parametric procedure used in the paper's experiments.
+  contents:
+  - kruskal_then_permute
+  - permutation_test
+- title: Plotting
+  contents:
+  - plot_partition
+  - plot_grasp_trajectory
+  - plot_reactive_pk
+- title: Graph constructors & data
+  contents:
+  - as_graph
+  - graph_from_edgelist_simple
+  - lcda_data
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with

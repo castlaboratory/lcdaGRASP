@@ -1,0 +1,79 @@
+---
+title: "Exploratory distributions of Q and H (Tukey)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Exploratory distributions of Q and H (Tukey)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7.6, fig.height = 5)
+library(lcdaGRASP)
+d <- lcda_data("eda_replicates"); have <- !is.null(d)
+has_gg <- requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("dplyr", quietly = TRUE)
+```
+
+```{r nodata, echo = FALSE, results = "asis", eval = !have}
+cat("> **Note.** Dataset not installed. Run `data-raw/run_all_data.R` and rebuild.\n")
+```
+
+# Show the distribution, not just the mean
+
+Tukey's lens privileges exploratory analysis. The paper reports means and
+significance letters; here we draw the **boxplots, ECDFs and (Q, H) scatter**
+that those tables hide, over replications per
+(graph $\times$ algorithm $\times$ centrality $\times$ similarity).
+
+```{r prep, eval = have && has_gg}
+library(ggplot2); library(dplyr)
+res <- d$results |> mutate(config = paste(centrality, similarity, sep = "/"))
+```
+
+```{r box, eval = have && has_gg}
+ggplot(res, aes(config, Q, fill = algorithm)) +
+  geom_boxplot(outlier.size = 0.5, alpha = 0.65) +
+  facet_wrap(~ graph, scales = "free_y") + coord_flip() +
+  labs(title = "Best-Q by configuration (each box = replications)",
+       subtitle = "Means alone hide this picture", x = NULL, y = "best Q") +
+  theme_minimal(base_size = 9)
+```
+
+```{r ecdf, eval = have && has_gg}
+ggplot(res, aes(Q, colour = config)) +
+  stat_ecdf(geom = "step", linewidth = 0.7) +
+  facet_wrap(~ graph, scales = "free_x") +
+  labs(title = "ECDF of best-Q by configuration", x = "Q", y = "F(Q)") +
+  theme_minimal(base_size = 9) + theme(legend.position = "bottom")
+```
+
+```{r qh, eval = have && has_gg}
+ggplot(res, aes(Q, H, colour = algorithm, shape = similarity)) +
+  geom_point(alpha = 0.6, size = 1.4) +
+  facet_wrap(~ graph, scales = "free") +
+  labs(title = "Joint (Q, H) across replicates",
+       subtitle = "Vertical clouds => H varies freely at fixed Q (lex order has bite)") +
+  theme_minimal(base_size = 9)
+```
+
+```{r winners, eval = have}
+d$results |>
+  dplyr::group_by(graph, centrality, similarity) |>
+  dplyr::summarise(Q = mean(Q), .groups = "drop_last") |>
+  dplyr::slice_max(Q, n = 1) |>
+  dplyr::ungroup() |>
+  knitr::kable(digits = 4, caption = "Best centrality/similarity per network (mean Q).")
+```
+
+**Reading.** HPI + eigenvector is the modal winner, matching the paper's
+recommendation --- but the boxplots show the margins are often within noise,
+and the (Q, H) clouds are nearly vertical, i.e. $H$ varies at essentially fixed
+$Q$. That is exactly the situation in which a lexicographic (Q, then H)
+objective could in principle bite; whether it actually does is quantified in
+the *Pool sensitivity* article (it rarely does).
+
+# References
+
+- Newman, M. E. J., & Girvan, M. (2004). Finding and evaluating community
+  structure in networks. *Phys. Rev. E*, 69, 026113.
+  [doi:10.1103/PhysRevE.69.026113](https://doi.org/10.1103/PhysRevE.69.026113)
