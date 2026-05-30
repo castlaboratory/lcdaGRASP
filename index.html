@@ -78,37 +78,24 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.svg" class="logo" alt=""><h1 id="lcdagrasp---companion-code-for-ospina-et-al-2026">lcdaGRASP  — companion code for Ospina et al. (2026)<a class="anchor" aria-label="anchor" href="#lcdagrasp---companion-code-for-ospina-et-al-2026"></a>
+<img src="logo.svg" class="logo" alt=""><h1 id="lcdagrasp-">lcdaGRASP <a class="anchor" aria-label="anchor" href="#lcdagrasp-"></a>
 </h1>
 </div>
 <!-- badges: start -->
 
-<p>Companion code and critical review for the preprint:</p>
+<p><strong>lcdaGRASP</strong> implements GRASP and Reactive GRASP algorithms for <strong>joint community-and-leader detection</strong> in complex networks, with performance-critical kernels in C++ via Rcpp. It accompanies:</p>
 <blockquote>
-<p>Ospina, R., Silva, G., Matos Junior, F. J., Leite, A., &amp; Ochi, L. S. (2026). <em>A GRASP Framework for Community and Leader Detection in Complex Networks.</em> Preprint submitted to <em>Knowledge-Based Systems</em>.</p>
+<p>Ospina, R., Silva, G., Matos Junior, F. J., Leite, A., &amp; Ochi, L. S. (2026). <em>A GRASP Framework for Community and Leader Detection in Complex Networks.</em></p>
 </blockquote>
-<p>The paper proposes four algorithms (LCDA-GRASP 1/2 and LCDA-GR 1/2) for <strong>joint community-and-leader detection</strong>. This repository contains:</p>
-<ol style="list-style-type: decimal">
-<li>
-<strong><code>lcdaGRASP/</code></strong> — a working R package with the four algorithms and their performance-critical kernels in C++ via Rcpp. Tidyverse style, <code>cli</code> logging, a <code>verbose</code> flag on every substantive function.</li>
-<li>
-<strong><code>lcdaGRASP/vignettes/</code></strong> — articles that render the publication-grade simulation panel (benchmarks, a <strong>George-Box design-of-experiments</strong> study, robustness, convergence, degeneracy, EDA, leader scores) from precomputed data, so they build without re-running any simulation.</li>
-<li>
-<strong><code>lcdaGRASP/data-raw/</code></strong> — the scripts that generate that data into <code>lcdaGRASP/inst/extdata/*.rds</code> (run once; see <code>run_all_data.R</code>).</li>
-<li>
-<strong><code>scripts/</code></strong> — the original standalone simulation drivers.</li>
-<li>
-<strong><code>artigo/</code></strong> — the LaTeX source of the manuscript, with errata fixes and literature updates applied this revision (see <code>artigo/CHANGES.md</code>).</li>
-<li>
-<strong><code>analise_critica.md</code></strong> — the critical review (four reasoning lenses: Wald, von Neumann, Tukey, Box).</li>
-</ol>
+<p>The package provides the four core algorithms (LCDA-GRASP 1/2 and LCDA-GR 1/2), the ensemble-consensus variant <strong>LCDA-ECG</strong>, the Node-Connection Entropy (NCE) leader score (global and community-conditioned), and non-parametric comparison utilities (Kruskal–Wallis + pairwise permutation). Vignettes render a publication-grade simulation panel (benchmarks, a George-Box design-of-experiments study, LFR robustness, reactive convergence, degeneracy, EDA, leader scores) from precomputed data, so they build without re-running any simulation.</p>
 <p>Package website (pkgdown): <strong><a href="https://castlaboratory.github.io/lcdaGRASP/" class="uri">https://castlaboratory.github.io/lcdaGRASP/</a></strong></p>
 <div class="section level2">
 <h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># from the repository root</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_local</span><span class="op">(</span><span class="st">"lcdaGRASP"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># from GitHub</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"castlaboratory/lcdaGRASP"</span><span class="op">)</span></span></code></pre></div>
+<p>(CRAN submission is in progress.)</p>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
@@ -122,7 +109,10 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">res_r</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lcda_gr.html">lcda_gr</a></span><span class="op">(</span><span class="va">g</span>, variant <span class="op">=</span> <span class="fl">1</span>, B <span class="op">=</span> <span class="fl">150</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>   <span class="co"># Reactive, self-tuning</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res_r</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res_r</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">res_e</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lcda_ecg.html">lcda_ecg</a></span><span class="op">(</span><span class="va">g</span>, B <span class="op">=</span> <span class="fl">64</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>                <span class="co"># ensemble consensus</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res_e</span><span class="op">)</span></span></code></pre></div>
 <p>Precomputed simulation results back the articles and are listed with <code><a href="reference/lcda_data.html">lcda_data()</a></code>; load one with <code>lcda_data("repro_summary")</code>.</p>
 </div>
 <div class="section level2">
@@ -148,7 +138,12 @@
 <tr>
 <td>Benchmark reproduction</td>
 <td>Wald</td>
-<td>Paper’s numbers + erratum E3 (Louvain on Karate = 0.4198)</td>
+<td>Reproduces the benchmark modularity; a multi-restart Louvain/Leiden reaches the exact optimum (0.4198) on Karate</td>
+</tr>
+<tr>
+<td>Ensemble consensus (LCDA-ECG)</td>
+<td>—</td>
+<td>Consensus over the GRASP pool: recovery, overlap, node confidence</td>
 </tr>
 <tr>
 <td><strong>DoE parameter tuning</strong></td>
@@ -193,26 +188,8 @@
 <div class="section level2">
 <h2 id="rebuild-the-data-and-the-site">Rebuild the data and the site<a class="anchor" aria-label="anchor" href="#rebuild-the-data-and-the-site"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">Rscript</span> lcdaGRASP/data-raw/run_all_data.R       <span class="co"># regenerate inst/extdata/*.rds (slow, once)</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'pkgdown::build_site("lcdaGRASP")'</span>   <span class="co"># build docs/</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="errata-flagged-to-the-authors-see-artigochangesmd">Errata flagged to the authors (see <code>artigo/CHANGES.md</code>)<a class="anchor" aria-label="anchor" href="#errata-flagged-to-the-authors-see-artigochangesmd"></a>
-</h2>
-<ul>
-<li>
-<strong>E1</strong> Table 9 duplicates LCDA-GRASP and LCDA-GR timings (impossible with different <code>B</code>).</li>
-<li>
-<strong>E2</strong> Lemma proof: smallest positive ΔQ is <code>1/(2m²)</code>, so <code>T ≤ 2m²</code> (was <code>2m</code>).</li>
-<li>
-<strong>E3</strong> Table 10 Louvain on Karate <code>0.3715</code>; current igraph Louvain/Leiden reach <code>0.4198</code> over 30 restarts — the <code>+12.9%</code> claim is baseline-dependent.</li>
-<li>
-<strong>E4</strong> Proposition 6 proof: Borel–Cantelli step made explicit (Lévy extension).</li>
-<li>
-<strong>E5</strong> Abstract framing softened.</li>
-<li>
-<strong>E6</strong> LeaderRank values look anomalous; verify the source.</li>
-</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/run_all_data.R              <span class="co"># regenerate inst/extdata/*.rds (slow, once)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'pkgdown::build_site(".")'</span>        <span class="co"># build docs/</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>

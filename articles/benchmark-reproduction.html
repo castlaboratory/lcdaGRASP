@@ -93,8 +93,7 @@
 numbers on the five benchmark networks while keeping the <strong>whole
 distribution</strong> over replications, and we compare against
 <code>igraph</code>’s Louvain <em>and</em> Leiden under a like-for-like
-multi-restart protocol. This is the evidence behind erratum
-<strong>E3</strong> in the companion critical review.</p>
+multi-restart protocol.</p>
 <p><strong>Source.</strong> Newman netdata collection
 (websites.umich.edu/~mejn) + igraph::make_graph(‘Zachary’)</p>
 <p><strong>Generated.</strong> 2026-05-28 with lcdaGRASP 0.2.0, R
@@ -199,12 +198,13 @@ literature best-known Q.</caption>
 </table>
 </div>
 <div class="section level2">
-<h2 id="erratum-e3-louvain-on-karate-reaches-the-optimum">Erratum E3: Louvain on Karate reaches the optimum<a class="anchor" aria-label="anchor" href="#erratum-e3-louvain-on-karate-reaches-the-optimum"></a>
+<h2 id="louvain-on-karate-reaches-the-optimum-under-multi-restart">Louvain on Karate reaches the optimum under multi-restart<a class="anchor" aria-label="anchor" href="#louvain-on-karate-reaches-the-optimum-under-multi-restart"></a>
 </h2>
-<p>The paper’s Table 10 lists Louvain on Karate at
-<code>Q = 0.3715</code> and claims a <code>+12.9%</code> gain. With 30
-restarts the current <code>igraph</code> Louvain reaches the exact
-optimum:</p>
+<p>A <em>single-run</em> Louvain can report <code>Q ≈ 0.3715</code> on
+Karate, which would suggest a large advantage for any competing method.
+But this is an artefact of the single run: with 30 restarts the current
+<code>igraph</code> Louvain reaches the exact optimum, so a
+like-for-like comparison tells a different story:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">network</span> <span class="op">==</span> <span class="st">"karate"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -212,18 +212,18 @@ optimum:</p>
 <span>    LCDA_best   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">Q_max</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span>,</span>
 <span>    Louvain_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html" class="external-link">first</a></span><span class="op">(</span><span class="va">Q_louvain_max</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span>,</span>
 <span>    Leiden_max  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html" class="external-link">first</a></span><span class="op">(</span><span class="va">Q_leiden_max</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span>,</span>
-<span>    paper_Louvain <span class="op">=</span> <span class="fl">0.3715</span>,</span>
+<span>    single_run_Louvain <span class="op">=</span> <span class="fl">0.3715</span>,</span>
 <span>    exact_optimum <span class="op">=</span> <span class="fl">0.4198</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>caption <span class="op">=</span> <span class="st">"Karate: the LCDA advantage over Louvain is an artefact of a single-run baseline."</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>caption <span class="op">=</span> <span class="st">"Karate: an apparent advantage over Louvain is an artefact of a single-run baseline."</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<caption>Karate: the LCDA advantage over Louvain is an artefact of a
+<caption>Karate: an apparent advantage over Louvain is an artefact of a
 single-run baseline.</caption>
 <thead><tr class="header">
 <th align="right">LCDA_best</th>
 <th align="right">Louvain_max</th>
 <th align="right">Leiden_max</th>
-<th align="right">paper_Louvain</th>
+<th align="right">single_run_Louvain</th>
 <th align="right">exact_optimum</th>
 </tr></thead>
 <tbody><tr class="odd">
@@ -235,7 +235,7 @@ single-run baseline.</caption>
 </tr></tbody>
 </table>
 <p>So on Karate the proposed methods <strong>match</strong> a properly
-tuned Louvain/Leiden rather than beating it by 12.9%.</p>
+tuned Louvain/Leiden rather than beating it.</p>
 </div>
 <div class="section level2">
 <h2 id="distribution-of-q-across-replications-tukey">Distribution of Q across replications (Tukey)<a class="anchor" aria-label="anchor" href="#distribution-of-q-across-replications-tukey"></a>
@@ -306,9 +306,9 @@ only spreads on the one large/diffuse network, Political Blogs.</p>
 <strong>LCDA-GR reproduces “match best known”</strong> on the four
 small networks.</li>
 <li>
-<strong>E3 confirmed</strong>: Louvain on Karate reaches 0.4198 (the
-optimum), so the <code>+12.9%</code> claim does not survive a
-like-for-like comparison.</li>
+<strong>Multi-restart matters</strong>: Louvain on Karate reaches
+0.4198 (the optimum) over 30 restarts, so single-run baselines overstate
+any advantage.</li>
 <li>
 <strong>Wald gap</strong>: on the only large network the methods
 trail Louvain/Leiden by ~2% — the advantage is benchmark-dependent.</li>

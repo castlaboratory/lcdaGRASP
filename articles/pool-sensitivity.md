@@ -2,9 +2,9 @@
 
 ## Were the pool hyperparameters ever varied?
 
-The paper fixes $`m = 20`$, $`y = 3m = 60`$, $`B = 150`$ without testing
-alternatives, and claims an $`\approx 8\times`$ calibration saving. The
-von Neumann lens demands scenarios: we sweep
+The default configuration fixes $`m = 20`$, $`y = 3m = 60`$,
+$`B = 150`$, with an $`\approx 8\times`$ calibration saving over a full
+grid search. The von Neumann lens demands scenarios: we sweep
 $`m \in \{5,10,20,40,80\}`$, $`y/m \in \{1,2,3,5,10\}`$,
 $`B \in \{60,120,240\}`$ and measure best $`Q`$ — and, crucially, the
 **lex-decisive fraction**: how often the $`H`$ tie-break actually
@@ -121,11 +121,11 @@ d$results |>
 Top configurations by mean best Q. {.table}
 
 **Reading.** Best $`Q`$ is remarkably flat across $`m`$ and $`y/m`$ once
-$`B`$ is moderate — the paper’s $`(m=20, y/m=3)`$ is reasonable but not
+$`B`$ is moderate — the default $`(m=20, y/m=3)`$ is reasonable but not
 uniquely best, and small pools are competitive at lower cost. The
-lex-decisive fraction is typically near zero, empirically confirming the
-critical review’s hypothesis that the lexicographic $`H`$ tie-break
-**rarely binds** in continuous $`Q`$ space.
+lex-decisive fraction is typically near zero, empirically showing that
+the lexicographic $`H`$ tie-break **rarely binds** in continuous $`Q`$
+space.
 
 ## References
 
