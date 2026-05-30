@@ -4,8 +4,9 @@
 # (the diverse partitions produced across iterations) is normally discarded
 # except for the best-by-(Q,H) solution. Following Ensemble Clustering for
 # Graphs (Poulin & Theberge 2019), we turn that pool into edge co-association
-# weights and re-cluster, which recovers the planted structure as well as
-# Leiden/ECG (and better at high mixing). The leader of each consensus community
+# weights and re-cluster, which recovers the planted structure on par with ECG
+# and outperforms Leiden (its advantage concentrated at high mixing). The leader
+# of each consensus community
 # is the node most frequently designated a leader across the pool -- an ensemble
 # signal a generic detector-plus-centrality pipeline cannot access. A per-node
 # confidence map (mean co-association of incident edges) comes for free.
@@ -15,8 +16,16 @@
 #' Builds a pool of \code{B} randomised LCDA constructions, turns it into edge
 #' co-association weights (ECG-style), re-clusters the reweighted graph for the
 #' consensus partition, and designates one leader per community from the pool's
-#' leader-designation frequencies. Recovers planted structure at the level of
-#' Leiden/ECG while retaining the joint leader output and a node-confidence map.
+#' leader-designation frequencies. Recovers planted structure on par with ECG
+#' and outperforms Leiden (advantage concentrated at high mixing), while
+#' retaining the joint leader output and a node-confidence map.
+#'
+#' @details
+#' Weighted graphs: a numeric \code{weight} edge attribute is honoured by the
+#' modularity objective and the local search inside each pool construction, but
+#' the similarity, centrality and NCE leader score remain \emph{structural}
+#' (unweighted). The consensus re-clustering uses the ECG co-association weights,
+#' not the input weights.
 #'
 #' @param g an igraph object (undirected, simple).
 #' @param B pool size (number of GRASP constructions to ensemble).
@@ -37,7 +46,11 @@
 #'   \code{membership} (1-based), \code{leaders} (consensus-derived, 1-based),
 #'   \code{leaders_central} (top-eigenvector per community, for comparison), a
 #'   per-node \code{confidence} vector, the leader-designation counts
-#'   \code{lead_count}, and modularity \code{Q}. When \code{overlap = TRUE} it
+#'   \code{lead_count}, the input-graph modularity \code{Q} (weight-aware;
+#'   comparable to \code{lcda_grasp}/\code{lcda_gr}), and
+#'   \code{Q_consensus_weighted} (modularity under the ECG co-association
+#'   weights, i.e. the objective the consensus optimised). When
+#'   \code{overlap = TRUE} it
 #'   additionally carries \code{overlap_membership} (a length-n list of the
 #'   community ids each node belongs to) and \code{is_overlap} (logical, the
 #'   bridge nodes).
@@ -103,7 +116,13 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
   deg  <- igraph::degree(g)
   conf <- ifelse(deg > 0, conf / deg, 0)
 
-  Q <- igraph::modularity(g, membership)
+  # Q on the input graph (honours an input `weight` attribute) is the headline
+  # value, directly comparable to the Q reported by lcda_grasp/lcda_gr.
+  # Q_consensus_weighted is the modularity under the ECG co-association weights
+  # `w` -- the objective the consensus re-clustering actually optimised.
+  w_in <- if ("weight" %in% igraph::edge_attr_names(g)) igraph::E(g)$weight else NULL
+  Q                    <- igraph::modularity(g, membership, weights = w_in)
+  Q_consensus_weighted <- igraph::modularity(g, membership, weights = w)
 
   # optional overlapping communities from the soft co-association: a node joins
   # any community whose mean co-association reaches tau * its home affinity.
@@ -133,6 +152,7 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
     list(membership = membership, leaders = leaders,
          leaders_central = leaders_central, confidence = conf,
          lead_count = lead_count, Q = Q,
+         Q_consensus_weighted = Q_consensus_weighted,
          overlap_membership = overlap_membership, is_overlap = is_overlap,
          params = list(B = B, w_min = w_min, variant = variant,
                        centrality = centrality, similarity = similarity,
@@ -145,7 +165,8 @@ print.lcda_ecg_result <- function(x, ...) {
   cli::cli_h1("LCDA-ECG (ensemble consensus) result")
   items <- c(
     "communities"          = "{length(x$leaders)}",
-    "modularity Q"         = "{format(x$Q, digits = 6)}",
+    "modularity Q (input)" = "{format(x$Q, digits = 6)}",
+    "Q (consensus weights)" = "{format(x$Q_consensus_weighted, digits = 6)}",
     "pool size B"          = "{x$params$B}",
     "mean node confidence" = "{format(mean(x$confidence), digits = 3)}")
   if (isTRUE(x$params$overlap))

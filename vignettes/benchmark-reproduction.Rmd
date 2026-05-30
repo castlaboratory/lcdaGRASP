@@ -89,14 +89,18 @@ large/diffuse network, Political Blogs.
 
 ```{r dist, eval = have && has_gg, fig.height = 5}
 library(ggplot2)
-ggplot(bench$results, aes(algo, Q)) +
-  geom_boxplot(outlier.size = 0.6, fill = "#1f4e79", alpha = 0.25) +
-  facet_wrap(~ network, scales = "free_y") +
-  coord_flip() +
+# Map Q to x directly (not via coord_flip, which silently ignores facet free
+# scales) so each panel zooms to its own Q range.
+ggplot(bench$results, aes(Q, algo)) +
+  geom_boxplot(outlier.size = 0.6, fill = "#1f4e79", alpha = 0.25,
+               orientation = "y") +
+  facet_wrap(~ network, scales = "free_x", nrow = 1) +
+  scale_x_continuous(n.breaks = 3, guide = ggplot2::guide_axis(check.overlap = TRUE)) +
   labs(title = "Best-Q distribution over replications",
        subtitle = "Flat boxes on small nets; real spread only on Political Blogs",
-       x = NULL, y = "best Q") +
-  theme_minimal(base_size = 10)
+       y = NULL, x = "best Q") +
+  theme_minimal(base_size = 10) +
+  theme(axis.text.x = element_text(size = 6.5), panel.spacing.x = grid::unit(1, "lines"))
 ```
 
 ```{r polblogs, eval = have}
