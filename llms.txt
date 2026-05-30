@@ -1,0 +1,213 @@
+# lcdaGRASP — companion code for Ospina et al. (2026)
+
+Companion code and critical review for the preprint:
+
+> Ospina, R., Silva, G., Matos Junior, F. J., Leite, A., & Ochi, L. S.
+> (2026). *A GRASP Framework for Community and Leader Detection in
+> Complex Networks.* Preprint submitted to *Knowledge-Based Systems*.
+
+The paper proposes four algorithms (LCDA-GRASP 1/2 and LCDA-GR 1/2) for
+**joint community-and-leader detection**. This repository contains:
+
+1.  **`lcdaGRASP/`** — a working R package with the four algorithms and
+    their performance-critical kernels in C++ via Rcpp. Tidyverse style,
+    `cli` logging, a `verbose` flag on every substantive function.
+2.  **`lcdaGRASP/vignettes/`** — articles that render the
+    publication-grade simulation panel (benchmarks, a **George-Box
+    design-of-experiments** study, robustness, convergence, degeneracy,
+    EDA, leader scores) from precomputed data, so they build without
+    re-running any simulation.
+3.  **`lcdaGRASP/data-raw/`** — the scripts that generate that data into
+    `lcdaGRASP/inst/extdata/*.rds` (run once; see `run_all_data.R`).
+4.  **`scripts/`** — the original standalone simulation drivers.
+5.  **`artigo/`** — the LaTeX source of the manuscript, with errata
+    fixes and literature updates applied this revision (see
+    `artigo/CHANGES.md`).
+6.  **`analise_critica.md`** — the critical review (four reasoning
+    lenses: Wald, von Neumann, Tukey, Box).
+
+Package website (pkgdown):
+**<https://castlaboratory.github.io/lcdaGRASP/>**
+
+## Install
+
+``` r
+
+# from the repository root
+remotes::install_local("lcdaGRASP", dependencies = TRUE)
+```
+
+## Quick start
+
+``` r
+
+library(lcdaGRASP)
+library(igraph)
+
+g   <- make_graph("Zachary")
+res <- lcda_grasp(g, alpha_c = 0.1, alpha_s = 0.3, B = 50, seed = 1, verbose = TRUE)
+print(res)
+
+res_r <- lcda_gr(g, variant = 1, B = 150, seed = 1)   # Reactive, self-tuning
+print(res_r)
+```
+
+Precomputed simulation results back the articles and are listed with
+[`lcda_data()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_data.md);
+load one with `lcda_data("repro_summary")`.
+
+## Articles (by reasoning lens)
+
+| Article | Lens | What it shows |
+|----|----|----|
+| Getting started | — | API tour |
+| Benchmark reproduction | Wald | Paper’s numbers + erratum E3 (Louvain on Karate = 0.4198) |
+| **DoE parameter tuning** | Box | Factorial screening → response surface (CCD) → canonical optimum for `(α_c, α_s)` |
+| Robustness (LFR) | Wald | Q **and** ARI across the mixing sweep |
+| Reactive convergence | von Neumann | Proposition 6 empirically (entropy decay) |
+| Pool sensitivity | von Neumann | `(m, y, B)` grid + lex-decisive audit |
+| Modularity degeneracy | Box | Near-best partition counts + NMI |
+| EDA distributions | Tukey | Boxplots / ECDFs / (Q, H) scatter |
+| Leader score | Box | Global vs community-conditioned NCE |
+
+## Rebuild the data and the site
+
+``` bash
+Rscript lcdaGRASP/data-raw/run_all_data.R       # regenerate inst/extdata/*.rds (slow, once)
+Rscript -e 'pkgdown::build_site("lcdaGRASP")'   # build docs/
+```
+
+## Errata flagged to the authors (see `artigo/CHANGES.md`)
+
+- **E1** Table 9 duplicates LCDA-GRASP and LCDA-GR timings (impossible
+  with different `B`).
+- **E2** Lemma proof: smallest positive ΔQ is `1/(2m²)`, so `T ≤ 2m²`
+  (was `2m`).
+- **E3** Table 10 Louvain on Karate `0.3715`; current igraph
+  Louvain/Leiden reach `0.4198` over 30 restarts — the `+12.9%` claim is
+  baseline-dependent.
+- **E4** Proposition 6 proof: Borel–Cantelli step made explicit (Lévy
+  extension).
+- **E5** Abstract framing softened.
+- **E6** LeaderRank values look anomalous; verify the source.
+
+## License
+
+MIT. See `LICENSE`.
+
+# Package index
+
+## Algorithms
+
+The LCDA variants proposed in the paper, plus the ensemble-consensus
+variant.
+
+- [`lcda_grasp()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_grasp.md)
+  : LCDA-GRASP: fixed-parameter variant.
+- [`lcda_gr()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_gr.md)
+  : LCDA-GR: Reactive variant with self-tuning of (alpha_c, alpha_s).
+  Implements Algorithm 4 of the paper.
+- [`lcda_ecg()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_ecg.md)
+  : LCDA-ECG: ensemble-consensus community and leader detection.
+
+## Construction phases
+
+Building blocks of a single GRASP iteration (construct, repair, local
+search).
+
+- [`lcda_construct()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_construct.md)
+  : LCDA construction - variant 1 (centrality computed once) or 2
+  (adaptive).
+- [`lcda_repair()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_repair.md)
+  : Repair: ensure every community has exactly one leader by recomputing
+  centrality within the community and designating the top-scoring node.
+- [`lcda_local_search()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_local_search.md)
+  : First-improvement local search, with automatic VNMI dispatch for n
+  \> 300.
+
+## Quality scores
+
+Modularity, the NCE leader score (global and community-conditioned), and
+the lexicographic objective.
+
+- [`modularity_score()`](https://castlaboratory.github.io/lcdaGRASP/reference/modularity_score.md)
+  : Compute modularity for an arbitrary partition.
+- [`nce_score()`](https://castlaboratory.github.io/lcdaGRASP/reference/nce_score.md)
+  : Global NCE leader score (Eq. 14).
+- [`nce_local_score()`](https://castlaboratory.github.io/lcdaGRASP/reference/nce_local_score.md)
+  : Community-conditioned NCE (proposed alternative).
+- [`lex_dominates()`](https://castlaboratory.github.io/lcdaGRASP/reference/lex_dominates.md)
+  : Lexicographic dominance under (Q, H).
+
+## Centrality measures
+
+Leader-selection centralities.
+
+- [`centrality_eigen()`](https://castlaboratory.github.io/lcdaGRASP/reference/centrality_eigen.md)
+  : Eigenvector centrality (own implementation, O(m log n)).
+- [`centrality_betweenness()`](https://castlaboratory.github.io/lcdaGRASP/reference/centrality_betweenness.md)
+  : Betweenness centrality - delegates to igraph::betweenness for now.
+  Tagged for a future native Rcpp implementation (Brandes 2001).
+- [`centrality_closeness()`](https://castlaboratory.github.io/lcdaGRASP/reference/centrality_closeness.md)
+  : Closeness centrality - delegates to igraph::closeness. On a
+  disconnected graph, plain closeness is ill-defined across components
+  (nodes in tiny components score spuriously high, distorting leader
+  selection); we fall back to harmonic centrality, the robust
+  generalisation that handles unreachable pairs (Boldi & Vigna 2014). On
+  connected graphs the two coincide in ranking, so this changes nothing
+  for the standard benchmarks.
+
+## Statistical comparison
+
+The non-parametric procedure used in the paper’s experiments.
+
+- [`kruskal_then_permute()`](https://castlaboratory.github.io/lcdaGRASP/reference/kruskal_then_permute.md)
+  : Two-stage non-parametric comparison: Kruskal-Wallis omnibus followed
+  by pairwise permutation tests with Bonferroni correction.
+- [`permutation_test()`](https://castlaboratory.github.io/lcdaGRASP/reference/permutation_test.md)
+  : Two-sample permutation test for a difference in means. Robust to
+  ties and to zero-variance pools (as discussed in section 5.1).
+
+## Plotting
+
+- [`plot_partition()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_partition.md)
+  : Plot a leader-community partition (leaders drawn larger).
+- [`plot_grasp_trajectory()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_grasp_trajectory.md)
+  : Plot the Q trajectory across GRASP iterations, with running maximum.
+- [`plot_reactive_pk()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_reactive_pk.md)
+  : Plot the evolution of selection probabilities p_k across iterations.
+
+## Graph constructors & data
+
+- [`as_graph()`](https://castlaboratory.github.io/lcdaGRASP/reference/as_graph.md)
+  : Coerce a variety of inputs to igraph.
+- [`graph_from_edgelist_simple()`](https://castlaboratory.github.io/lcdaGRASP/reference/graph_from_edgelist_simple.md)
+  : Build an igraph from an integer edgelist (1-based), undirected
+  simple.
+- [`lcda_data()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_data.md)
+  : Precomputed simulation datasets
+
+# Articles
+
+### All vignettes
+
+- [Reproducing the paper's benchmark
+  numbers](https://castlaboratory.github.io/lcdaGRASP/articles/benchmark-reproduction.md):
+- [Tuning LCDA-GRASP by Design of Experiments (a la George
+  Box)](https://castlaboratory.github.io/lcdaGRASP/articles/doe-parameter-tuning.md):
+- [Exploratory distributions of Q and H
+  (Tukey)](https://castlaboratory.github.io/lcdaGRASP/articles/eda-distributions.md):
+- [Ensemble consensus over the GRASP pool
+  (LCDA-ECG)](https://castlaboratory.github.io/lcdaGRASP/articles/ensemble-consensus.md):
+- [Getting started with
+  lcdaGRASP](https://castlaboratory.github.io/lcdaGRASP/articles/lcdaGRASP-intro.md):
+- [Modularity degeneracy
+  (Box)](https://castlaboratory.github.io/lcdaGRASP/articles/modularity-degeneracy.md):
+- [The leader score: global vs community-conditioned NCE
+  (Box)](https://castlaboratory.github.io/lcdaGRASP/articles/nce-leader-score.md):
+- [Pool and refresh sensitivity (von
+  Neumann)](https://castlaboratory.github.io/lcdaGRASP/articles/pool-sensitivity.md):
+- [Reactive update convergence (von
+  Neumann)](https://castlaboratory.github.io/lcdaGRASP/articles/reactive-convergence.md):
+- [Robustness across community-strength regimes
+  (Wald)](https://castlaboratory.github.io/lcdaGRASP/articles/robustness-lfr.md):
