@@ -1,0 +1,342 @@
+---
+title: "Parameter choice and the behaviour of Reactive GRASP"
+output: rmarkdown::html_vignette
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7.4, fig.height = 4.6)
+library(lcdaGRASP)
+
+scr  <- lcda_data("doe_screening")
+rsmd <- lcda_data("doe_rsm")
+pool <- lcda_data("pool_sensitivity")
+p6s  <- lcda_data("prop6_summary")
+p6t  <- lcda_data("prop6_trajectories")
+
+have_scr  <- !is.null(scr)
+have_rsm  <- !is.null(rsmd)
+have_pool <- !is.null(pool)
+have_p6s  <- !is.null(p6s)
+have_p6t  <- !is.null(p6t)
+
+has_gg    <- requireNamespace("ggplot2", quietly = TRUE) &&
+             requireNamespace("dplyr",   quietly = TRUE)
+has_broom <- requireNamespace("broom",   quietly = TRUE)
+```
+
+# Overview
+
+The paper fixes the GRASP construction parameters once: the greediness pair
+`(alpha_c, alpha_s) = (0.1, 0.3)`, a candidate pool of size $m = 20$ refreshed
+every $y = 3m = 60$ iterations, and a budget of $B = 150$ GRASP iterations,
+with the Reactive update of [Prais & Ribeiro, 2000] adapting the selection
+probabilities along the way. Those choices were calibrated on a $5\times5$
+grid over a single network.
+
+This article asks three connected questions that a single grid cannot answer,
+and answers each from a precomputed experiment:
+
+1. **Which parameters actually matter, and where is the continuous optimum
+   for `(alpha_c, alpha_s)`?** A sequential design of experiments --- a
+   screening factorial followed by a response-surface (central composite)
+   design --- separates the influential factors from the inert ones and
+   locates the optimum by canonical analysis.
+2. **Do the pool hyperparameters `(m, y, B)` matter once they are varied?**
+   A sweep measures best $Q$ and, crucially, the *lex-decisive fraction* ---
+   how often the lexicographic $H$ tie-break actually changed the incumbent.
+3. **How fast does the Reactive update concentrate, and is its empirical
+   winner the true winner at the $B = 150$ the paper runs?** We track the
+   Shannon entropy of the selection probabilities to turn Proposition 6's
+   asymptotic statement into a finite-budget one.
+
+A single theme recurs across all three: the response is **flat near the top**.
+The paper's defaults sit inside a near-optimal plateau --- reasonable, but not
+uniquely optimal --- and several of the mechanisms the paper formalises (the
+$H$ tie-break, the Reactive concentration) are mostly inert in the regime it
+actually runs. The sections below show this directly rather than asserting it.
+
+# Part 1 --- Design of experiments for `(alpha_c, alpha_s)`
+
+A grid answers *where is the best cell*, but not *which factors matter*, *how
+they interact*, or *where the true continuous optimum lies*. We follow the
+sequential response-surface strategy of [Box & Wilson, 1951]: a screening
+factorial to find what matters, then a rotatable central composite design
+(CCD) to locate the optimum by a second-order model. The response is
+modularity $Q$ (best over $B = 50$ GRASP iterations).
+
+```{r doe-nodata, echo = FALSE, results = "asis", eval = !(have_scr && have_rsm)}
+cat("> **Note.** The precomputed DoE datasets are not installed. Generate them",
+    "with `Rscript data-raw/run_all_data.R` and rebuild this article.\n")
+```
+
+```{r doe-meta, echo = FALSE, eval = have_scr, results = "asis"}
+m <- scr$meta
+cat(sprintf("**Generated.** %s with lcdaGRASP %s (seed %s).\n\n",
+            m$generated_on, m$pkg_version, m$seed))
+cat("**Screening limitations.**\n\n")
+cat(paste0("- ", m$limitations, collapse = "\n"), "\n")
+```
+
+## Screening: which factors matter?
+
+We fit a main-effects-plus-two-factor-interaction model over the
+categorical/discrete factors (`variant`, `centrality`, `similarity`) crossed
+with a 2-level coding of `(alpha_c, alpha_s)`, with the network as a blocking
+factor and pooled across several networks for coverage.
+
+```{r doe-screen-anova, eval = have_scr && has_gg}
+d <- scr$results
+d$variant    <- factor(d$variant)
+d$centrality <- factor(d$centrality)
+d$similarity <- factor(d$similarity)
+d$network    <- factor(d$network)
+
+fit <- lm(Q ~ network + (ac_code + as_code + variant + centrality + similarity)^2, data = d)
+av <- as.data.frame(anova(fit))
+av <- av[order(-av[["F value"]]), ]
+knitr::kable(round(av, 4), caption = "Pooled ANOVA (factors ranked by F). 'network' is a block.")
+```
+
+```{r doe-screen-pareto, eval = have_scr && has_gg, fig.height = 5}
+library(ggplot2); library(dplyr)
+eff <- summary(fit)$coefficients |> as.data.frame()
+eff$term <- rownames(eff)
+eff <- eff[eff$term != "(Intercept)" & !grepl("^network", eff$term), ]
+eff |>
+  mutate(abs_t = abs(`t value`)) |>
+  slice_max(abs_t, n = 15) |>
+  ggplot(aes(reorder(term, abs_t), abs_t)) +
+  geom_col(fill = "#1f4e79") + coord_flip() +
+  labs(title = "Pareto of standardised effects on Q (screening)",
+       subtitle = "Larger |t| = more influential factor/interaction",
+       x = NULL, y = "|t value|") +
+  theme_minimal(base_size = 10)
+```
+
+The dominant effects are the similarity measure and `alpha_s` (the
+community-formation parameter), confirming the paper's granularity lemma;
+`alpha_c` and `centrality` move $Q$ much less, consistent with the paper's
+claim that `alpha_c` mainly diversifies *leader* selection. The best
+categorical cell is reported below.
+
+```{r doe-screen-best, eval = have_scr && has_gg}
+d |>
+  dplyr::group_by(centrality, similarity, variant) |>
+  dplyr::summarise(Q = mean(Q), .groups = "drop") |>
+  dplyr::slice_max(Q, n = 5) |>
+  knitr::kable(digits = 4, caption = "Top categorical configurations by mean Q (pooled).")
+```
+
+## Response surface in `(alpha_c, alpha_s)`
+
+We use the rotatable CCD at the paper construction (`eigen`/`hpi`, variant 1)
+and fit a second-order model in the **coded** factors
+$x_1 = \widehat{\alpha_c}$, $x_2 = \widehat{\alpha_s}$.
+
+```{r doe-rsm-fit, eval = have_rsm && has_gg}
+cod <- rsmd$meta$extra$coding
+to_actual <- function(code, p) p[["center"]] + code * p[["half_range"]]
+
+fit_rsm <- function(df) {
+  m <- lm(y ~ ac + as + I(ac^2) + I(as^2) + ac:as, data = df)
+  co <- coef(m)
+  b  <- c(co[["ac"]], co[["as"]])
+  B  <- matrix(c(co[["I(ac^2)"]], co[["ac:as"]] / 2,
+                 co[["ac:as"]] / 2, co[["I(as^2)"]]), 2, 2)
+  xs <- tryCatch(as.numeric(-0.5 * solve(B) %*% b), error = function(e) c(NA, NA))
+  list(model = m, stationary = xs, eigen = eigen(B, only.values = TRUE)$values)
+}
+
+rr <- rsmd$results |> dplyr::filter(variant == 1)
+# Standardise Q within network so the pooled surface is comparable.
+rr <- rr |>
+  dplyr::group_by(network) |>
+  dplyr::mutate(y = (Q - min(Q)) / (max(Q) - min(Q) + 1e-9)) |>
+  dplyr::ungroup() |>
+  dplyr::rename(ac = ac_code, as = as_code)
+
+f_pool <- fit_rsm(rr)
+xs <- f_pool$stationary
+cat(sprintf("Stationary point (coded):  alpha_c* = %.3f,  alpha_s* = %.3f\n", xs[1], xs[2]))
+cat(sprintf("Stationary point (actual): alpha_c* = %.3f,  alpha_s* = %.3f\n",
+            to_actual(xs[1], cod$alpha_c), to_actual(xs[2], cod$alpha_s)))
+cat("Eigenvalues of the quadratic form:", paste(round(f_pool$eigen, 4), collapse = ", "),
+    if (all(f_pool$eigen < 0)) "=> maximum" else "=> saddle/ridge", "\n")
+```
+
+```{r doe-rsm-anova, eval = have_rsm && has_gg && has_broom}
+knitr::kable(broom::tidy(f_pool$model), digits = 4,
+  caption = "Second-order model coefficients (pooled, standardised Q).")
+```
+
+```{r doe-rsm-anova-fallback, eval = have_rsm && has_gg && !has_broom}
+print(summary(f_pool$model))
+```
+
+```{r doe-rsm-contour, eval = have_rsm && has_gg, fig.height = 5}
+grid <- expand.grid(ac = seq(-1.6, 1.6, 0.05), as = seq(-1.6, 1.6, 0.05))
+grid$yhat <- predict(f_pool$model, newdata = grid)
+grid$alpha_c <- to_actual(grid$ac, cod$alpha_c)
+grid$alpha_s <- to_actual(grid$as, cod$alpha_s)
+ggplot(grid, aes(alpha_c, alpha_s, z = yhat)) +
+  geom_contour_filled(bins = 10) +
+  annotate("point", x = to_actual(xs[1], cod$alpha_c), y = to_actual(xs[2], cod$alpha_s),
+           shape = 4, size = 4, stroke = 1.3, colour = "white") +
+  annotate("point", x = 0.1, y = 0.3, shape = 21, size = 3, fill = "red", colour = "white") +
+  labs(title = "Fitted response surface (standardised Q)",
+       subtitle = "X = canonical optimum; red dot = the paper's default (0.1, 0.3)",
+       fill = "std Q") +
+  theme_minimal(base_size = 10)
+```
+
+```{r doe-rsm-pernet, eval = have_rsm && has_gg}
+rr |>
+  dplyr::group_split(network) |>
+  lapply(function(df) {
+    f <- fit_rsm(df)
+    data.frame(network = df$network[1],
+               alpha_c_opt = round(to_actual(f$stationary[1], cod$alpha_c), 3),
+               alpha_s_opt = round(to_actual(f$stationary[2], cod$alpha_s), 3),
+               shape = if (all(f$eigen < 0)) "maximum" else "saddle/ridge")
+  }) |>
+  dplyr::bind_rows() |>
+  knitr::kable(caption = "Canonical optimum per network (CCD, variant 1).")
+```
+
+`alpha_s` and the similarity measure dominate; `alpha_c` and centrality are
+second-order, matching the paper's theory. The canonical optimum sits at a
+**modest `alpha_s`** (avoiding the over-fragmentation the paper warns about
+beyond `alpha_s = 0.5`), and the paper's default `(0.1, 0.3)` lies inside the
+near-optimal plateau. On the small networks the standardised-$Q$ surface is
+*very flat* near the top, and several stationary points are ridges rather than
+sharp maxima --- a direct manifestation of modularity degeneracy (see the
+*Modularity degeneracy* article). The recommendation is therefore a *region*,
+not a point.
+
+# Part 2 --- Pool and refresh sensitivity `(m, y, B)`
+
+The default fixes $m = 20$, $y = 3m = 60$, $B = 150$, with an $\approx 8\times$
+calibration saving over a full grid search --- but the paper never varies
+them. We sweep $m \in \{5,10,20,40,80\}$, $y/m \in \{1,2,3,5,10\}$,
+$B \in \{60,120,240\}$ and measure best $Q$ and the **lex-decisive fraction**:
+how often the $H$ tie-break actually changed the incumbent.
+
+```{r pool-nodata, echo = FALSE, results = "asis", eval = !have_pool}
+cat("> **Note.** The pool-sensitivity dataset is not installed.",
+    "Run `data-raw/run_all_data.R` and rebuild.\n")
+```
+
+```{r pool-meta, echo = FALSE, eval = have_pool, results = "asis"}
+m <- pool$meta
+cat(sprintf("**Generated.** %s, lcdaGRASP %s, %s reps on %s.\n\n",
+            m$generated_on, m$pkg_version, m$extra$reps, m$extra$network))
+```
+
+```{r pool-heat, eval = have_pool && has_gg}
+library(ggplot2); library(dplyr)
+sm <- pool$results |>
+  group_by(m, y_ratio, B) |>
+  summarise(Q = mean(best_Q), H_pct = mean(H_decisive_pct), .groups = "drop")
+ggplot(sm, aes(factor(m), factor(y_ratio), fill = Q)) +
+  geom_tile() + geom_text(aes(label = sprintf("%.3f", Q)), size = 2.6) +
+  facet_wrap(~ B, labeller = label_both) +
+  scale_fill_viridis_c() +
+  labs(title = "Best Q vs pool size m and refresh ratio y/m",
+       x = "pool size m", y = "refresh ratio y/m (3 = paper default)") +
+  theme_minimal(base_size = 10)
+```
+
+```{r pool-lex, eval = have_pool && has_gg}
+ggplot(sm, aes(factor(m), factor(y_ratio), fill = H_pct)) +
+  geom_tile() + geom_text(aes(label = sprintf("%.1f", H_pct)), size = 2.6) +
+  facet_wrap(~ B, labeller = label_both) +
+  scale_fill_viridis_c(option = "plasma") +
+  labs(title = "Lex-decisive fraction (%): how often H broke a Q-tie",
+       subtitle = "Near 0 => the lexicographic objective is mostly ornamental",
+       x = "pool size m", y = "y/m") +
+  theme_minimal(base_size = 10)
+```
+
+```{r pool-best, eval = have_pool && has_gg}
+pool$results |>
+  dplyr::group_by(m, y_ratio, B) |>
+  dplyr::summarise(Q = mean(best_Q), .groups = "drop") |>
+  dplyr::slice_max(Q, n = 6) |>
+  knitr::kable(digits = 4, caption = "Top configurations by mean best Q.")
+```
+
+Best $Q$ is remarkably flat across $m$ and $y/m$ once $B$ is moderate: the
+default $(m = 20, y/m = 3)$ is reasonable but not uniquely best, and small
+pools are competitive at lower cost --- the same plateau seen in the response
+surface, now in the pool dimensions. The lex-decisive fraction is typically
+near zero, empirically showing that the lexicographic $H$ tie-break **rarely
+binds** in continuous $Q$ space.
+
+# Part 3 --- Concentration of the Reactive update
+
+Proposition 6 proves that the Reactive update concentrates the selection
+probabilities $p_k$ on the best parameter pair as $B \to \infty$. The
+asymptotic statement leaves open the *finite-budget* questions: **how fast**
+does concentration happen, and **is the empirical winner the true winner** at
+the $B = 150$ the paper actually runs? We answer both by tracking the Shannon
+entropy $H(p_k)$ for $B \in \{150, 300, 600, 1200\}$.
+
+```{r prop6-nodata, echo = FALSE, results = "asis", eval = !(have_p6s && have_p6t)}
+cat("> **Note.** The Proposition-6 datasets are not installed.",
+    "Run `data-raw/run_all_data.R` and rebuild.\n")
+```
+
+```{r prop6-entropy, eval = have_p6t && has_gg}
+library(ggplot2)
+ggplot(p6t$results, aes(iter, H_pk, colour = factor(B_max))) +
+  geom_line(alpha = 0.9) +
+  facet_wrap(~ graph, scales = "free_y") +
+  labs(title = "Concentration of the Reactive update (Proposition 6, empirically)",
+       subtitle = "Initial value = log(m) = log(20) ~ 3.0; lower = more concentrated",
+       x = "GRASP iteration", y = "Shannon entropy of p_k", colour = "B") +
+  theme_minimal(base_size = 10)
+```
+
+```{r prop6-table, eval = have_p6s && has_gg}
+p6s$results |>
+  dplyr::transmute(graph, B,
+                   H_initial = round(H_p_initial, 3),
+                   H_final   = round(H_p_final, 3),
+                   H_max     = round(H_max, 3),
+                   rank_corr = round(rank_corr_p_mu, 3),
+                   best_Q    = round(best_Q, 4)) |>
+  knitr::kable(caption = "Entropy drop and rank correlation between final p_k and mean performance mu_k.")
+```
+
+Entropy falls from $\log 20 \approx 3.0$ toward a low plateau within the first
+few refresh blocks, and the rank correlation between $p_k$ and $\mu_k$ is high
+--- the empirical winner matches the best-mean pair. The practical
+implication: the paper's $B = 150$ is enough for the *concentration* to occur.
+But concentration is not the same as solution quality --- as Part 2 shows, the
+$Q$ surface over the pool parameters is flat, so concentrating onto the
+"winning" pair buys little once $B$ is moderate.
+
+# Takeaways
+
+- **`alpha_s` and the similarity measure are the only first-order levers;**
+  `alpha_c` and centrality are second-order, matching the paper's theory.
+- **The defaults are reasonable but not uniquely optimal.** Both the
+  `(alpha_c, alpha_s)` response surface and the `(m, y, B)` sweep show a flat
+  near-optimal plateau: report a *region*, not a point.
+- **The lexicographic $H$ tie-break rarely binds** in continuous $Q$ space.
+- **The Reactive update concentrates well before $B = 150$**, and its
+  empirical winner tracks the best-mean pair --- but concentration does not
+  translate into a meaningful $Q$ gain, because the underlying surface is flat.
+
+# References
+
+- Box, G. E. P., & Wilson, K. B. (1951). On the Experimental Attainment of
+  Optimum Conditions. *J. R. Stat. Soc. B*, 13(1), 1--38.
+  [doi:10.1111/j.2517-6161.1951.tb00067.x](https://doi.org/10.1111/j.2517-6161.1951.tb00067.x)
+- Box, G. E. P., & Behnken, D. W. (1960). Some New Three Level Designs for the
+  Study of Quantitative Variables. *Technometrics*, 2(4), 455--475.
+  [doi:10.1080/00401706.1960.10489912](https://doi.org/10.1080/00401706.1960.10489912)
+- Prais, M., & Ribeiro, C. C. (2000). Reactive GRASP. *INFORMS Journal on
+  Computing*, 12(3), 164--176.
+  [doi:10.1287/ijoc.12.3.164.12639](https://doi.org/10.1287/ijoc.12.3.164.12639)
+```

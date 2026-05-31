@@ -40,7 +40,7 @@ cat(paste0("- ", m$limitations, collapse = "\n"), "\n")
 
 # Best modularity vs baselines and literature
 
-```{r table, eval = have}
+```{r table, eval = have && has_gg}
 res <- summ$results
 best <- res |>
   dplyr::group_by(network) |>
@@ -65,7 +65,7 @@ large advantage for any competing method. But this is an artefact of the
 single run: with 30 restarts the current `igraph` Louvain reaches the exact
 optimum, so a like-for-like comparison tells a different story:
 
-```{r e3, eval = have}
+```{r e3, eval = have && has_gg}
 res |>
   dplyr::filter(network == "karate") |>
   dplyr::summarise(
@@ -103,7 +103,7 @@ ggplot(bench$results, aes(Q, algo)) +
   theme(axis.text.x = element_text(size = 6.5), panel.spacing.x = grid::unit(1, "lines"))
 ```
 
-```{r polblogs, eval = have}
+```{r polblogs, eval = have && has_gg}
 bench$results |>
   dplyr::filter(network == "polblogs") |>
   dplyr::group_by(algo) |>

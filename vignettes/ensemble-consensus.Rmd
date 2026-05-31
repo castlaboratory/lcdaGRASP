@@ -11,6 +11,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7.4, fig.height = 4.2)
 library(lcdaGRASP)
 has_gg <- requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("dplyr", quietly = TRUE)
+has_tidyr <- requireNamespace("tidyr", quietly = TRUE)
 rec <- lcda_data("lcda_ecg"); ov <- lcda_data("overlap_lcda_ecg"); st <- lcda_data("stability_pool")
 ```
 
@@ -52,7 +53,7 @@ rather than beating it.)
 
 # Overlapping nodes show bridge-like connectivity
 
-```{r overlap, eval = !is.null(ov) && has_gg}
+```{r overlap, eval = !is.null(ov) && has_gg && has_tidyr}
 ov$results$per_graph |>
   group_by(mu) |>
   summarise(`overlap node` = mean(P_overlap, na.rm = TRUE),
@@ -73,7 +74,7 @@ is a consistency check rather than an independent validation.
 
 # The pool stabilises (so the pool size is principled)
 
-```{r stability, eval = !is.null(st) && has_gg}
+```{r stability, eval = !is.null(st) && has_gg && has_tidyr}
 st$results |>
   group_by(B) |>
   summarise(`co-assoc drift` = mean(coassoc_drift, na.rm = TRUE),
