@@ -17,9 +17,7 @@ if (!exists("save_dataset")) {
   source(hp[1])
 }
 suppressPackageStartupMessages({ library(igraph); library(dplyr) })
-options(lcda_ecg_define_only = TRUE)
-source(file.path(PKG_DIR, "data-raw", "97_lcda_ecg.R"))
-options(lcda_ecg_define_only = FALSE)
+# lcda_ecg() comes from the installed lcdaGRASP package (loaded via 00_helpers).
 
 set.seed(20260529)
 NS    <- as.integer(strsplit(Sys.getenv("LS_NS", "10000,25000,50000"), ",")[[1]])

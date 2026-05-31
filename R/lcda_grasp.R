@@ -62,6 +62,16 @@
   if (igraph::ecount(g) == 0L) cli::cli_abort("{.arg g} has no edges; community detection is undefined.")
   invisible(g)
 }
+.check_seed <- function(seed) {
+  # NULL or NA mean "leave the RNG untouched"; otherwise require a scalar integer.
+  if (is.null(seed)) return(NA_integer_)
+  if (length(seed) != 1L)
+    cli::cli_abort("{.arg seed} must be NULL, NA, or a single integer.")
+  if (is.na(seed)) return(NA_integer_)
+  if (!is.numeric(seed) || seed != as.integer(seed))
+    cli::cli_abort("{.arg seed} must be NULL, NA, or a single integer.")
+  as.integer(seed)
+}
 
 # --- centralities -----------------------------------------------------
 
@@ -373,6 +383,7 @@ lcda_grasp <- function(g,
   .check_pos_int(B, "B")
   .check_unit(alpha_c, "alpha_c"); .check_unit(alpha_s, "alpha_s")
   if (!variant %in% c(1, 2)) cli::cli_abort("{.arg variant} must be 1 or 2.")
+  seed <- .check_seed(seed)
   if (!is.na(seed)) set.seed(seed)
   csr <- .as_csr(g)
   g <- csr$igraph   # use the simplified graph so H (degree/n) matches the CSR
@@ -454,6 +465,7 @@ lcda_gr <- function(g,
   .check_range(alpha_c_range, "alpha_c_range"); .check_range(alpha_s_range, "alpha_s_range")
   .check_unit(p_floor, "p_floor")
   if (!variant %in% c(1, 2)) cli::cli_abort("{.arg variant} must be 1 or 2.")
+  seed <- .check_seed(seed)
   if (!is.na(seed)) set.seed(seed)
   if (is.null(y)) y <- 3L * m
   .check_pos_int(y, "y")

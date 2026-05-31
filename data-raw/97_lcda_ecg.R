@@ -27,57 +27,9 @@ if (!exists("save_dataset")) {
 }
 suppressPackageStartupMessages({ library(igraph); library(dplyr) })
 
-# ---- LCDA-ECG: consensus over the GRASP pool -------------------------------
-lcda_ecg <- function(g, B = 64, w_min = 0.05,
-                     alpha_c_range = c(0.1, 0.9), alpha_s_range = c(0.1, 0.5),
-                     centrality = "eigen", similarity = "hpi", seed = NA) {
-  if (!is.na(seed)) set.seed(seed)
-  csr <- lcdaGRASP:::.as_csr(g)
-  n   <- igraph::vcount(g)
-  el  <- igraph::as_edgelist(g, names = FALSE)            # m x 2, 1-based
-  coassoc <- numeric(nrow(el))
-  lead_count <- integer(n)                                # leader-designation frequency
-  for (b in seq_len(B)) {
-    ac <- stats::runif(1, alpha_c_range[1], alpha_c_range[2])
-    as_ <- stats::runif(1, alpha_s_range[1], alpha_s_range[2])
-    sol <- lcda_construct(csr, ac, as_, variant = 1, centrality = centrality, similarity = similarity)
-    sol <- lcda_repair(csr, sol)
-    sol <- lcda_local_search(csr, sol)
-    mem <- sol$membership
-    coassoc <- coassoc + (mem[el[, 1]] == mem[el[, 2]])
-    lead_count[sol$leaders] <- lead_count[sol$leaders] + 1L   # LCDA's own leader designations
-  }
-  coassoc <- coassoc / B
-  core <- igraph::coreness(g)
-  in2 <- core[el[, 1]] >= 2 & core[el[, 2]] >= 2
-  w <- ifelse(in2, w_min + (1 - w_min) * coassoc, w_min)  # ECG-style edge weights
-  cons <- igraph::cluster_louvain(g, weights = w)
-  mem_c <- as.integer(igraph::membership(cons))
-  ev <- igraph::eigen_centrality(g)$vector
-  comms <- sort(unique(mem_c))
-  # (a) post-hoc centrality leader (= the two-stage rule)
-  leaders_cent <- vapply(comms, function(c) { i <- which(mem_c == c); i[which.max(ev[i])] }, integer(1))
-  # (b) CONSENSUS leader = most-frequently-designated leader in the pool within
-  #     the community (tie-break by eigenvector centrality). This uses LCDA's own
-  #     ensemble of leader designations -- a signal ECG+centrality cannot access.
-  leaders_freq <- vapply(comms, function(c) {
-    i <- which(mem_c == c)
-    score <- lead_count[i] + ev[i] / (max(ev) + 1)        # ev as a small tie-breaker
-    i[which.max(score)]
-  }, integer(1))
-  # (#2) node-level confidence: mean co-association of a node's incident edges
-  #      (how robustly the node sits inside its community across the ensemble)
-  conf <- numeric(n)
-  for (e in seq_len(nrow(el))) { conf[el[e, 1]] <- conf[el[e, 1]] + coassoc[e]; conf[el[e, 2]] <- conf[el[e, 2]] + coassoc[e] }
-  deg <- igraph::degree(g); conf <- ifelse(deg > 0, conf / deg, 0)
-  list(membership = mem_c, leaders = leaders_freq, leaders_cent = leaders_cent,
-       lead_count = lead_count, confidence = conf, Q = igraph::modularity(g, mem_c))
-}
+# Uses the canonical exported lcdaGRASP::lcda_ecg() (no local re-definition).
 
 # ---- evaluate on canonical LFR ---------------------------------------------
-# Guard: when this file is sourced only to reuse lcda_ecg() (e.g. by 98_), skip
-# the evaluation/save below.
-if (!isTRUE(getOption("lcda_ecg_define_only"))) {
 set.seed(20260529)
 MUS    <- as.numeric(strsplit(Sys.getenv("ECG_MUS", "0.2,0.3,0.4,0.5"), ",")[[1]])
 NGRAPH <- as.integer(Sys.getenv("ECG_NGRAPH", "5"))
@@ -119,4 +71,3 @@ meta <- make_meta(
                   "n=500; pure-R IC not involved here (recovery only)."))
 save_dataset("lcda_ecg", list(per_graph = res, summary = summ), meta)
 cli::cli_alert_success("LCDA-ECG evaluation done.")
-}  # end guard

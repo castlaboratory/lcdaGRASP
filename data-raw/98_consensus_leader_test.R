@@ -16,9 +16,7 @@ if (!exists("save_dataset")) {
   source(hp[1])
 }
 suppressPackageStartupMessages({ library(igraph); library(dplyr) })
-options(lcda_ecg_define_only = TRUE)                     # source only the function, skip 97_'s eval
-source(file.path(PKG_DIR, "data-raw", "97_lcda_ecg.R"))
-options(lcda_ecg_define_only = FALSE)
+# lcda_ecg() comes from the installed lcdaGRASP package (loaded via 00_helpers).
 
 set.seed(20260529)
 MUS    <- as.numeric(strsplit(Sys.getenv("CLT_MUS", "0.1,0.2,0.3"), ",")[[1]])
@@ -59,7 +57,7 @@ for (mu in MUS) for (r in seq_len(NGRAPH)) {
   add <- function(method, mem, lead) { x <- leader_metrics(g, mem, lead, nb, MC, PIC)
     tibble::tibble(mu = mu, graph = r, method = method, coverage = x["coverage"], within_inf = x["within_inf"]) }
   rows[[length(rows)+1]] <- add("LCDA-ECG consensus-leader", ec$membership, ec$leaders)       # freq
-  rows[[length(rows)+1]] <- add("LCDA-ECG central-leader",   ec$membership, ec$leaders_cent)  # same comms!
+  rows[[length(rows)+1]] <- add("LCDA-ECG central-leader",   ec$membership, ec$leaders_central)  # same comms!
   rows[[length(rows)+1]] <- add("Leiden + central", mem_l, central_leaders(g, mem_l))
   if (!is.null(mem_e)) rows[[length(rows)+1]] <- add("ECG + central", mem_e, central_leaders(g, mem_e))
   cli::cli_alert("mu={mu} g={r} done")
