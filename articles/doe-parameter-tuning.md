@@ -19,7 +19,7 @@ response-surface strategy of \[Box & Wilson, 1951\]:
 
 The response is modularity $`Q`$ (best over $`B=50`$ GRASP iterations).
 
-**Generated.** 2026-05-27 with lcdaGRASP 0.2.0 (seed 424242).
+**Generated.** 2026-05-30 with lcdaGRASP 0.3.0 (seed 424242).
 
 **Screening limitations.**
 
@@ -50,23 +50,23 @@ knitr::kable(round(av, 4), caption = "Pooled ANOVA (factors ranked by F). 'netwo
 
 |                       |   Df |  Sum Sq | Mean Sq |    F value | Pr(\>F) |
 |:----------------------|-----:|--------:|--------:|-----------:|--------:|
-| network               |    3 | 14.7278 |  4.9093 | 38301.7678 |  0.0000 |
-| ac_code               |    1 |  0.0921 |  0.0921 |   718.5408 |  0.0000 |
-| as_code               |    1 |  0.0498 |  0.0498 |   388.4677 |  0.0000 |
-| centrality            |    2 |  0.0550 |  0.0275 |   214.7365 |  0.0000 |
-| ac_code:as_code       |    1 |  0.0170 |  0.0170 |   132.8380 |  0.0000 |
-| variant               |    1 |  0.0098 |  0.0098 |    76.3498 |  0.0000 |
-| as_code:centrality    |    2 |  0.0148 |  0.0074 |    57.5616 |  0.0000 |
-| ac_code:variant       |    1 |  0.0052 |  0.0052 |    40.7846 |  0.0000 |
-| ac_code:centrality    |    2 |  0.0034 |  0.0017 |    13.3487 |  0.0000 |
-| variant:centrality    |    2 |  0.0028 |  0.0014 |    10.8282 |  0.0000 |
-| as_code:variant       |    1 |  0.0012 |  0.0012 |     9.3142 |  0.0023 |
-| variant:similarity    |    2 |  0.0011 |  0.0006 |     4.4791 |  0.0114 |
-| as_code:similarity    |    2 |  0.0007 |  0.0003 |     2.6678 |  0.0696 |
-| similarity            |    2 |  0.0004 |  0.0002 |     1.4656 |  0.2311 |
-| ac_code:similarity    |    2 |  0.0002 |  0.0001 |     0.6587 |  0.5176 |
-| centrality:similarity |    4 |  0.0002 |  0.0001 |     0.4865 |  0.7457 |
-| Residuals             | 2850 |  0.3653 |  0.0001 |         NA |      NA |
+| network               |    3 | 14.6525 |  4.8842 | 38040.3343 |  0.0000 |
+| ac_code               |    1 |  0.0943 |  0.0943 |   734.3669 |  0.0000 |
+| as_code               |    1 |  0.0454 |  0.0454 |   353.2590 |  0.0000 |
+| centrality            |    2 |  0.0573 |  0.0286 |   223.1183 |  0.0000 |
+| ac_code:as_code       |    1 |  0.0180 |  0.0180 |   140.4759 |  0.0000 |
+| variant               |    1 |  0.0119 |  0.0119 |    92.6630 |  0.0000 |
+| as_code:centrality    |    2 |  0.0151 |  0.0075 |    58.6563 |  0.0000 |
+| ac_code:variant       |    1 |  0.0047 |  0.0047 |    36.7732 |  0.0000 |
+| as_code:variant       |    1 |  0.0020 |  0.0020 |    15.5765 |  0.0001 |
+| ac_code:centrality    |    2 |  0.0037 |  0.0018 |    14.2617 |  0.0000 |
+| variant:centrality    |    2 |  0.0032 |  0.0016 |    12.6115 |  0.0000 |
+| variant:similarity    |    2 |  0.0014 |  0.0007 |     5.2930 |  0.0051 |
+| as_code:similarity    |    2 |  0.0006 |  0.0003 |     2.4385 |  0.0875 |
+| similarity            |    2 |  0.0005 |  0.0003 |     2.1329 |  0.1187 |
+| centrality:similarity |    4 |  0.0003 |  0.0001 |     0.5135 |  0.7258 |
+| ac_code:similarity    |    2 |  0.0000 |  0.0000 |     0.0335 |  0.9671 |
+| Residuals             | 2850 |  0.3659 |  0.0001 |         NA |      NA |
 
 Pooled ANOVA (factors ranked by F). ‘network’ is a block. {.table}
 
@@ -113,11 +113,11 @@ d |>
 
 | centrality | similarity | variant |      Q |
 |:-----------|:-----------|:--------|-------:|
+| closeness  | dice       | 2       | 0.5153 |
 | eigen      | dice       | 2       | 0.5140 |
 | eigen      | jaccard    | 2       | 0.5140 |
+| closeness  | hpi        | 2       | 0.5138 |
 | eigen      | hpi        | 1       | 0.5137 |
-| eigen      | hpi        | 2       | 0.5135 |
-| closeness  | dice       | 2       | 0.5134 |
 
 Top categorical configurations by mean Q (pooled). {.table}
 

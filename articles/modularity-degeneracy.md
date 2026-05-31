@@ -29,17 +29,17 @@ knitr::kable(
 | karate            |   0.010 | 0.4020 |           33 |                   1 |    1.000 |
 | karate            |   0.020 | 0.4020 |           33 |                   1 |    1.000 |
 | dolphins          |   0.001 | 0.5259 |            4 |                   1 |    1.000 |
-| dolphins          |   0.005 | 0.5259 |           12 |                   4 |    0.845 |
-| dolphins          |   0.010 | 0.5259 |           28 |                   7 |    0.821 |
-| dolphins          |   0.020 | 0.5259 |           59 |                  15 |    0.798 |
+| dolphins          |   0.005 | 0.5259 |           12 |                   3 |    0.845 |
+| dolphins          |   0.010 | 0.5259 |           28 |                   6 |    0.821 |
+| dolphins          |   0.020 | 0.5259 |           59 |                  13 |    0.798 |
 | polbooks          |   0.001 | 0.5272 |           44 |                   2 |    0.980 |
 | polbooks          |   0.005 | 0.5272 |           48 |                   4 |    0.967 |
 | polbooks          |   0.010 | 0.5272 |           60 |                   6 |    0.931 |
 | polbooks          |   0.020 | 0.5272 |           60 |                   6 |    0.931 |
-| sbm_polblogs_like |   0.001 | 0.2093 |            3 |                   3 |    0.339 |
-| sbm_polblogs_like |   0.005 | 0.2093 |            6 |                   6 |    0.349 |
-| sbm_polblogs_like |   0.010 | 0.2093 |           19 |                  19 |    0.347 |
-| sbm_polblogs_like |   0.020 | 0.2093 |           44 |                  44 |    0.341 |
+| sbm_polblogs_like |   0.001 | 0.2286 |            1 |                   1 |       NA |
+| sbm_polblogs_like |   0.005 | 0.2286 |            1 |                   1 |       NA |
+| sbm_polblogs_like |   0.010 | 0.2286 |            8 |                   8 |    0.458 |
+| sbm_polblogs_like |   0.020 | 0.2286 |           29 |                  29 |    0.427 |
 
 Distinct near-best partitions and their similarity, per network and
 tolerance. {.table style="width:100%;"}

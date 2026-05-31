@@ -36,7 +36,7 @@ d$results |>
 | Dolphins |         5.0 |    0.581 |   0.741 |                80.0 |
 | Karate   |         3.0 |    0.840 |   0.598 |               100.0 |
 | Polbooks |         5.0 |    0.535 |   0.736 |                80.0 |
-| SBM_5    |         5.1 |    0.316 |   0.755 |                42.7 |
+| SBM_5    |         5.1 |    0.343 |   0.764 |                33.7 |
 
 Mean leader-score values and the fraction of leaders that change
 identity under the local NCE. {.table}

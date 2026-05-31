@@ -11,7 +11,7 @@ protocol.
 **Source.** Newman netdata collection (websites.umich.edu/~mejn) +
 igraph::make_graph(‘Zachary’)
 
-**Generated.** 2026-05-28 with lcdaGRASP 0.2.0, R version 4.6.0
+**Generated.** 2026-05-30 with lcdaGRASP 0.3.0, R version 4.6.0
 (2026-04-24) (seed 20260527, 30 reps).
 
 **Limitations.**
@@ -44,13 +44,13 @@ best <- res |>
 knitr::kable(best, caption = "Best LCDA Q over reps vs multi-restart Louvain/Leiden and literature best-known Q.")
 ```
 
-| network  | best_algo    | Q_best | Louvain_max | Leiden_max | Q_literature | kind          |
-|:---------|:-------------|-------:|------------:|-----------:|-------------:|:--------------|
-| dolphins | LCDA-GR 1    | 0.5285 |      0.5277 |     0.5285 |       0.5285 | best known    |
-| football | LCDA-GR 1    | 0.6046 |      0.6046 |     0.6046 |       0.6046 | best known    |
-| karate   | LCDA-GR 1    | 0.4198 |      0.4198 |     0.4198 |       0.4198 | exact optimum |
-| polblogs | LCDA-GRASP 1 | 0.4184 |      0.4271 |     0.4271 |       0.4271 | best known    |
-| polbooks | LCDA-GR 1    | 0.5272 |      0.5271 |     0.5272 |       0.5272 | best known    |
+| network  | best_algo | Q_best | Louvain_max | Leiden_max | Q_literature | kind          |
+|:---------|:----------|-------:|------------:|-----------:|-------------:|:--------------|
+| dolphins | LCDA-GR 1 | 0.5285 |      0.5277 |     0.5285 |       0.5285 | best known    |
+| football | LCDA-GR 1 | 0.6046 |      0.6046 |     0.6046 |       0.6046 | best known    |
+| karate   | LCDA-GR 1 | 0.4198 |      0.4198 |     0.4198 |       0.4198 | exact optimum |
+| polblogs | LCDA-GR 1 | 0.4190 |      0.4271 |     0.4271 |       0.4271 | best known    |
+| polbooks | LCDA-GR 1 | 0.5272 |      0.5271 |     0.5272 |       0.5272 | best known    |
 
 Best LCDA Q over reps vs multi-restart Louvain/Leiden and literature
 best-known Q. {.table}
@@ -124,8 +124,8 @@ bench$results |>
 
 | algo         | Q_mean |   Q_sd |  Q_max |
 |:-------------|-------:|-------:|-------:|
-| LCDA-GR 1    | 0.4159 | 0.0017 | 0.4179 |
-| LCDA-GR 2    | 0.4152 | 0.0013 | 0.4173 |
+| LCDA-GR 1    | 0.4163 | 0.0014 | 0.4190 |
+| LCDA-GR 2    | 0.4150 | 0.0015 | 0.4171 |
 | LCDA-GRASP 1 | 0.4156 | 0.0011 | 0.4184 |
 | LCDA-GRASP 2 | 0.4149 | 0.0009 | 0.4168 |
 
