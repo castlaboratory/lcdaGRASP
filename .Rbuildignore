@@ -8,6 +8,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.lintr$
+^vignettes/articles$
 ^cran-comments\.md$
 ^paper$
 ^\.gitignore$

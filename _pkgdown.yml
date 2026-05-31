@@ -23,31 +23,21 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: "Getting started"
+      - text: "Guides (package vignettes)"
       - text: Introduction to lcdaGRASP
         href: articles/lcdaGRASP-intro.html
       - text: "Ensemble consensus (LCDA-ECG)"
         href: articles/ensemble-consensus.html
-      - text: "-------"
-      - text: "Benchmarks & tuning"
       - text: Reproducing the paper's benchmarks
         href: articles/benchmark-reproduction.html
-      - text: "DoE parameter tuning"
-        href: articles/doe-parameter-tuning.html
       - text: "-------"
-      - text: "Robustness & analysis"
-      - text: "Robustness across regimes"
-        href: articles/robustness-lfr.html
-      - text: "Reactive convergence"
-        href: articles/reactive-convergence.html
-      - text: "Pool sensitivity"
-        href: articles/pool-sensitivity.html
-      - text: "Distributions / EDA"
-        href: articles/eda-distributions.html
-      - text: "Modularity degeneracy"
-        href: articles/modularity-degeneracy.html
-      - text: "Leader score: NCE alternatives"
-        href: articles/nce-leader-score.html
+      - text: "In-depth studies (paper supplement)"
+      - text: "Parameter tuning & reactive behaviour"
+        href: articles/tuning-and-reactive.html
+      - text: "Robustness, variance & degeneracy"
+        href: articles/robustness-and-limits.html
+      - text: "The leader score (NCE)"
+        href: articles/leader-score.html
 
 reference:
 - title: Algorithms

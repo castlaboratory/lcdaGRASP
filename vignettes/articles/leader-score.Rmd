@@ -1,10 +1,6 @@
 ---
 title: "The leader score: global vs community-conditioned NCE"
 output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{The leader score: global vs community-conditioned NCE}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
@@ -31,7 +27,7 @@ $$ I_{\text{local}}(v) = H_b\!\left(\frac{|\Gamma(v) \cap C(v)|}{|C(v)| - 1}\rig
 exposed in the package as `nce_local_score()`. We measure how often the
 designated leader **changes** when re-picked under the local score.
 
-```{r table, eval = have}
+```{r table, eval = have && has_gg}
 d$results |>
   dplyr::group_by(graph) |>
   dplyr::summarise(
