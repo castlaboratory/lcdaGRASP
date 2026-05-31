@@ -35,8 +35,9 @@ dir.create(EXTDATA_DIR, showWarnings = FALSE, recursive = TRUE)
 
 # Benchmark GML cache: prefer the repo-root data/benchmarks, else download.
 BENCH_DIR <- local({
-  cands <- c(file.path(dirname(PKG_DIR), "data", "benchmarks"),
-             "data/benchmarks", "../data/benchmarks")
+  cands <- c(file.path(PKG_DIR, "data-raw", "benchmarks"),
+             file.path(dirname(PKG_DIR), "data", "benchmarks"),
+             "data-raw/benchmarks", "data/benchmarks", "../data/benchmarks")
   hit <- cands[dir.exists(cands)]
   if (length(hit)) normalizePath(hit[1]) else {
     d <- file.path(dirname(PKG_DIR), "data", "benchmarks")
