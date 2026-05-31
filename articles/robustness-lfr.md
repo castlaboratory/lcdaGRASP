@@ -12,7 +12,7 @@ normalized mutual information (NMI) against the planted partition. $`Q`$
 alone cannot tell you whether the *recovered* partition is correct;
 ARI/NMI can.
 
-**Generated.** 2026-05-29, lcdaGRASP 0.2.0, 10 reps, n=500.
+**Generated.** 2026-05-31, lcdaGRASP 0.3.0, 10 reps, n=500.
 
 - Generator: canonical LFR (Lancichinetti-Fortunato-Radicchi 2008) via
   networkx 3.6.1 (.venv-lfr); tau1=2.5, tau2=1.5, avg_degree=12, comm in
@@ -43,7 +43,7 @@ ggplot(sm, aes(mu, NMI, colour = method, fill = method)) +
        subtitle = "Canonical LFR; higher is better",
        x = expression(mu~"(mixing parameter)"), y = "NMI") +
   theme_minimal(base_size = 10)
-#> Warning: Removed 56 rows containing missing values or values outside the scale range
+#> Warning: Removed 48 rows containing missing values or values outside the scale range
 #> (`geom_ribbon()`).
 ```
 
@@ -60,12 +60,11 @@ sm |>
 
 | method       |   0.2 |   0.4 |   0.6 |
 |:-------------|------:|------:|------:|
-| ECG          | 0.997 | 0.830 | 0.185 |
 | FastGreedy   | 0.810 | 0.429 | 0.093 |
-| LCDA-GR 1    | 0.944 | 0.575 | 0.122 |
+| LCDA-GR 1    | 0.946 | 0.594 | 0.125 |
 | LCDA-GRASP 1 | 0.948 | 0.491 | 0.115 |
-| Leiden       | 0.997 | 0.794 | 0.133 |
-| Louvain      | 0.997 | 0.751 | 0.132 |
+| Leiden       | 0.997 | 0.769 | 0.134 |
+| Louvain      | 0.997 | 0.740 | 0.129 |
 | Walktrap     | 0.995 | 0.697 | 0.190 |
 
 NMI vs the planted partition at low/medium/high mixing. {.table}
