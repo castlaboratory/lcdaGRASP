@@ -70,6 +70,7 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
   .check_unit(w_min, "w_min"); .check_unit(tau, "tau", lower = 1e-9)
   .check_range(alpha_c_range, "alpha_c_range"); .check_range(alpha_s_range, "alpha_s_range")
   if (!variant %in% c(1, 2)) cli::cli_abort("{.arg variant} must be 1 or 2.")
+  seed <- .check_seed(seed)
   if (!is.na(seed)) set.seed(seed)
   csr <- .as_csr(g)
   g   <- csr$igraph                                   # simplified, undirected
@@ -84,8 +85,8 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
     a_s <- stats::runif(1, alpha_s_range[1], alpha_s_range[2])
     sol <- lcda_construct(csr, a_c, a_s, variant = variant,
                           centrality = centrality, similarity = similarity)
-    sol <- lcda_repair(csr, sol)
-    sol <- lcda_local_search(csr, sol)
+    sol <- lcda_repair(csr, sol, centrality = centrality)
+    sol <- lcda_local_search(csr, sol, centrality = centrality)
     mem <- sol$membership
     coassoc <- coassoc + (mem[el[, 1]] == mem[el[, 2]])   # same-community indicator
     lead_count[sol$leaders] <- lead_count[sol$leaders] + 1L

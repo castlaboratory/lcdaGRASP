@@ -16,9 +16,7 @@ if (!exists("save_dataset")) {
   source(hp[1])
 }
 suppressPackageStartupMessages({ library(igraph); library(dplyr) })
-options(lcda_ecg_define_only = TRUE)
-source(file.path(PKG_DIR, "data-raw", "97_lcda_ecg.R"))
-options(lcda_ecg_define_only = FALSE)
+# lcda_ecg() comes from the installed lcdaGRASP package (loaded via 00_helpers).
 
 gae_membership <- function(g, k, epochs = 200, seed = 1) {
   py <- .venv_python(); if (is.na(py)) return(NULL)

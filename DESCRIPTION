@@ -1,8 +1,8 @@
 Package: lcdaGRASP
 Type: Package
 Title: GRASP and Reactive GRASP Algorithms for Joint Community and Leader Detection
-Version: 0.3.0
-Date: 2026-05-29
+Version: 0.3.1
+Date: 2026-05-31
 Authors@R: c(
     person("Andre", "Leite", email = "leite@de.ufpe.br", role = c("aut", "cre")),
     person("Raydonal", "Ospina", role = "aut"),
