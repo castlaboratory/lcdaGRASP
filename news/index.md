@@ -1,5 +1,20 @@
 # Changelog
 
+## lcdaGRASP 0.3.1
+
+### Fixes
+
+- [`lcda_ecg()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_ecg.md)
+  now passes the chosen `centrality` to the repair and local-search
+  steps (previously the consensus leader was always eigenvector-based).
+- `seed = NULL` (and `NA`) is accepted and means “leave the RNG
+  untouched”; invalid seeds are rejected with a clear message.
+- `data-raw/97_lcda_ecg.R` and the scripts that reused it now call the
+  exported
+  [`lcda_ecg()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_ecg.md)
+  instead of a private re-implementation, so the cached `lcda_ecg.rds`
+  reflects the canonical function (incl. `Q_consensus_weighted`).
+
 ## lcdaGRASP 0.3.0
 
 ### New features

@@ -25,7 +25,7 @@ on every substantive function.
 ``` r
 
 library(lcdaGRASP)
-#> lcdaGRASP 0.3.0 - GRASP / Reactive-GRASP for joint community-leader detection.
+#> lcdaGRASP 0.3.1 - GRASP / Reactive-GRASP for joint community-leader detection.
 #> Reference: Ospina et al. (2026), preprint. See `vignette('lcdaGRASP-intro')`.
 library(igraph)
 #> 
