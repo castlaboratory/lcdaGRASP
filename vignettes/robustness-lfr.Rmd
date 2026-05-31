@@ -78,7 +78,7 @@ The pool also lets us ask whether the LCDA leaders are useful *seeds*: we
 compare the expected Independent-Cascade spread from the detected leaders
 against an equal-size top-degree seed set, as a function of $\mu$.
 
-```{r leader, eval = have && has_gg && !is.null(d$results$leader_utility)}
+```{r leader, eval = have && has_gg && !is.null(d$results$leader_utility) && nrow(d$results$leader_utility) > 0}
 u <- d$results$leader_utility |>
   dplyr::group_by(mu) |>
   dplyr::summarise(adv_vs_degree = mean(adv_vs_degree),
