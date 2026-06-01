@@ -36,3 +36,11 @@ the input `construction` with updated `membership`, `Q`, and leaders.
 \description{
 First-improvement local search, with automatic VNMI dispatch for n > 300.
 }
+\examples{
+csr <- as_csr(igraph::make_graph("Zachary"))
+sol <- lcda_local_search(csr, lcda_construct(csr, 0.1, 0.3))
+sol$Q                          # modularity after local search
+}
+\seealso{
+[as_csr()], [lcda_construct()], [lcda_repair()].
+}

@@ -35,6 +35,7 @@ export(kruskal_then_permute)
 export(permutation_test)
 
 # --- helpers
+export(as_csr)
 export(as_graph)
 export(graph_from_edgelist_simple)
 export(lcda_data)

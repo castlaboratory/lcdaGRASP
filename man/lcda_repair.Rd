@@ -25,3 +25,12 @@ the input `construction` with its `leaders` field rebuilt.
 Repair: ensure every community has exactly one leader by recomputing
 centrality within the community and designating the top-scoring node.
 }
+\examples{
+csr <- as_csr(igraph::make_graph("Zachary"))
+sol <- lcda_construct(csr, alpha_c = 0.1, alpha_s = 0.3)
+sol <- lcda_repair(csr, sol)
+length(sol$leaders)            # one leader per community
+}
+\seealso{
+[as_csr()], [lcda_construct()], [lcda_local_search()].
+}
