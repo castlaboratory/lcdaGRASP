@@ -77,6 +77,7 @@ reference:
   - plot_reactive_pk
 - title: Graph constructors & data
   contents:
+  - as_csr
   - as_graph
   - graph_from_edgelist_simple
   - lcda_data

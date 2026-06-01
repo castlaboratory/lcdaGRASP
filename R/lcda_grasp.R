@@ -37,7 +37,35 @@
   )
 }
 
+#' Convert an igraph graph to the CSR representation used by the kernels
+#'
+#' The composable building blocks [lcda_construct()], [lcda_repair()], and
+#' [lcda_local_search()] operate on a compressed-sparse-row (CSR) view of the
+#' graph rather than on the igraph object directly. `as_csr()` builds that view:
+#' an undirected simple graph becomes a list of `indptr`/`indices`/`weights`
+#' (0-based, as the C++ kernels expect) together with the originating igraph.
+#' A numeric `weight` edge attribute, if present, is carried through (the
+#' kernels reduce exactly to the unweighted case when all weights are 1).
+#'
+#' @param graph an undirected [igraph::igraph] object. Multi-edges are collapsed
+#'   to a simple graph; directed graphs are not supported.
+#' @return a CSR list with elements `n`, `indptr`, `indices`, `weights`, and
+#'   `igraph`, suitable as the `csr` argument of [lcda_construct()],
+#'   [lcda_repair()], and [lcda_local_search()].
+#' @examples
+#' g <- igraph::make_graph("Zachary")
+#' csr <- as_csr(g)
+#' str(csr[c("n", "indptr", "indices")])
+#' @export
+as_csr <- function(graph) .as_csr(graph)
+
 # --- input validation helpers ----------------------------------------
+
+.check_csr <- function(csr) {
+  if (!is.list(csr) || !all(c("n", "indptr", "indices", "igraph") %in% names(csr)))
+    cli::cli_abort("{.arg csr} must be a CSR list as returned by {.fn as_csr}.")
+  invisible(csr)
+}
 
 .check_pos_int <- function(x, nm) {
   if (!is.numeric(x) || length(x) != 1L || !is.finite(x) || x < 1 || x != as.integer(x))
@@ -146,6 +174,15 @@ centrality_closeness <- function(csr) {
 #'
 #' @return list(membership, leaders, d) - membership a 1-based vector, leaders
 #'   a 1-based integer vector of leader indices, d the number of communities.
+#' @seealso [as_csr()] to build `csr`; [lcda_repair()] and [lcda_local_search()]
+#'   for the remaining pipeline stages; [lcda_grasp()] for the all-in-one driver.
+#' @examples
+#' g <- igraph::make_graph("Zachary")
+#' csr <- as_csr(g)
+#' sol <- lcda_construct(csr, alpha_c = 0.1, alpha_s = 0.3)
+#' sol <- lcda_repair(csr, sol)
+#' sol <- lcda_local_search(csr, sol)
+#' c(communities = sol$d, leaders = length(sol$leaders))
 #' @export
 lcda_construct <- function(csr,
                            alpha_c, alpha_s,
@@ -153,7 +190,9 @@ lcda_construct <- function(csr,
                            centrality = "eigen",
                            similarity = "hpi",
                            verbose = FALSE) {
+  .check_csr(csr)
   if (!variant %in% c(1, 2)) cli::cli_abort("{.arg variant} must be 1 or 2, not {.val {variant}}.")
+  .check_unit(alpha_c, "alpha_c"); .check_unit(alpha_s, "alpha_s")
   n <- csr$n
   membership <- rep(NA_integer_, n)
   leaders <- integer(0)
@@ -219,8 +258,15 @@ lcda_construct <- function(csr,
 #'   leader is consistent with the chosen measure.
 #' @param verbose logical; emit a cli trace.
 #' @return the input `construction` with its `leaders` field rebuilt.
+#' @seealso [as_csr()], [lcda_construct()], [lcda_local_search()].
+#' @examples
+#' csr <- as_csr(igraph::make_graph("Zachary"))
+#' sol <- lcda_construct(csr, alpha_c = 0.1, alpha_s = 0.3)
+#' sol <- lcda_repair(csr, sol)
+#' length(sol$leaders)            # one leader per community
 #' @export
 lcda_repair <- function(csr, construction, centrality = "eigen", verbose = FALSE) {
+  .check_csr(csr)
   mem <- construction$membership          # 1-based community ids
   cent_fn <- .dispatch_centrality(centrality)
   # Iterate the community ids actually present (iterating 0..d-1 would mix
@@ -256,11 +302,17 @@ lcda_repair <- function(csr, construction, centrality = "eigen", verbose = FALSE
 #' @param vnmi_eps minimum per-move modularity gain accepted by VNMI.
 #' @param verbose logical; emit a cli trace.
 #' @return the input `construction` with updated `membership`, `Q`, and leaders.
+#' @seealso [as_csr()], [lcda_construct()], [lcda_repair()].
+#' @examples
+#' csr <- as_csr(igraph::make_graph("Zachary"))
+#' sol <- lcda_local_search(csr, lcda_construct(csr, 0.1, 0.3))
+#' sol$Q                          # modularity after local search
 #' @export
 lcda_local_search <- function(csr, construction, centrality = "eigen",
                               n_threshold = 300,
                               vnmi_n_prime = 300, vnmi_eps = 1e-4,
                               verbose = FALSE) {
+  .check_csr(csr)
   mem0 <- as.integer(construction$membership - 1L)   # 0-based for C++
   d    <- as.integer(construction$d)
   use_vnmi <- csr$n > n_threshold

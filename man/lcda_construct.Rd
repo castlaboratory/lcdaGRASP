@@ -36,3 +36,15 @@ list(membership, leaders, d) - membership a 1-based vector, leaders
 \description{
 LCDA construction - variant 1 (centrality computed once) or 2 (adaptive).
 }
+\examples{
+g <- igraph::make_graph("Zachary")
+csr <- as_csr(g)
+sol <- lcda_construct(csr, alpha_c = 0.1, alpha_s = 0.3)
+sol <- lcda_repair(csr, sol)
+sol <- lcda_local_search(csr, sol)
+c(communities = sol$d, leaders = length(sol$leaders))
+}
+\seealso{
+[as_csr()] to build `csr`; [lcda_repair()] and [lcda_local_search()]
+  for the remaining pipeline stages; [lcda_grasp()] for the all-in-one driver.
+}
