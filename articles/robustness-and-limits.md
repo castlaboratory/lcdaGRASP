@@ -26,7 +26,7 @@ communities dissolve — and measure $`Q`$, the adjusted Rand index (ARI)
 partition. $`Q`$ alone cannot tell you whether the *recovered* partition
 is correct; ARI/NMI can.
 
-**Generated.** 2026-05-31, lcdaGRASP 0.3.0, 10 reps, n=500.
+**Generated.** 2026-05-31, lcdaGRASP 0.3.1, 10 reps, n=500.
 
 - Generator: canonical LFR (Lancichinetti-Fortunato-Radicchi 2008) via
   networkx 3.6.1 (.venv-lfr); tau1=2.5, tau2=1.5, avg_degree=12, comm in
@@ -123,11 +123,7 @@ ggplot(u, aes(mu, adv_vs_degree)) +
        subtitle = "Above zero: LCDA leaders out-spread top-degree of the same size",
        x = expression(mu), y = "IC-spread advantage (LCDA − top-degree)") +
   theme_minimal(base_size = 10)
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
-#> (`geom_ribbon()`).
 ```
-
-![](robustness-and-limits_files/figure-html/lfr-leader-1.png)
 
 The leaders always beat a random seed set, but they do **not**
 out-spread a top-degree set on LFR; any edge is confined to the

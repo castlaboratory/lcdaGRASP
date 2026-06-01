@@ -45,7 +45,7 @@ central composite design (CCD) to locate the optimum by a second-order
 model. The response is modularity $`Q`$ (best over $`B = 50`$ GRASP
 iterations).
 
-**Generated.** 2026-05-30 with lcdaGRASP 0.3.0 (seed 424242).
+**Generated.** 2026-05-31 with lcdaGRASP 0.3.1 (seed 424242).
 
 **Screening limitations.**
 
@@ -276,7 +276,7 @@ $`y/m \in \{1,2,3,5,10\}`$, $`B \in \{60,120,240\}`$ and measure best
 $`Q`$ and the **lex-decisive fraction**: how often the $`H`$ tie-break
 actually changed the incumbent.
 
-**Generated.** 2026-05-30, lcdaGRASP 0.3.0, 5 reps on SBM(300, 5 blocks,
+**Generated.** 2026-05-31, lcdaGRASP 0.3.1, 5 reps on SBM(300, 5 blocks,
 p_in=0.12, p_out=0.02).
 
 ``` r

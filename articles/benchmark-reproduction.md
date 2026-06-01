@@ -11,7 +11,7 @@ protocol.
 **Source.** Newman netdata collection (websites.umich.edu/~mejn) +
 igraph::make_graph(‘Zachary’)
 
-**Generated.** 2026-05-30 with lcdaGRASP 0.3.0, R version 4.6.0
+**Generated.** 2026-05-31 with lcdaGRASP 0.3.1, R version 4.6.0
 (2026-04-24) (seed 20260527, 30 reps).
 
 **Limitations.**
