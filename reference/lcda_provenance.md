@@ -3,11 +3,12 @@
 Reports the reproducibility metadata for one of the \[lcda_data()\]
 datasets: the package version that generated it, the generation date,
 and its SHA-256 checksum looked up from the \`SHA256SUMS\` manifest
-shipped alongside the data (so it matches \`shasum -a 256 -c
-inst/extdata/SHA256SUMS\`). Use it in analyses and vignettes to pin
-exactly which version of a dataset a result came from. The version is
-also enforced by the package's own tests, so a shipped dataset always
-matches the installed \`packageVersion("lcdaGRASP")\`.
+shipped alongside the data. The manifest stores bare file names, so
+verify it from inside the data directory: \`cd inst/extdata && shasum -a
+256 -c SHA256SUMS\`. Use it in analyses and vignettes to pin exactly
+which version of a dataset a result came from. The version is also
+enforced by the package's own tests, so a shipped dataset always matches
+the installed \`packageVersion("lcdaGRASP")\`.
 
 ## Usage
 
