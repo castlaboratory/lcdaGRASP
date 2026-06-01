@@ -58,7 +58,7 @@ choice, recorded here so benchmark results are interpreted accordingly."><meta p
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Closeness centrality - delegates to igraph::closeness. On a disconnected graph, plain closeness is ill-defined across components (nodes in tiny components score spuriously high, distorting leader selection); we fall back to harmonic centrality, the robust generalisation that handles unreachable pairs (Boldi &amp; Vigna 2014). Note the two are NOT identical even on a connected graph – closeness inverts the mean distance, harmonic averages the inverse distances – so on disconnected inputs (e.g. PolBlogs, and the frequently-disconnected induced subgraphs of variant 2) the selected leader may differ from a per-component closeness; this is a deliberate robustness choice, recorded here so benchmark results are interpreted accordingly.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/castlaboratory/lcdaGRASP/blob/v0.3.1/R/lcda_grasp.R" class="external-link"><code>R/lcda_grasp.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/castlaboratory/lcdaGRASP/blob/main/R/lcda_grasp.R" class="external-link"><code>R/lcda_grasp.R</code></a></small>
       <div class="d-none name"><code>centrality_closeness.Rd</code></div>
     </div>
 
