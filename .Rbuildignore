@@ -10,6 +10,8 @@
 ^\.lintr$
 ^vignettes/articles$
 ^cran-comments\.md$
+^RELEASE\.md$
+^SHA256SUMS$
 ^paper$
 ^\.gitignore$
 ^\.git$
