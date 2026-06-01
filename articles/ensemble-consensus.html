@@ -187,6 +187,36 @@ and its recovery plateau by
 concentration of the Reactive update.</p>
 </div>
 <div class="section level2">
+<h2 id="reproducibility-and-data-provenance">Reproducibility and data provenance<a class="anchor" aria-label="anchor" href="#reproducibility-and-data-provenance"></a>
+</h2>
+<p>Every figure above is read from datasets shipped with the package;
+nothing is simulated at build time. Each dataset records the package
+version and date it was generated and ships with a SHA-256 checksum
+(matching <code>inst/extdata/SHA256SUMS</code>):</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lcda_ecg"</span>, <span class="st">"overlap_lcda_ecg"</span>, <span class="st">"stability_pool"</span><span class="op">)</span>,</span>
+<span>                      <span class="va">lcda_provenance</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            dataset pkg_version generated_on</span></span>
+<span><span class="co">#&gt; 1         lcda_ecg       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt; 2 overlap_lcda_ecg       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt; 3   stability_pool       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt;                                                             sha256</span></span>
+<span><span class="co">#&gt; 1 172581aeea1a12d65fc8941a43bb6bb746db032c39efe30a5bb18975330a98e8</span></span>
+<span><span class="co">#&gt; 2 4ef193c4d6be50dac15a62599cb41e34a79dfef47103f21d44d5713ed7dc7250</span></span>
+<span><span class="co">#&gt; 3 a0d9318110e5a826fb9711e6bd54a9a6091dee28218f1b4a9d7a4a90d6cb5386</span></span></code></pre></div>
+<p>Regenerate with <code>data-raw/97_lcda_ecg.R</code>,
+<code>data-raw/99_overlap_lcda_ecg.R</code> and
+<code>data-raw/100_stability_pool.R</code> (each fixes a single
+documented seed).</p>
+<p><strong>Scope and honest reading.</strong> LCDA-ECG is
+<em>competitive with</em> ECG — which remains marginally ahead on pure
+recovery — and overtakes Leiden only at high mixing
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\mu = 0.5</annotation></semantics></math>).
+The overlapping-community result is a <em>consistency check</em>
+(overlap nodes are structural bridges), not a validation against planted
+overlap, which the disjoint LFR generator does not provide.</p>
+</div>
+<div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <ul>

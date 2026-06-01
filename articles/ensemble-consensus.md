@@ -115,6 +115,38 @@ partition and its recovery plateau by $`B\approx 32`$ — a
 stability-based stopping rule, consistent with the asymptotic
 concentration of the Reactive update.
 
+## Reproducibility and data provenance
+
+Every figure above is read from datasets shipped with the package;
+nothing is simulated at build time. Each dataset records the package
+version and date it was generated and ships with a SHA-256 checksum
+(matching `inst/extdata/SHA256SUMS`):
+
+``` r
+
+do.call(rbind, lapply(c("lcda_ecg", "overlap_lcda_ecg", "stability_pool"),
+                      lcda_provenance))
+#>            dataset pkg_version generated_on
+#> 1         lcda_ecg       0.3.1   2026-05-31
+#> 2 overlap_lcda_ecg       0.3.1   2026-05-31
+#> 3   stability_pool       0.3.1   2026-05-31
+#>                                                             sha256
+#> 1 172581aeea1a12d65fc8941a43bb6bb746db032c39efe30a5bb18975330a98e8
+#> 2 4ef193c4d6be50dac15a62599cb41e34a79dfef47103f21d44d5713ed7dc7250
+#> 3 a0d9318110e5a826fb9711e6bd54a9a6091dee28218f1b4a9d7a4a90d6cb5386
+```
+
+Regenerate with `data-raw/97_lcda_ecg.R`,
+`data-raw/99_overlap_lcda_ecg.R` and `data-raw/100_stability_pool.R`
+(each fixes a single documented seed).
+
+**Scope and honest reading.** LCDA-ECG is *competitive with* ECG — which
+remains marginally ahead on pure recovery — and overtakes Leiden only at
+high mixing ($`\mu = 0.5`$). The overlapping-community result is a
+*consistency check* (overlap nodes are structural bridges), not a
+validation against planted overlap, which the disjoint LFR generator
+does not provide.
+
 ## References
 
 - Poulin, V., & Théberge, F. (2019). Ensemble clustering for graphs.

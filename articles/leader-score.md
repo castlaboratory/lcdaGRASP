@@ -64,6 +64,31 @@ and
 precisely so this comparison is part of the contribution rather than
 buried.
 
+## Reproducibility and data provenance
+
+The comparison above is read from a dataset shipped with the package;
+nothing is re-run at build time. It records the package version and
+generation date and ships with a SHA-256 checksum (matching
+`inst/extdata/SHA256SUMS`):
+
+``` r
+
+lcda_provenance("nce_alternatives")
+#>            dataset pkg_version generated_on
+#> 1 nce_alternatives       0.3.1   2026-05-31
+#>                                                             sha256
+#> 1 4c84047682a77fd82555cc1b791668406d186afdecfa3ef453e3c2379c878d09
+```
+
+Regenerate with `data-raw/80_nce.R` (single documented seed).
+
+**Honest reading.** The global-vs-community-conditioned NCE comparison
+is a *structural* contrast of two exported scores, not a
+downstream-utility claim; relatedly, the lexicographic $`H`$ tie-break
+is empirically never decisive (it fired in $`0\%`$ of iterations across
+the pool-sensitivity sweep), so $`H`$ acts as a tie-breaking safeguard
+rather than a search driver.
+
 ## References
 
 - Ospina, R., Silva, G., Matos Junior, F. J., Leite, A., & Ochi, L. S.

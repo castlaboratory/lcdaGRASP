@@ -142,6 +142,33 @@ Political Blogs: all four variants trail the best baseline by ~2%.
 3.  **Coverage gap**: on the only large network the methods trail
     Louvain/Leiden by ~2% — the advantage is benchmark-dependent.
 
+## Reproducibility and data provenance
+
+The numbers above are read from datasets shipped with the package;
+nothing is re-run at build time. Each dataset records the package
+version and date it was generated and ships with a SHA-256 checksum
+(matching `inst/extdata/SHA256SUMS`):
+
+``` r
+
+do.call(rbind, lapply(c("repro_benchmarks", "repro_summary"), lcda_provenance))
+#>            dataset pkg_version generated_on
+#> 1 repro_benchmarks       0.3.1   2026-05-31
+#> 2    repro_summary       0.3.1   2026-05-31
+#>                                                             sha256
+#> 1 566986748aa3a254b96255249b32dbbef3aa66cf21699e4befad6b2dd44b617d
+#> 2 0a140370d6b7ce2272808592c0c82d3945a4ae21b328638c2cc3ba18f77cdbbe
+```
+
+Regenerate with `data-raw/10_repro_benchmarks.R` (single documented
+seed, 30 restarts).
+
+**Honest reading.** On the four small networks the proposed methods
+*match* a fully tuned multi-restart Louvain/Leiden (they reach the exact
+optimum where one is known), and they trail by ~2% on the only large
+network (Political Blogs). The contribution is the joint leader
+designation at no modularity cost, not a modularity win.
+
 ## References
 
 - Blondel, V. D., Guillaume, J.-L., Lambiotte, R., & Lefebvre, E.

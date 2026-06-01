@@ -97,3 +97,5 @@ The non-parametric procedure used in the paper’s experiments.
   simple.
 - [`lcda_data()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_data.md)
   : Precomputed simulation datasets
+- [`lcda_provenance()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_provenance.md)
+  : Provenance of a shipped dataset (version, date, checksum)

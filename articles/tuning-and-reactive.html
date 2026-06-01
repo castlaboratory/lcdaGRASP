@@ -1139,9 +1139,15 @@ plateau: report a <em>region</em>, not a point.</li>
 <li>
 <strong>The lexicographic
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>H</mi><annotation encoding="application/x-tex">H</annotation></semantics></math>
-tie-break rarely binds</strong> in continuous
+tie-break essentially never binds</strong> in continuous
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
-space.</li>
+space: across all 375
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>B</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(m, y, B)</annotation></semantics></math>
+configurations in <code>pool_sensitivity</code>, the fraction of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>H</mi><annotation encoding="application/x-tex">H</annotation></semantics></math>-decisive
+iterations was
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0\%</annotation></semantics></math>
+in every cell.</li>
 <li>
 <strong>The Reactive update concentrates well before
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>=</mo><mn>150</mn></mrow><annotation encoding="application/x-tex">B = 150</annotation></semantics></math></strong>,
@@ -1150,6 +1156,33 @@ does not translate into a meaningful
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
 gain, because the underlying surface is flat.</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="reproducibility-and-data-provenance">Reproducibility and data provenance<a class="anchor" aria-label="anchor" href="#reproducibility-and-data-provenance"></a>
+</h2>
+<p>Every figure and table here is read from datasets shipped with the
+package; nothing is simulated at build time. Each records the package
+version and generation date and ships with a SHA-256 checksum (matching
+<code>inst/extdata/SHA256SUMS</code>):</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"doe_screening"</span>, <span class="st">"doe_rsm"</span>, <span class="st">"pool_sensitivity"</span>,</span>
+<span>                        <span class="st">"prop6_summary"</span>, <span class="st">"prop6_trajectories"</span><span class="op">)</span>, <span class="va">lcda_provenance</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;              dataset pkg_version generated_on</span></span>
+<span><span class="co">#&gt; 1      doe_screening       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt; 2            doe_rsm       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt; 3   pool_sensitivity       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt; 4      prop6_summary       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt; 5 prop6_trajectories       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt;                                                             sha256</span></span>
+<span><span class="co">#&gt; 1 c234866d721849cef733b649fe45b38266dd57f31fb560ae538f399ae9652651</span></span>
+<span><span class="co">#&gt; 2 d99ff5f6b05eb69362af64453c7fb77612fc1e2c3250c9e68e0deb49b9a78d17</span></span>
+<span><span class="co">#&gt; 3 e7cf34cf748280eae1dfb042a7e6ee9fa67fd6cb6b99b36121d170388d1f38b6</span></span>
+<span><span class="co">#&gt; 4 cdd1df0582a9edc1cf006e757bdfad140a3833e79316503d5babee3cb5584059</span></span>
+<span><span class="co">#&gt; 5 534f7e98fa547273eb701acb1a4e9937851bf1152c8f73fd01258161b2cbb6eb</span></span></code></pre></div>
+<p>Regenerate with <code>data-raw/20_doe_experiment.R</code>,
+<code>data-raw/50_pool_sensitivity.R</code> and
+<code>data-raw/40_prop6.R</code> (each fixes a single documented
+seed).</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

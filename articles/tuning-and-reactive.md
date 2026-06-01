@@ -452,12 +452,43 @@ moderate.
 - **The defaults are reasonable but not uniquely optimal.** Both the
   `(alpha_c, alpha_s)` response surface and the `(m, y, B)` sweep show a
   flat near-optimal plateau: report a *region*, not a point.
-- **The lexicographic $`H`$ tie-break rarely binds** in continuous $`Q`$
-  space.
+- **The lexicographic $`H`$ tie-break essentially never binds** in
+  continuous $`Q`$ space: across all 375 $`(m, y, B)`$ configurations in
+  `pool_sensitivity`, the fraction of $`H`$-decisive iterations was
+  $`0\%`$ in every cell.
 - **The Reactive update concentrates well before $`B = 150`$**, and its
   empirical winner tracks the best-mean pair — but concentration does
   not translate into a meaningful $`Q`$ gain, because the underlying
   surface is flat.
+
+## Reproducibility and data provenance
+
+Every figure and table here is read from datasets shipped with the
+package; nothing is simulated at build time. Each records the package
+version and generation date and ships with a SHA-256 checksum (matching
+`inst/extdata/SHA256SUMS`):
+
+``` r
+
+do.call(rbind, lapply(c("doe_screening", "doe_rsm", "pool_sensitivity",
+                        "prop6_summary", "prop6_trajectories"), lcda_provenance))
+#>              dataset pkg_version generated_on
+#> 1      doe_screening       0.3.1   2026-05-31
+#> 2            doe_rsm       0.3.1   2026-05-31
+#> 3   pool_sensitivity       0.3.1   2026-05-31
+#> 4      prop6_summary       0.3.1   2026-05-31
+#> 5 prop6_trajectories       0.3.1   2026-05-31
+#>                                                             sha256
+#> 1 c234866d721849cef733b649fe45b38266dd57f31fb560ae538f399ae9652651
+#> 2 d99ff5f6b05eb69362af64453c7fb77612fc1e2c3250c9e68e0deb49b9a78d17
+#> 3 e7cf34cf748280eae1dfb042a7e6ee9fa67fd6cb6b99b36121d170388d1f38b6
+#> 4 cdd1df0582a9edc1cf006e757bdfad140a3833e79316503d5babee3cb5584059
+#> 5 534f7e98fa547273eb701acb1a4e9937851bf1152c8f73fd01258161b2cbb6eb
+```
+
+Regenerate with `data-raw/20_doe_experiment.R`,
+`data-raw/50_pool_sensitivity.R` and `data-raw/40_prop6.R` (each fixes a
+single documented seed).
 
 ## References
 
