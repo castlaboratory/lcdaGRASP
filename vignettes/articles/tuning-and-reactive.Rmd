@@ -323,10 +323,27 @@ $Q$ surface over the pool parameters is flat, so concentrating onto the
 - **The defaults are reasonable but not uniquely optimal.** Both the
   `(alpha_c, alpha_s)` response surface and the `(m, y, B)` sweep show a flat
   near-optimal plateau: report a *region*, not a point.
-- **The lexicographic $H$ tie-break rarely binds** in continuous $Q$ space.
+- **The lexicographic $H$ tie-break essentially never binds** in continuous
+  $Q$ space: across all 375 $(m, y, B)$ configurations in `pool_sensitivity`,
+  the fraction of $H$-decisive iterations was $0\%$ in every cell.
 - **The Reactive update concentrates well before $B = 150$**, and its
   empirical winner tracks the best-mean pair --- but concentration does not
   translate into a meaningful $Q$ gain, because the underlying surface is flat.
+
+# Reproducibility and data provenance
+
+Every figure and table here is read from datasets shipped with the package;
+nothing is simulated at build time. Each records the package version and
+generation date and ships with a SHA-256 checksum (matching
+`inst/extdata/SHA256SUMS`):
+
+```{r provenance}
+do.call(rbind, lapply(c("doe_screening", "doe_rsm", "pool_sensitivity",
+                        "prop6_summary", "prop6_trajectories"), lcda_provenance))
+```
+
+Regenerate with `data-raw/20_doe_experiment.R`, `data-raw/50_pool_sensitivity.R`
+and `data-raw/40_prop6.R` (each fixes a single documented seed).
 
 # References
 

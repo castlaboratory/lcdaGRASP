@@ -69,3 +69,42 @@ lcda_data <- function(name = NULL) {
   }
   readRDS(path)
 }
+
+#' Provenance of a shipped dataset (version, date, checksum)
+#'
+#' Reports the reproducibility metadata for one of the [lcda_data()] datasets:
+#' the package version that generated it, the generation date, and its SHA-256
+#' checksum looked up from the `SHA256SUMS` manifest shipped alongside the data
+#' (so it matches `shasum -a 256 -c inst/extdata/SHA256SUMS`). Use it in
+#' analyses and vignettes to pin exactly which version of a dataset a result
+#' came from. The version is also enforced by the package's own tests, so a
+#' shipped dataset always matches the installed `packageVersion("lcdaGRASP")`.
+#'
+#' @param name dataset name (without the `.rds` extension), as in [lcda_data()].
+#' @return a one-row data frame with columns `dataset`, `pkg_version`,
+#'   `generated_on`, and `sha256`; or `NULL` (invisibly) if the dataset is not
+#'   installed.
+#' @seealso [lcda_data()]
+#' @examples
+#' lcda_provenance("repro_summary")
+#' @export
+lcda_provenance <- function(name) {
+  d <- lcda_data(name)
+  if (is.null(d)) return(invisible(NULL))
+  m <- d$meta
+  field <- function(x) if (is.null(x)) NA_character_ else as.character(x)[1]
+  sha <- NA_character_
+  sums <- system.file("extdata", "SHA256SUMS", package = "lcdaGRASP")
+  if (nzchar(sums) && file.exists(sums)) {
+    L <- readLines(sums, warn = FALSE)
+    hit <- L[grepl(paste0("[ /]", name, "\\.rds$"), L)]
+    if (length(hit)) sha <- sub("[[:space:]].*$", "", hit[1])
+  }
+  data.frame(
+    dataset      = name,
+    pkg_version  = field(m$pkg_version),
+    generated_on = field(m$generated_on),
+    sha256       = sha,
+    stringsAsFactors = FALSE
+  )
+}

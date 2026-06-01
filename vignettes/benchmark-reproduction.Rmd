@@ -120,6 +120,25 @@ bench$results |>
 3. **Coverage gap**: on the only large network the methods trail Louvain/Leiden by
    ~2% --- the advantage is benchmark-dependent.
 
+# Reproducibility and data provenance
+
+The numbers above are read from datasets shipped with the package; nothing is
+re-run at build time. Each dataset records the package version and date it was
+generated and ships with a SHA-256 checksum (matching `inst/extdata/SHA256SUMS`):
+
+```{r provenance}
+do.call(rbind, lapply(c("repro_benchmarks", "repro_summary"), lcda_provenance))
+```
+
+Regenerate with `data-raw/10_repro_benchmarks.R` (single documented seed,
+30 restarts).
+
+**Honest reading.** On the four small networks the proposed methods *match* a
+fully tuned multi-restart Louvain/Leiden (they reach the exact optimum where one
+is known), and they trail by ~2% on the only large network (Political Blogs).
+The contribution is the joint leader designation at no modularity cost, not a
+modularity win.
+
 # References
 
 - Blondel, V. D., Guillaume, J.-L., Lambiotte, R., & Lefebvre, E. (2008).

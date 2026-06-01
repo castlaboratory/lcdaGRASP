@@ -81,6 +81,7 @@ reference:
   - as_graph
   - graph_from_edgelist_simple
   - lcda_data
+  - lcda_provenance
 
 footer:
   structure:
