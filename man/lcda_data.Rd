@@ -31,6 +31,8 @@ Available datasets (name -> contents):
   \item{`lfr_robustness`}{Q and ARI across the LFR-like mixing sweep.}
   \item{`prop6_summary`, `prop6_trajectories`}{Reactive-update concentration.}
   \item{`pool_sensitivity`}{`(m, y, B)` grid for LCDA-GR.}
+  \item{`vnmi_nprime`}{VNMI candidate-subset size `n'` sweep: modularity and
+    local-search time vs `n'` across density regimes.}
   \item{`degeneracy`}{Near-best partition counts and pairwise NMI.}
   \item{`eda_replicates`}{Replicated `(Q, H)` for exploratory analysis.}
   \item{`nce_alternatives`}{Global vs community-conditioned NCE leaders.}
