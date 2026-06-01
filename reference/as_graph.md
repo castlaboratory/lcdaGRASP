@@ -24,7 +24,7 @@ an undirected igraph object.
 ``` r
 el <- matrix(c(1, 2, 2, 3, 3, 1), ncol = 2, byrow = TRUE)
 as_graph(el)
-#> IGRAPH 85d023c U--- 3 3 -- 
-#> + edges from 85d023c:
+#> IGRAPH 8ec5847 U--- 3 3 -- 
+#> + edges from 8ec5847:
 #> [1] 1--2 1--3 2--3
 ```
