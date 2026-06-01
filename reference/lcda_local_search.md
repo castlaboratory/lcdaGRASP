@@ -52,3 +52,16 @@ lcda_local_search(
 
 the input \`construction\` with updated \`membership\`, \`Q\`, and
 leaders.
+
+## See also
+
+\[as_csr()\], \[lcda_construct()\], \[lcda_repair()\].
+
+## Examples
+
+``` r
+csr <- as_csr(igraph::make_graph("Zachary"))
+sol <- lcda_local_search(csr, lcda_construct(csr, 0.1, 0.3))
+sol$Q                          # modularity after local search
+#> [1] 0.3717949
+```

@@ -168,6 +168,9 @@ The non-parametric procedure used in the paper’s experiments.
 
 ## Graph constructors & data
 
+- [`as_csr()`](https://castlaboratory.github.io/lcdaGRASP/reference/as_csr.md)
+  : Convert an igraph graph to the CSR representation used by the
+  kernels
 - [`as_graph()`](https://castlaboratory.github.io/lcdaGRASP/reference/as_graph.md)
   : Coerce a variety of inputs to igraph.
 - [`graph_from_edgelist_simple()`](https://castlaboratory.github.io/lcdaGRASP/reference/graph_from_edgelist_simple.md)

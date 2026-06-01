@@ -51,3 +51,22 @@ lcda_construct(
 
 list(membership, leaders, d) - membership a 1-based vector, leaders a
 1-based integer vector of leader indices, d the number of communities.
+
+## See also
+
+\[as_csr()\] to build \`csr\`; \[lcda_repair()\] and
+\[lcda_local_search()\] for the remaining pipeline stages;
+\[lcda_grasp()\] for the all-in-one driver.
+
+## Examples
+
+``` r
+g <- igraph::make_graph("Zachary")
+csr <- as_csr(g)
+sol <- lcda_construct(csr, alpha_c = 0.1, alpha_s = 0.3)
+sol <- lcda_repair(csr, sol)
+sol <- lcda_local_search(csr, sol)
+c(communities = sol$d, leaders = length(sol$leaders))
+#> communities     leaders 
+#>           2           2 
+```
