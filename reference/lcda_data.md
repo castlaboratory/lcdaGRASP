@@ -78,10 +78,16 @@ Available datasets (name -\> contents):
 
   Recovery and runtime up to n = 5e4 (synthetic LFR).
 
-- \`realnet_amazon\`:
+- \`realnet_amazon\`, \`realnet_coauthor\`:
 
-  Large real network with ground truth: modularity Q and recovery
-  (NMI/ARI vs product categories) on Amazon-Computers.
+  Large real networks with ground truth: modularity Q and recovery
+  (NMI/ARI vs labels) on Amazon-Computers (co-purchase) and
+  Coauthor-Physics (co-authorship).
+
+- \`openalex_leaders\`:
+
+  Leader validation against an external citation signal on an OpenAlex
+  co-authorship graph.
 
 - \`gnn_baseline\`:
 
@@ -110,7 +116,7 @@ Available datasets (name -\> contents):
 
 ``` r
 lcda_data()                       # list what is available
-#> # A tibble: 26 × 1
+#> # A tibble: 28 × 1
 #>    dataset              
 #>    <chr>                
 #>  1 blogs_table9         
@@ -123,7 +129,7 @@ lcda_data()                       # list what is available
 #>  8 eda_replicates       
 #>  9 gnn_baseline         
 #> 10 largescale           
-#> # ℹ 16 more rows
+#> # ℹ 18 more rows
 if (FALSE) { # \dontrun{
 d <- lcda_data("repro_summary")
 d$meta$limitations
