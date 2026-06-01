@@ -29,7 +29,9 @@
 #'     `consensus_leader_test`}{LCDA-ECG ensemble consensus: LFR recovery,
 #'     overlapping/bridge nodes, pool-stability stopping rule, and the
 #'     consensus-vs-central leader comparison.}
-#'   \item{`largescale`}{Recovery and runtime up to n = 5e4.}
+#'   \item{`largescale`}{Recovery and runtime up to n = 5e4 (synthetic LFR).}
+#'   \item{`realnet_amazon`}{Large real network with ground truth: modularity Q
+#'     and recovery (NMI/ARI vs product categories) on Amazon-Computers.}
 #'   \item{`gnn_baseline`}{Graph-auto-encoder baseline (true-k and auto-k) vs
 #'     classical methods on LFR.}
 #'   \item{`weighted_demo`}{Weighted-graph demonstration (weights aid recovery).}
