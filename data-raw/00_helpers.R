@@ -174,13 +174,15 @@ ic_spread <- function(nb, seeds, p, mc) {
 
 # Generate one canonical LFR graph via the .venv-lfr Python generator.
 # Returns list(graph = igraph, truth = integer membership) or NULL on failure.
-lfr_generate <- function(n, mu, seed, avg_degree = 12, min_comm = 20, max_comm = 60) {
+lfr_generate <- function(n, mu, seed, avg_degree = 12, min_comm = 20, max_comm = 60,
+                         max_degree = 50) {
   py  <- .venv_python(); if (is.na(py)) return(NULL)
   gen <- file.path(PKG_DIR, "data-raw", "lfr_generate.py")
   ef <- tempfile(fileext = ".edges"); tf <- tempfile(fileext = ".truth")
   on.exit(unlink(c(ef, tf)), add = TRUE)
   st <- suppressWarnings(system2(py, c(gen, "--n", n, "--mu", mu, "--seed", seed,
-    "--avg-degree", avg_degree, "--min-comm", min_comm, "--max-comm", max_comm,
+    "--avg-degree", avg_degree, "--max-degree", max_degree,
+    "--min-comm", min_comm, "--max-comm", max_comm,
     "--edges", ef, "--truth", tf), stdout = FALSE, stderr = FALSE))
   if (st != 0 || !file.exists(ef) || !file.exists(tf)) return(NULL)
   el <- as.matrix(utils::read.table(ef))
