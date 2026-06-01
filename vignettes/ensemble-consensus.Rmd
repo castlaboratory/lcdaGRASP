@@ -93,6 +93,27 @@ As $B$ grows the co-association drift vanishes and both the consensus partition
 and its recovery plateau by $B\approx 32$ --- a stability-based stopping rule,
 consistent with the asymptotic concentration of the Reactive update.
 
+# Reproducibility and data provenance
+
+Every figure above is read from datasets shipped with the package; nothing is
+simulated at build time. Each dataset records the package version and date it
+was generated and ships with a SHA-256 checksum (matching
+`inst/extdata/SHA256SUMS`):
+
+```{r provenance}
+do.call(rbind, lapply(c("lcda_ecg", "overlap_lcda_ecg", "stability_pool"),
+                      lcda_provenance))
+```
+
+Regenerate with `data-raw/97_lcda_ecg.R`, `data-raw/99_overlap_lcda_ecg.R` and
+`data-raw/100_stability_pool.R` (each fixes a single documented seed).
+
+**Scope and honest reading.** LCDA-ECG is *competitive with* ECG — which remains
+marginally ahead on pure recovery — and overtakes Leiden only at high mixing
+($\mu = 0.5$). The overlapping-community result is a *consistency check*
+(overlap nodes are structural bridges), not a validation against planted
+overlap, which the disjoint LFR generator does not provide.
+
 # References
 
 - Poulin, V., & Théberge, F. (2019). Ensemble clustering for graphs.

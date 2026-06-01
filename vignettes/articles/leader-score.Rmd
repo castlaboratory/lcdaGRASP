@@ -56,6 +56,24 @@ crowned the leader. Both scores are exported (`nce_score()` and
 `nce_local_score()`) precisely so this comparison is part of the contribution
 rather than buried.
 
+# Reproducibility and data provenance
+
+The comparison above is read from a dataset shipped with the package; nothing is
+re-run at build time. It records the package version and generation date and
+ships with a SHA-256 checksum (matching `inst/extdata/SHA256SUMS`):
+
+```{r provenance}
+lcda_provenance("nce_alternatives")
+```
+
+Regenerate with `data-raw/80_nce.R` (single documented seed).
+
+**Honest reading.** The global-vs-community-conditioned NCE comparison is a
+*structural* contrast of two exported scores, not a downstream-utility claim;
+relatedly, the lexicographic $H$ tie-break is empirically never decisive (it
+fired in $0\%$ of iterations across the pool-sensitivity sweep), so $H$ acts as
+a tie-breaking safeguard rather than a search driver.
+
 # References
 
 - Ospina, R., Silva, G., Matos Junior, F. J., Leite, A., & Ochi, L. S. (2026).

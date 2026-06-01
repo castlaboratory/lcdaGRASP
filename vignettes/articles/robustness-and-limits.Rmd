@@ -232,6 +232,25 @@ honest envelope around the headline numbers, and it is the reason the package
 reports distributions, leader-utility comparisons, and degeneracy counts rather
 than point estimates alone.
 
+# Reproducibility and data provenance
+
+Every figure here is read from datasets shipped with the package; nothing is
+simulated at build time. Each records the package version and generation date
+and ships with a SHA-256 checksum (matching `inst/extdata/SHA256SUMS`):
+
+```{r provenance}
+do.call(rbind, lapply(c("lfr_robustness", "eda_replicates", "degeneracy"),
+                      lcda_provenance))
+```
+
+Regenerate with `data-raw/30_lfr_robustness.R`, `data-raw/70_eda.R` and
+`data-raw/60_degeneracy.R` (each fixes a single documented seed; the LFR sweep
+uses $n = 500$ with 10 graphs per mixing level).
+
+**Scope.** All synthetic results are at $n = 500$ (size effects are studied
+separately in the large-scale evaluation); recovery is reported as a mean with
+dispersion over the replicate graphs, never as a single number.
+
 # References
 
 - Good, B. H., de Montjoye, Y.-A., & Clauset, A. (2010). Performance of
