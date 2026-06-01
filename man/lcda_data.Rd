@@ -41,8 +41,11 @@ Available datasets (name -> contents):
     overlapping/bridge nodes, pool-stability stopping rule, and the
     consensus-vs-central leader comparison.}
   \item{`largescale`}{Recovery and runtime up to n = 5e4 (synthetic LFR).}
-  \item{`realnet_amazon`}{Large real network with ground truth: modularity Q
-    and recovery (NMI/ARI vs product categories) on Amazon-Computers.}
+  \item{`realnet_amazon`, `realnet_coauthor`}{Large real networks with
+    ground truth: modularity Q and recovery (NMI/ARI vs labels) on
+    Amazon-Computers (co-purchase) and Coauthor-Physics (co-authorship).}
+  \item{`openalex_leaders`}{Leader validation against an external citation
+    signal on an OpenAlex co-authorship graph.}
   \item{`gnn_baseline`}{Graph-auto-encoder baseline (true-k and auto-k) vs
     classical methods on LFR.}
   \item{`weighted_demo`}{Weighted-graph demonstration (weights aid recovery).}
