@@ -50,6 +50,11 @@ Available datasets (name -\> contents):
 
   \`(m, y, B)\` grid for LCDA-GR.
 
+- \`vnmi_nprime\`:
+
+  VNMI candidate-subset size \`n'\` sweep: modularity and local-search
+  time vs \`n'\` across density regimes.
+
 - \`degeneracy\`:
 
   Near-best partition counts and pairwise NMI.
@@ -105,7 +110,7 @@ Available datasets (name -\> contents):
 
 ``` r
 lcda_data()                       # list what is available
-#> # A tibble: 25 × 1
+#> # A tibble: 26 × 1
 #>    dataset              
 #>    <chr>                
 #>  1 blogs_table9         
@@ -118,7 +123,7 @@ lcda_data()                       # list what is available
 #>  8 eda_replicates       
 #>  9 gnn_baseline         
 #> 10 largescale           
-#> # ℹ 15 more rows
+#> # ℹ 16 more rows
 if (FALSE) { # \dontrun{
 d <- lcda_data("repro_summary")
 d$meta$limitations

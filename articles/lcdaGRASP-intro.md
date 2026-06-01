@@ -141,7 +141,7 @@ The companion *Articles* render from precomputed results shipped under
 ``` r
 
 lcda_data()
-#> # A tibble: 25 × 1
+#> # A tibble: 26 × 1
 #>    dataset              
 #>    <chr>                
 #>  1 blogs_table9         
@@ -154,7 +154,7 @@ lcda_data()
 #>  8 eda_replicates       
 #>  9 gnn_baseline         
 #> 10 largescale           
-#> # ℹ 15 more rows
+#> # ℹ 16 more rows
 ```
 
 ## References
