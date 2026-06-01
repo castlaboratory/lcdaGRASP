@@ -71,7 +71,12 @@ Available datasets (name -\> contents):
 
 - \`largescale\`:
 
-  Recovery and runtime up to n = 5e4.
+  Recovery and runtime up to n = 5e4 (synthetic LFR).
+
+- \`realnet_amazon\`:
+
+  Large real network with ground truth: modularity Q and recovery
+  (NMI/ARI vs product categories) on Amazon-Computers.
 
 - \`gnn_baseline\`:
 
@@ -100,7 +105,7 @@ Available datasets (name -\> contents):
 
 ``` r
 lcda_data()                       # list what is available
-#> # A tibble: 24 × 1
+#> # A tibble: 25 × 1
 #>    dataset              
 #>    <chr>                
 #>  1 blogs_table9         
@@ -113,7 +118,7 @@ lcda_data()                       # list what is available
 #>  8 eda_replicates       
 #>  9 gnn_baseline         
 #> 10 largescale           
-#> # ℹ 14 more rows
+#> # ℹ 15 more rows
 if (FALSE) { # \dontrun{
 d <- lcda_data("repro_summary")
 d$meta$limitations
