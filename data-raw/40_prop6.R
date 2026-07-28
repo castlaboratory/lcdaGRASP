@@ -43,6 +43,7 @@ for (g_lbl in c("karate", "sbm400")) {
 meta <- make_meta(
   title = "Reactive update concentration (Proposition 6, empirical)",
   description = "Entropy of the selection distribution p_k over iterations for B in {150,300,600,1200}; initial value is log(m)=log(20). Lower = more concentrated.",
+  network_source = paste(SRC_ZACHARY, "and", SRC_SBM, "-- SBM(400, 4 blocks, p_in=0.15, p_out=0.02)"),
   seed = 2026, m = 20, y = 60,
   limitations = c("Two graphs only (Karate + a 4-block SBM); concentration speed is graph-dependent."))
 save_dataset("prop6_summary", dplyr::bind_rows(summary_rows), meta)

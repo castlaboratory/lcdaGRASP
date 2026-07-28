@@ -83,6 +83,7 @@ meta <- make_meta(
                       "vs Leiden/ECG + per-community central leader, on canonical LFR at low mixing",
                       "where all methods recover a similar number of communities -- removes the",
                       "granularity confound seen on PolBlogs."),
+  network_source = SRC_LFR,
   seed = 20260529, mus = MUS, ngraph = NGRAPH, n = N, mc = MC, p_ic = PIC,
   limitations = c("Low-mixing regime only (where recovery -- hence matched granularity -- holds).",
                   "IC simulator is pure R; two-stage leaders use eigenvector centrality."))

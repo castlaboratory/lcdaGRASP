@@ -73,6 +73,7 @@ summary_tbl <- results |>
 meta <- make_meta(
   title = "Benchmark reproduction (5 networks x 4 LCDA variants + Louvain/Leiden)",
   description = "Best/mean/sd modularity over reps, vs igraph Louvain/Leiden and literature best-known Q. Confirms E3 (Louvain on Karate reaches 0.4198, not 0.3715).",
+  network_source = src_newman(BENCHMARKS$network),
   seed = 20260527, nrep = NREP,
   limitations = c(
     "alpha_c/alpha_s use package defaults (0.1, 0.3), not the paper's exact RCL parameters.",

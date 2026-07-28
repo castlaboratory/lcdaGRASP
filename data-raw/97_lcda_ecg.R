@@ -65,6 +65,7 @@ meta <- make_meta(
   description = paste("Applies ECG-style co-association consensus to the LCDA GRASP pool, then assigns",
                       "one leader per consensus community. Tests whether consensus closes the LFR",
                       "recovery gap to Leiden/ECG while keeping the joint leader output."),
+  network_source = SRC_LFR,
   seed = 20260529, mus = MUS, ngraph = NGRAPH, n = N, b_ensemble = BENS,
   limitations = c("Consensus members use construct+repair+full local search (the natural GRASP pool).",
                   "Leaders assigned post-hoc by eigenvector centrality within each consensus community.",

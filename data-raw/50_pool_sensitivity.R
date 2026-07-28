@@ -39,6 +39,7 @@ results <- grid |>
 meta <- make_meta(
   title = "Pool/refresh hyperparameter sensitivity for LCDA-GR",
   description = "Best Q and lex-decisive fraction over a (m, y/m, B) grid on a 5-block SBM(300). Tests whether the paper's m=20, y=3m, B=150 is justified and whether the H tie-break is mostly ornamental.",
+  network_source = paste(SRC_SBM, "-- SBM(300, 5 blocks, p_in=0.12, p_out=0.02)"),
   seed = 2026, reps = REPS, network = "SBM(300, 5 blocks, p_in=0.12, p_out=0.02)",
   limitations = c("Single synthetic SBM; conclusions about m/y may differ on real networks.",
                   "B capped at 240 for runtime."))

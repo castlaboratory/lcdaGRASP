@@ -194,6 +194,7 @@ meta <- make_meta(
                       "Threshold, seeding from LCDA-GR leaders vs degree/eigen/betweenness/k-core/",
                       "LeaderRank/random, plus greedy IM as an upper reference on small nets.",
                       "Tests whether the community-grounded leaders are a useful seed set (Fase 1.9)."),
+  network_source = src_newman(NETS),
   seed = 20260529, nrep = MC,
   limitations = c(
     "IC/LT are pure-R reference implementations; a Rcpp kernel is the productionisation.",

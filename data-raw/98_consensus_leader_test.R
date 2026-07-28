@@ -80,6 +80,7 @@ meta <- make_meta(
   description = paste("Isolates the leader-selection rule: consensus (most-frequently-designated in",
                       "the GRASP pool) vs post-hoc top-eigenvector, on the SAME LCDA-ECG communities,",
                       "plus Leiden/ECG+central for context. Granularity-matched LFR."),
+  network_source = SRC_LFR,
   seed = 20260529, mus = MUS, ngraph = NGRAPH, n = N, mc = MC, b_ensemble = BENS,
   limitations = c("Low-mixing regime; pure-R IC; n=500."))
 save_dataset("consensus_leader_test", list(per_graph = res, summary = summ), meta)

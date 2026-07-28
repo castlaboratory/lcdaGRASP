@@ -69,6 +69,7 @@ meta <- make_meta(
   description = paste("Companion-package C++ execution times and mean Q on Political Blogs,",
                       "B=50 (GRASP) vs B=150 (GR). Produced to replace the duplicated",
                       "LCDA-GR rows of the paper's Table 9 (tab:sim_blogs)."),
+  network_source = src_newman("polblogs"),
   seed = 20260528, nrep = NREP,
   limitations = c(
     "Absolute times are the package's optimized C++ kernels; an R-only implementation (as in the paper) is far slower. The reproducible content is the B=50 vs B=150 ratio and the per-configuration structure.",

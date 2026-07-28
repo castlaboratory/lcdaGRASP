@@ -94,8 +94,14 @@ where none was measured:
 * `openalex_leaders` — leader validation against an external citation signal on
   an OpenAlex co-authorship graph.
 
-The other 24 datasets are **bit-identical** to the ones shipped in `v0.3.1`
-(verifiable: their SHA-256 checksums are unchanged).
+The other 24 datasets carry the **same numbers** as the ones shipped in
+`v0.3.1`: their `results` objects are byte-for-byte identical (verified by
+serialising `$results` for all 28 datasets before and after the metadata repair
+below and comparing SHA-256: 28/28 unchanged), as is every `meta` field except
+`network_source`. They are **not** bit-identical as files, and their SHA-256
+checksums in `inst/extdata/SHA256SUMS` have changed accordingly: the one
+provenance field that was false has been corrected in place (see *Fixes*
+below). No simulation was re-run for this release.
 
 ## Provenance model
 
@@ -130,6 +136,34 @@ version string:
   current version when it cannot reach git to derive `first_release`.
 
 ## Fixes
+
+* **`meta$network_source` was a false constant in all 28 shipped datasets.**
+  `data-raw/00_helpers.R::make_meta()` hard-coded it to
+  `"Newman netdata collection (websites.umich.edu/~mejn) + igraph::make_graph('Zachary')"`
+  and collected every other argument into `extra`. Every dataset therefore
+  claimed the five classical benchmarks as its origin — including the synthetic
+  LFR sweeps generated with `networkx` (`lfr_robustness`, `largescale`,
+  `lcda_ecg`, …), the purely synthetic SBM study (`pool_sensitivity`), the
+  Shchur et al. (2018) real networks (`realnet_coauthor`, `realnet_amazon`) and
+  the OpenAlex extraction (`openalex_leaders`). The three generators that *did*
+  pass a correct `network_source` passed it through `...`, where it was
+  swallowed by `extra` and never reached the field readers see.
+
+  Fixed at the source: `make_meta()` now takes `network_source` as a required
+  formal argument with **no default**, aborts if it is missing, empty, or
+  passed through `...`, and every `data-raw/*.R` generator supplies the network
+  it actually ran on. The 28 shipped `.rds` files were repaired in place by the
+  one-off `data-raw/998_fix_network_source.R`, which rewrites *only*
+  `meta$network_source` (and drops the shadowed `meta$extra$network_source`
+  copy) and aborts if anything else moves. Correcting a field that was **false**
+  is not the same as restamping one that was true: `generated_by` /
+  `generated_on` are untouched, exactly as in the 0.3.2 provenance model above.
+
+  `tests/testthat/test-data-network-source.R` locks the invariants in: every
+  dataset declares a non-empty source, the collection is not one constant, no
+  synthetic or external dataset cites the benchmark collection, every
+  benchmark-based dataset names a benchmark, no `network_source` survives in
+  `meta$extra`, and every installed dataset is covered by the guard.
 
 * Vignette `robustness-and-limits`: the two uncertainty ribbons (NMI vs mixing,
   and leader spreading advantage) were silently missing. Both `summarise()`

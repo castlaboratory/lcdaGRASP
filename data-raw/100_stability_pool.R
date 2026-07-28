@@ -76,6 +76,7 @@ meta <- make_meta(
   description = paste("As the GRASP pool grows, the co-association matrix and the consensus partition",
                       "converge (drift -> 0, stability -> 1) and recovery plateaus -- a principled",
                       "stopping rule, consistent with the Reactive concentration of Proposition 6."),
+  network_source = SRC_LFR,
   seed = 20260529, mus = MUS, ngraph = NGR, bmax = BMAX, checkpoints = CHK,
   limitations = c("LFR n=500; single re-clusterer (Louvain); convergence shown empirically, not bounded."))
 save_dataset("stability_pool", res, meta)

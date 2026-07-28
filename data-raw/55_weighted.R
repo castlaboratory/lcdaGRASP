@@ -57,6 +57,7 @@ meta <- make_meta(
                       "Compares LCDA-GR and Louvain run with vs without the weights. Demonstrates",
                       "that the weighted modularity kernels (validated against igraph in test T9)",
                       "are useful: using informative weights improves NMI recovery."),
+  network_source = paste(SRC_LFR, "-- edge weights are synthetic (U(1.5,4) intra-community, U(0.1,1) inter-community), not measured."),
   seed = 20260529, mus = MUS, ngraph = NGRAPH, n = N,
   limitations = c("Weights are synthetic and informative by construction (best case for weighting).",
                   "Construction centrality/similarity remain structural; the objective is weighted."))

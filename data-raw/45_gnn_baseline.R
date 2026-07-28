@@ -59,6 +59,7 @@ meta <- make_meta(
   description = paste("Canonical GAE (Kipf & Welling 2016) on attribute-free LFR using synthesised",
                       "structural node features + KMeans (given the true k), vs Louvain/Leiden/LCDA-ECG.",
                       "Tests the paper's claim that GNNs are ill-suited to attribute-free community detection."),
+  network_source = SRC_LFR,
   seed = 20260529, mus = MUS, ngraph = NGRAPH, n = N,
   limitations = c("Two GAE rows: 'true k' (KMeans given the planted community count, generous) and",
                   "'auto-k' (k chosen by silhouette over a candidate range, the realistic no-ground-truth setting).",
