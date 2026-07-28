@@ -300,18 +300,20 @@ estimates alone.
 ## Reproducibility and data provenance
 
 Every figure here is read from datasets shipped with the package;
-nothing is simulated at build time. Each records the package version and
-generation date and ships with a SHA-256 checksum (matching
-`inst/extdata/SHA256SUMS`):
+nothing is simulated at build time. Each dataset records the package
+version that **generated** it (not necessarily the version you
+installed: the generators are re-run only when the algorithms change),
+the release it first shipped in, and a SHA-256 checksum matching
+`inst/extdata/SHA256SUMS`:
 
 ``` r
 
 do.call(rbind, lapply(c("lfr_robustness", "eda_replicates", "degeneracy"),
                       lcda_provenance))
-#>          dataset pkg_version generated_on
-#> 1 lfr_robustness       0.3.1   2026-06-01
-#> 2 eda_replicates       0.3.1   2026-05-31
-#> 3     degeneracy       0.3.1   2026-05-31
+#>          dataset generated_by generated_on first_release shipped_in
+#> 1 lfr_robustness        0.3.1   2026-06-01         0.3.1      0.3.2
+#> 2 eda_replicates        0.3.1   2026-05-31         0.3.1      0.3.2
+#> 3     degeneracy        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
 #> 1 74f90ed93192d1c022e3194420a5b0695ec4555abdfd77b84e6ffc630cd222f6
 #> 2 d151c78e9c653bc57829279b774bab310df7be1c2ee246d4c13fa75675276edc

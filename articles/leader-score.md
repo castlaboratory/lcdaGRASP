@@ -67,15 +67,17 @@ buried.
 ## Reproducibility and data provenance
 
 The comparison above is read from a dataset shipped with the package;
-nothing is re-run at build time. It records the package version and
-generation date and ships with a SHA-256 checksum (matching
-`inst/extdata/SHA256SUMS`):
+nothing is re-run at build time. Each dataset records the package
+version that **generated** it (not necessarily the version you
+installed: the generators are re-run only when the algorithms change),
+the release it first shipped in, and a SHA-256 checksum matching
+`inst/extdata/SHA256SUMS`:
 
 ``` r
 
 lcda_provenance("nce_alternatives")
-#>            dataset pkg_version generated_on
-#> 1 nce_alternatives       0.3.1   2026-05-31
+#>            dataset generated_by generated_on first_release shipped_in
+#> 1 nce_alternatives        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
 #> 1 4c84047682a77fd82555cc1b791668406d186afdecfa3ef453e3c2379c878d09
 ```

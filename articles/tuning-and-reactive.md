@@ -464,20 +464,22 @@ moderate.
 ## Reproducibility and data provenance
 
 Every figure and table here is read from datasets shipped with the
-package; nothing is simulated at build time. Each records the package
-version and generation date and ships with a SHA-256 checksum (matching
-`inst/extdata/SHA256SUMS`):
+package; nothing is simulated at build time. Each dataset records the
+package version that **generated** it (not necessarily the version you
+installed: the generators are re-run only when the algorithms change),
+the release it first shipped in, and a SHA-256 checksum matching
+`inst/extdata/SHA256SUMS`:
 
 ``` r
 
 do.call(rbind, lapply(c("doe_screening", "doe_rsm", "pool_sensitivity",
                         "prop6_summary", "prop6_trajectories"), lcda_provenance))
-#>              dataset pkg_version generated_on
-#> 1      doe_screening       0.3.1   2026-05-31
-#> 2            doe_rsm       0.3.1   2026-05-31
-#> 3   pool_sensitivity       0.3.1   2026-05-31
-#> 4      prop6_summary       0.3.1   2026-05-31
-#> 5 prop6_trajectories       0.3.1   2026-05-31
+#>              dataset generated_by generated_on first_release shipped_in
+#> 1      doe_screening        0.3.1   2026-05-31         0.3.1      0.3.2
+#> 2            doe_rsm        0.3.1   2026-05-31         0.3.1      0.3.2
+#> 3   pool_sensitivity        0.3.1   2026-05-31         0.3.1      0.3.2
+#> 4      prop6_summary        0.3.1   2026-05-31         0.3.1      0.3.2
+#> 5 prop6_trajectories        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
 #> 1 c234866d721849cef733b649fe45b38266dd57f31fb560ae538f399ae9652651
 #> 2 d99ff5f6b05eb69362af64453c7fb77612fc1e2c3250c9e68e0deb49b9a78d17

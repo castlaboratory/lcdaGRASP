@@ -1,5 +1,5 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   benchmark-reproduction: benchmark-reproduction.html
@@ -8,7 +8,7 @@ articles:
   articles/leader-score: leader-score.html
   articles/robustness-and-limits: robustness-and-limits.html
   articles/tuning-and-reactive: tuning-and-reactive.html
-last_built: 2026-06-01T16:11Z
+last_built: 2026-07-28T19:20Z
 urls:
   reference: https://castlaboratory.github.io/lcdaGRASP/reference
   article: https://castlaboratory.github.io/lcdaGRASP/articles

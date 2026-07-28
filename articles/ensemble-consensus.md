@@ -119,17 +119,19 @@ concentration of the Reactive update.
 
 Every figure above is read from datasets shipped with the package;
 nothing is simulated at build time. Each dataset records the package
-version and date it was generated and ships with a SHA-256 checksum
-(matching `inst/extdata/SHA256SUMS`):
+version that **generated** it (not necessarily the version you
+installed: the generators are re-run only when the algorithms change),
+the release it first shipped in, and a SHA-256 checksum matching
+`inst/extdata/SHA256SUMS`:
 
 ``` r
 
 do.call(rbind, lapply(c("lcda_ecg", "overlap_lcda_ecg", "stability_pool"),
                       lcda_provenance))
-#>            dataset pkg_version generated_on
-#> 1         lcda_ecg       0.3.1   2026-05-31
-#> 2 overlap_lcda_ecg       0.3.1   2026-05-31
-#> 3   stability_pool       0.3.1   2026-05-31
+#>            dataset generated_by generated_on first_release shipped_in
+#> 1         lcda_ecg        0.3.1   2026-05-31         0.3.1      0.3.2
+#> 2 overlap_lcda_ecg        0.3.1   2026-05-31         0.3.1      0.3.2
+#> 3   stability_pool        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
 #> 1 172581aeea1a12d65fc8941a43bb6bb746db032c39efe30a5bb18975330a98e8
 #> 2 4ef193c4d6be50dac15a62599cb41e34a79dfef47103f21d44d5713ed7dc7250

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">lcdaGRASP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,30 +46,32 @@
 <div id="release-procedure" class="section level1">
 
 <p>Single source of truth for the package <strong>and</strong> the JOSS paper (<code>paper/</code>).</p>
-<ol style="list-style-type: decimal"><li><p><strong>Version.</strong> Bump <code>Version</code> and <code>Date</code> in <code>DESCRIPTION</code>; add a <code>NEWS.md</code> entry.</p></li>
+<ol style="list-style-type: decimal"><li><p><strong>Version.</strong> Bump <code>Version</code> and <code>Date</code> in <code>DESCRIPTION</code>; add a <code>NEWS.md</code> entry. Do this <strong>in the release commit</strong>, not after tagging: anything merged after a tag while <code>DESCRIPTION</code> still shows the tagged version makes two different contents installable under one version number (this is what happened between <code>v0.3.1</code> and <code>0.3.2</code>).</p></li>
 <li>
-<p><strong>Regenerate data at the new version.</strong> Run the generators so every <code>inst/extdata/*.rds</code> is produced by the new version:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/run_all_data.R           <span class="co"># core panel (FORCE=1 to overwrite)</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># plus the individual heavy scripts (11,12,25,35,45,55,90,95,96,97,98,99,100)</span></span></code></pre></div>
-<p>Confirm consistency:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p><strong>Refresh the data manifests</strong> (no simulation is re-run):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/999_manifest.R    <span class="co"># -&gt; inst/extdata/{MANIFEST.csv,SHA256SUMS}</span></span></code></pre></div>
+<p>Data is <strong>not</strong> regenerated just because the version changed. <code>generated_by</code> in each <code>.rds</code> is the version that actually produced the numbers and stays as it is; <code>first_release</code> in <code>MANIFEST.csv</code> records the release a file first shipped in. Regenerate data only when the algorithms change:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/run_all_data.R           <span class="co"># core panel (FORCE=1 to overwrite)</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># plus the individual heavy scripts (11,12,25,35,45,55,90,95,96,97,98,99,100)</span></span></code></pre></div>
+<p>Confirm consistency either way:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_file.html" class="external-link">test_file</a></span><span class="op">(</span><span class="st">"tests/testthat/test-data-versions.R"</span><span class="op">)</span>  <span class="co"># must pass</span></span></code></pre></div>
-<p>(The test fails if any RDS <code>meta$pkg_version</code> differs from <code>DESCRIPTION</code>.)</p>
+<p>(The test fails if a dataset claims a version newer than <code>DESCRIPTION</code>, is missing from either manifest, or its checksum does not match.)</p>
 </li>
 <li><p><strong>Check.</strong> <code>R CMD build .</code> then <code>R CMD check --as-cran lcdaGRASP_*.tar.gz</code> (expect only the benign “new submission” / local-HTML-Tidy notes).</p></li>
 <li>
 <p><strong>Source archive (never Finder/zip).</strong> Use git so junk is excluded:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">git</span> archive <span class="at">--format</span><span class="op">=</span>zip <span class="at">--prefix</span><span class="op">=</span>lcdaGRASP/ <span class="at">-o</span> lcdaGRASP-vX.Y.Z.zip HEAD</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">unzip</span> <span class="at">-l</span> lcdaGRASP-vX.Y.Z.zip <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">'__MACOSX|\.DS_Store|\.o$|\.so$|/\.git'</span> <span class="dt">\</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"JUNK FOUND"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"clean"</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">git</span> archive <span class="at">--format</span><span class="op">=</span>zip <span class="at">--prefix</span><span class="op">=</span>lcdaGRASP/ <span class="at">-o</span> lcdaGRASP-vX.Y.Z.zip HEAD</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">unzip</span> <span class="at">-l</span> lcdaGRASP-vX.Y.Z.zip <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">'__MACOSX|\.DS_Store|\.o$|\.so$|/\.git'</span> <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"JUNK FOUND"</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"clean"</span></span></code></pre></div>
 </li>
-<li><p><strong>Checksums.</strong> <code>shasum -a 256 inst/extdata/*.rds | sort &gt; inst/extdata/SHA256SUMS</code>.</p></li>
-<li><p><strong>Tag.</strong> <code>git tag -a vX.Y.Z -m "lcdaGRASP X.Y.Z"; git push origin vX.Y.Z</code>.</p></li>
+<li><p><strong>Checksums.</strong> Already written by step 2. Verify: <code>cd inst/extdata &amp;&amp; shasum -a 256 -c SHA256SUMS</code> (all <code>OK</code>).</p></li>
+<li><p><strong>Tag the merge commit</strong>, after the version bump is on <code>main</code>: <code>git tag -a vX.Y.Z -m "lcdaGRASP X.Y.Z"; git push origin vX.Y.Z</code>. Then check nothing drifted: <code>git diff --stat vX.Y.Z..main</code> must be empty until the next version bump lands.</p></li>
 <li><p><strong>CRAN / JOSS.</strong> Submit the tarball; the JOSS paper builds from <code>paper/</code>.</p></li>
 </ol><div class="section level2">
 <h2 id="end-to-end-reproduction-one-command">End-to-end reproduction (one command)<a class="anchor" aria-label="anchor" href="#end-to-end-reproduction-one-command"></a></h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'remotes::install_local(".", dependencies = TRUE)'</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/run_all_data.R   <span class="co"># + the individual scripts; needs data-raw/benchmarks and .venv-lfr</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'remotes::install_local(".", dependencies = TRUE)'</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/run_all_data.R   <span class="co"># + the individual scripts; needs data-raw/benchmarks and .venv-lfr</span></span></code></pre></div>
 </div>
 </div>
 
@@ -81,7 +83,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

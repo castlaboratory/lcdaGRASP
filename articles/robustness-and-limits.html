@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lcdaGRASP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -578,16 +578,18 @@ degeneracy counts rather than point estimates alone.</p>
 <h2 id="reproducibility-and-data-provenance">Reproducibility and data provenance<a class="anchor" aria-label="anchor" href="#reproducibility-and-data-provenance"></a>
 </h2>
 <p>Every figure here is read from datasets shipped with the package;
-nothing is simulated at build time. Each records the package version and
-generation date and ships with a SHA-256 checksum (matching
-<code>inst/extdata/SHA256SUMS</code>):</p>
+nothing is simulated at build time. Each dataset records the package
+version that <strong>generated</strong> it (not necessarily the version
+you installed: the generators are re-run only when the algorithms
+change), the release it first shipped in, and a SHA-256 checksum
+matching <code>inst/extdata/SHA256SUMS</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lfr_robustness"</span>, <span class="st">"eda_replicates"</span>, <span class="st">"degeneracy"</span><span class="op">)</span>,</span>
 <span>                      <span class="va">lcda_provenance</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          dataset pkg_version generated_on</span></span>
-<span><span class="co">#&gt; 1 lfr_robustness       0.3.1   2026-06-01</span></span>
-<span><span class="co">#&gt; 2 eda_replicates       0.3.1   2026-05-31</span></span>
-<span><span class="co">#&gt; 3     degeneracy       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt;          dataset generated_by generated_on first_release shipped_in</span></span>
+<span><span class="co">#&gt; 1 lfr_robustness        0.3.1   2026-06-01         0.3.1      0.3.2</span></span>
+<span><span class="co">#&gt; 2 eda_replicates        0.3.1   2026-05-31         0.3.1      0.3.2</span></span>
+<span><span class="co">#&gt; 3     degeneracy        0.3.1   2026-05-31         0.3.1      0.3.2</span></span>
 <span><span class="co">#&gt;                                                             sha256</span></span>
 <span><span class="co">#&gt; 1 74f90ed93192d1c022e3194420a5b0695ec4555abdfd77b84e6ffc630cd222f6</span></span>
 <span><span class="co">#&gt; 2 d151c78e9c653bc57829279b774bab310df7be1c2ee246d4c13fa75675276edc</span></span>
@@ -634,7 +636,7 @@ graphs. <em>Applied Network Science</em>, 4, 51. <a href="https://doi.org/10.100
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

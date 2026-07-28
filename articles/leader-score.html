@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lcdaGRASP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -166,13 +166,15 @@ the contribution rather than buried.</p>
 <h2 id="reproducibility-and-data-provenance">Reproducibility and data provenance<a class="anchor" aria-label="anchor" href="#reproducibility-and-data-provenance"></a>
 </h2>
 <p>The comparison above is read from a dataset shipped with the package;
-nothing is re-run at build time. It records the package version and
-generation date and ships with a SHA-256 checksum (matching
-<code>inst/extdata/SHA256SUMS</code>):</p>
+nothing is re-run at build time. Each dataset records the package
+version that <strong>generated</strong> it (not necessarily the version
+you installed: the generators are re-run only when the algorithms
+change), the release it first shipped in, and a SHA-256 checksum
+matching <code>inst/extdata/SHA256SUMS</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lcda_provenance.html">lcda_provenance</a></span><span class="op">(</span><span class="st">"nce_alternatives"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;            dataset pkg_version generated_on</span></span>
-<span><span class="co">#&gt; 1 nce_alternatives       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt;            dataset generated_by generated_on first_release shipped_in</span></span>
+<span><span class="co">#&gt; 1 nce_alternatives        0.3.1   2026-05-31         0.3.1      0.3.2</span></span>
 <span><span class="co">#&gt;                                                             sha256</span></span>
 <span><span class="co">#&gt; 1 4c84047682a77fd82555cc1b791668406d186afdecfa3ef453e3c2379c878d09</span></span></code></pre></div>
 <p>Regenerate with <code>data-raw/80_nce.R</code> (single documented
@@ -211,7 +213,7 @@ Sciences</em>, 686, 121341. <a href="https://doi.org/10.1016/j.ins.2024.121341" 
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

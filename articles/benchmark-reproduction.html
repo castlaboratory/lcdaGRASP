@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lcdaGRASP</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -317,13 +317,15 @@ trail Louvain/Leiden by ~2% — the advantage is benchmark-dependent.</li>
 </h2>
 <p>The numbers above are read from datasets shipped with the package;
 nothing is re-run at build time. Each dataset records the package
-version and date it was generated and ships with a SHA-256 checksum
-(matching <code>inst/extdata/SHA256SUMS</code>):</p>
+version that <strong>generated</strong> it (not necessarily the version
+you installed: the generators are re-run only when the algorithms
+change), the release it first shipped in, and a SHA-256 checksum
+matching <code>inst/extdata/SHA256SUMS</code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"repro_benchmarks"</span>, <span class="st">"repro_summary"</span><span class="op">)</span>, <span class="va">lcda_provenance</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;            dataset pkg_version generated_on</span></span>
-<span><span class="co">#&gt; 1 repro_benchmarks       0.3.1   2026-05-31</span></span>
-<span><span class="co">#&gt; 2    repro_summary       0.3.1   2026-05-31</span></span>
+<span><span class="co">#&gt;            dataset generated_by generated_on first_release shipped_in</span></span>
+<span><span class="co">#&gt; 1 repro_benchmarks        0.3.1   2026-05-31         0.3.1      0.3.2</span></span>
+<span><span class="co">#&gt; 2    repro_summary        0.3.1   2026-05-31         0.3.1      0.3.2</span></span>
 <span><span class="co">#&gt;                                                             sha256</span></span>
 <span><span class="co">#&gt; 1 566986748aa3a254b96255249b32dbbef3aa66cf21699e4befad6b2dd44b617d</span></span>
 <span><span class="co">#&gt; 2 0a140370d6b7ce2272808592c0c82d3945a4ae21b328638c2cc3ba18f77cdbbe</span></span></code></pre></div>
@@ -363,7 +365,7 @@ community structure in networks. <em>Phys. Rev. E</em>, 69, 026113. <a href="ht
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

@@ -32,13 +32,13 @@ lcdaGRASP.
 
 Ospina R, Silva G, Matos Junior FJ, Leite A, Ochi LS (2026). *lcdaGRASP:
 GRASP and Reactive GRASP Algorithms for Joint Community and Leader
-Detection*. R package version 0.3.1,
+Detection*. R package version 0.3.2,
 <https://github.com/castlaboratory/lcdaGRASP>.
 
     @Manual{,
       title = {lcdaGRASP: GRASP and Reactive GRASP Algorithms for Joint Community and Leader Detection},
       author = {Raydonal Ospina and Geiza Silva and Francisco Jucelino {Matos Junior} and Andre Leite and Luiz Satoru Ochi},
       year = {2026},
-      note = {R package version 0.3.1},
+      note = {R package version 0.3.2},
       url = {https://github.com/castlaboratory/lcdaGRASP},
     }
