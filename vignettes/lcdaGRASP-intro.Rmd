@@ -84,6 +84,59 @@ out <- kruskal_then_permute(df$Q, df$cfg, B_perm = 2000)
 out$letters
 ```
 
+# From a result to the paper's numbers
+
+`lcda_metrics()` turns a fitted result into the quantities the paper's tables
+report. The default level is a tidy long table grouped by *scope*: the
+partition (Q, community count, size distribution), the leaders (the NCE score
+in both forms, leader degrees, coverage), the search (runtime, the best
+iteration, trace dispersion, and how often the lexicographic tie-break on `H`
+was actually decisive), and --- when a ground truth is supplied --- recovery.
+
+```{r metrics}
+m <- lcda_metrics(res_r)
+subset(m, scope %in% c("partition", "search"))
+```
+
+Pass `truth =` for the recovery indices (NMI, ARI, Rand, VI, split-join). The
+Zachary club's documented split is the natural reference here:
+
+```{r metrics-truth}
+truth <- c(rep(1, 17), rep(2, 17))
+subset(lcda_metrics(res_r, truth = truth), scope == "recovery")
+```
+
+Baselines that carry no leaders are accepted and scored through exactly the
+same code path, with their leaders derived as the top-eigenvector node of each
+community and flagged as such, so a comparison table is one `rbind()` away:
+
+```{r metrics-baseline}
+subset(lcda_metrics(cluster_louvain(g), g, truth = truth), scope == "recovery")
+```
+
+The per-community and per-leader breakdowns answer the questions the summary
+row cannot. Each community's `q_contribution` sums exactly to Q, and each
+leader's `degree_pctile_in_community` is the statistic the paper's external
+leader validation uses.
+
+```{r metrics-levels}
+lcda_metrics(res_r, level = "community")
+lcda_metrics(res_r, level = "leader")
+```
+
+# The community-and-leader map
+
+`plot()` on a fitted result draws the partition with the elected leaders
+highlighted; the result carries the graph it was fitted on, so nothing else is
+needed. `lcda_plot_communities()` does the whole pipeline (detect communities,
+designate leaders, draw) from a bare graph in one call, and
+`ggplot2::autoplot()` returns the same figure as a `ggplot` object.
+
+```{r map, fig.width = 7, fig.height = 6}
+set.seed(1)
+plot(res_r)
+```
+
 # Community-conditioned NCE
 
 The paper's NCE uses the *global* connection probability `k_v / n`. The

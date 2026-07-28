@@ -57,7 +57,10 @@ an object of class \code{lcda_ecg_result}: the consensus
   \code{overlap = TRUE} it
   additionally carries \code{overlap_membership} (a length-n list of the
   community ids each node belongs to) and \code{is_overlap} (logical, the
-  bridge nodes).
+  bridge nodes). It also carries the wall-clock \code{elapsed} time in
+  seconds and the (simplified) input \code{graph}, so that
+  \code{\link{lcda_metrics}()} and \code{\link{plot.lcda_ecg_result}()} can be
+  called on the result alone.
 }
 \description{
 Builds a pool of \code{B} randomised LCDA constructions, turns it into edge
@@ -79,4 +82,7 @@ g <- igraph::make_graph("Zachary")
 res <- lcda_ecg(g, B = 24, overlap = TRUE, tau = 0.6, seed = 1)
 res$Q
 which(res$is_overlap)   # bridge nodes
+}
+\seealso{
+\code{\link{lcda_metrics}()}, \code{\link{plot.lcda_ecg_result}()}.
 }

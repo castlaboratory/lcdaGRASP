@@ -101,24 +101,8 @@ permutation_test <- function(x, y, B = 1e4, verbose = FALSE) {
 }
 
 # --- plotting helpers ------------------------------------------------
-
-#' Plot a leader-community partition (leaders drawn larger).
-#' @param g an igraph object (undirected, simple).
-#' @param membership integer vector of 1-based community ids.
-#' @param leaders integer vector of 1-based leader vertex indices.
-#' @param ... further arguments passed to [igraph::plot.igraph()].
-#' @return invisibly, `NULL` (called for its plotting side effect).
-#' @examples
-#' g <- igraph::make_graph("Zachary")
-#' res <- lcda_grasp(g, B = 20, seed = 1)
-#' plot_partition(g, res$best$membership, res$best$leaders)
-#' @export
-plot_partition <- function(g, membership, leaders, ...) {
-  cols <- grDevices::hcl.colors(max(membership), palette = "Dynamic")
-  vsize <- rep(4, igraph::vcount(g)); vsize[leaders] <- 9
-  igraph::plot.igraph(g, vertex.color = cols[membership],
-                      vertex.size = vsize, vertex.label = NA, ...)
-}
+# The community-and-leader map (plot_partition, lcda_plot_communities, the
+# plot()/autoplot() methods) lives in R/plot_leaders.R.
 
 #' Plot the Q trajectory across GRASP iterations, with running maximum.
 #' @param res an `lcda_grasp_result` or `lcda_gr_result` object.

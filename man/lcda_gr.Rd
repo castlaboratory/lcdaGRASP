@@ -47,7 +47,9 @@ Proposition 6). Set to 0 to recover the raw proportional rule.}
 }
 \value{
 an object of class `lcda_gr_result`: best partition, traces, the
-  reactive pool state, and the H-decisive iterations.
+  reactive pool state, the H-decisive iterations, the wall-clock `elapsed`
+  time in seconds, and the (simplified) input `graph`, so that
+  [lcda_metrics()] and [plot()] can be called on the result alone.
 }
 \description{
 LCDA-GR: Reactive variant with self-tuning of (alpha_c, alpha_s).
@@ -63,4 +65,7 @@ g <- igraph::make_graph("Zachary")
 res <- lcda_gr(g, B = 30, seed = 1)
 res$best$Q
 length(res$lex_decisive_iters)  # how often H broke a Q-tie
+}
+\seealso{
+[lcda_metrics()], [plot.lcda_gr_result()].
 }

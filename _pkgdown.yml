@@ -52,6 +52,12 @@ reference:
   - lcda_construct
   - lcda_repair
   - lcda_local_search
+- title: Reporting
+  desc: >
+    Everything the paper's tables report, computed from a fitted result: one
+    tidy metric table, plus the per-community and per-leader breakdowns.
+  contents:
+  - lcda_metrics
 - title: Quality scores
   desc: Modularity, the NCE leader score (global and community-conditioned), and the lexicographic objective.
   contents:
@@ -71,8 +77,12 @@ reference:
   - kruskal_then_permute
   - permutation_test
 - title: Plotting
+  desc: The community-and-leader map, plus the search-diagnostic figures.
   contents:
+  - lcda_plot_communities
   - plot_partition
+  - plot.lcda
+  - autoplot.lcda
   - plot_grasp_trajectory
   - plot_reactive_pk
 - title: Graph constructors & data

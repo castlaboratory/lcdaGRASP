@@ -33,7 +33,9 @@ lcda_grasp(
 }
 \value{
 an object of class `lcda_grasp_result`: best partition, Q/H traces,
-  and the parameters used.
+  the parameters used, the wall-clock `elapsed` time in seconds, and the
+  (simplified) input `graph`, so that [lcda_metrics()] and [plot()] can be
+  called on the result alone.
 }
 \description{
 LCDA-GRASP: fixed-parameter variant.
@@ -48,4 +50,9 @@ g <- igraph::make_graph("Zachary")
 res <- lcda_grasp(g, B = 20, seed = 1)
 res$best$Q
 res$best$leaders
+res$elapsed                       # wall-clock seconds
+}
+\seealso{
+[lcda_metrics()] for the paper's metric surface computed from a
+  result, and [plot.lcda_grasp_result()] for the community-and-leader map.
 }
