@@ -65,6 +65,15 @@ overloading one version string:
 
 ### Fixes
 
+- Vignette `robustness-and-limits`: the two uncertainty ribbons (NMI vs
+  mixing, and leader spreading advantage) were silently missing. Both
+  [`summarise()`](https://dplyr.tidyverse.org/reference/summarise.html)
+  calls overwrote a column with its own mean before taking
+  [`sd()`](https://rdrr.io/r/stats/sd.html) of it, so the dispersion
+  evaluated to `NA` and
+  [`geom_ribbon()`](https://ggplot2.tidyverse.org/reference/geom_ribbon.html)
+  dropped every row. The dispersion is now computed before the mean, and
+  the bands render again.
 - [`lcda_ecg()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_ecg.md)
   now passes the chosen `centrality` to the repair and local-search
   steps (previously the consensus leader was always eigenvector-based).

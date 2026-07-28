@@ -52,7 +52,10 @@ library(ggplot2); library(dplyr)
 quality <- d_lfr$results$quality
 sm <- quality |>
   dplyr::group_by(mu, method) |>
-  dplyr::summarise(NMI = mean(NMI), NMI_sd = sd(NMI), ARI = mean(ARI),
+  # Dispersion first: inside summarise() a later expression sees the column it
+  # has just created, so sd(NMI) after NMI = mean(NMI) would receive a scalar
+  # and return NA (silently dropping the ribbon below).
+  dplyr::summarise(NMI_sd = sd(NMI), NMI = mean(NMI), ARI = mean(ARI),
                    Q = mean(Q), .groups = "drop")
 ```
 
@@ -65,8 +68,6 @@ ggplot(sm, aes(mu, NMI, colour = method, fill = method)) +
        subtitle = "Canonical LFR; shaded band = ±1 sd over replicates; higher is better",
        x = expression(mu~"(mixing parameter)"), y = "NMI") +
   theme_minimal(base_size = 10)
-#> Warning: Removed 48 rows containing missing values or values outside the scale range
-#> (`geom_ribbon()`).
 ```
 
 ![](robustness-and-limits_files/figure-html/lfr-plot-nmi-1.png)
@@ -112,8 +113,10 @@ $`\mu`$.
 
 u <- d_lfr$results$leader_utility |>
   dplyr::group_by(mu) |>
-  dplyr::summarise(adv_vs_degree = mean(adv_vs_degree),
-                   se = sd(adv_vs_degree) / sqrt(dplyr::n()),
+  # Standard error first (see the note above: a self-referencing summarise()
+  # would hand sd() the mean it has just computed and yield NA).
+  dplyr::summarise(se = sd(adv_vs_degree) / sqrt(dplyr::n()),
+                   adv_vs_degree = mean(adv_vs_degree),
                    adv_vs_random = mean(adv_vs_random), .groups = "drop")
 ggplot(u, aes(mu, adv_vs_degree)) +
   geom_hline(yintercept = 0, linetype = 2, colour = "grey50") +
@@ -123,15 +126,15 @@ ggplot(u, aes(mu, adv_vs_degree)) +
        subtitle = "Above zero: LCDA leaders out-spread top-degree of the same size",
        x = expression(mu), y = "IC-spread advantage (LCDA − top-degree)") +
   theme_minimal(base_size = 10)
-#> Warning: Removed 8 rows containing missing values or values outside the scale range
-#> (`geom_ribbon()`).
 ```
 
 ![](robustness-and-limits_files/figure-html/lfr-leader-1.png)
 
 The leaders always beat a random seed set, but they do **not**
-out-spread a top-degree set on LFR; any edge is confined to the
-strongest-community regime and inverts as $`\mu`$ grows. The leader
+out-spread a top-degree set on LFR. The $`\pm 1`$ standard-error band
+makes the reading precise: at the strongest-community regime the
+difference is indistinguishable from zero (the band still covers the
+dashed line), and it turns clearly negative as $`\mu`$ grows. The leader
 contribution is the *joint, community-grounded* designation — not
 superior raw spreading.
 

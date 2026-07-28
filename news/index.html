@@ -74,7 +74,8 @@
 <h2 class="pkg-version" data-toc-text="0.3.1" id="lcdagrasp-031">lcdaGRASP 0.3.1<a class="anchor" aria-label="anchor" href="#lcdagrasp-031"></a></h2>
 <div class="section level3">
 <h3 id="fixes-0-3-1">Fixes<a class="anchor" aria-label="anchor" href="#fixes-0-3-1"></a></h3>
-<ul><li>
+<ul><li>Vignette <code>robustness-and-limits</code>: the two uncertainty ribbons (NMI vs mixing, and leader spreading advantage) were silently missing. Both <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise()</a></code> calls overwrote a column with its own mean before taking <code><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd()</a></code> of it, so the dispersion evaluated to <code>NA</code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon()</a></code> dropped every row. The dispersion is now computed before the mean, and the bands render again.</li>
+<li>
 <code><a href="../reference/lcda_ecg.html">lcda_ecg()</a></code> now passes the chosen <code>centrality</code> to the repair and local-search steps (previously the consensus leader was always eigenvector-based).</li>
 <li>
 <code>seed = NULL</code> (and <code>NA</code>) is accepted and means “leave the RNG untouched”; invalid seeds are rejected with a clear message.</li>
