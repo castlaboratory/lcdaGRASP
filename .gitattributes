@@ -1,0 +1,6 @@
+# The two provenance manifests are checksummed byte-for-byte (MANIFEST.csv is
+# itself listed in SHA256SUMS), so git must never rewrite their line endings.
+# Without this, a checkout on Windows converts LF to CRLF and the checksum test
+# fails there and only there.
+inst/extdata/MANIFEST.csv -text
+inst/extdata/SHA256SUMS   -text
