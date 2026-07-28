@@ -84,12 +84,17 @@ test_that("SHA256SUMS covers every shipped dataset with a matching checksum", {
   lines <- lines[nzchar(trimws(lines))]
   listed <- sub("^[0-9a-f]{64}[[:space:]]+\\*?", "", lines)
   hashes <- stats::setNames(sub("[[:space:]].*$", "", lines), listed)
-  expect_setequal(listed, basename(rds_files()))
+  manifest <- file.path(extdata_dir(), "MANIFEST.csv")
+  # MANIFEST.csv is signed too: the release-identity record gets the same
+  # integrity check as the data it describes.
+  expected <- c(basename(rds_files()),
+                if (file.exists(manifest)) basename(manifest))
+  expect_setequal(listed, expected)
 
   # tools::sha256sum() is recent; skip the byte-level check on older R.
   skip_if_not(exists("sha256sum", where = asNamespace("tools")),
               "tools::sha256sum() not available")
-  fs  <- rds_files()
+  fs  <- c(rds_files(), if (file.exists(manifest)) manifest)
   got <- unname(tools::sha256sum(fs))
   mismatch <- basename(fs)[got != unname(hashes[basename(fs)])]
   expect_true(

@@ -85,7 +85,16 @@ rows <- do.call(rbind, lapply(files, function(f) {
   fr <- prev$first_release[match(name, prev$dataset)]
   if (length(fr) != 1 || is.na(fr) || !nzchar(fr)) {
     fr <- .first_release_from_git(file.path("inst", "extdata", f))
-    if (is.na(fr)) fr <- cur_ver          # not in any release yet -> this one
+    if (is.na(fr)) {
+      # Either the file genuinely has not shipped yet, or git is unreachable
+      # (a source tarball has no .git). The two cases are indistinguishable
+      # here and only the first is benign, so say so rather than guess quietly.
+      warning("no release tag contains the commit that added ", f,
+              " -- recording first_release = ", cur_ver,
+              ". If this is a tarball without git history, regenerate the ",
+              "manifest from a clone instead.", call. = FALSE, immediate. = TRUE)
+      fr <- cur_ver
+    }
   }
 
   data.frame(
@@ -99,13 +108,19 @@ rows <- do.call(rbind, lapply(files, function(f) {
 
 utils::write.csv(rows, manifest, row.names = FALSE, quote = FALSE)
 
-# ---- checksums (same format as `shasum -a 256 *.rds | sort`) ---------------
+# ---- checksums (same format as `shasum -a 256 * | sort`) -------------------
+#
+# MANIFEST.csv is hashed alongside the data: it is the release-identity record,
+# so it deserves the same integrity guarantee as the bytes it describes.
+# It is written first, above, and hashed here from what landed on disk.
 
-hashes <- unname(tools::sha256sum(file.path(extdata, files)))
-writeLines(sprintf("%s  %s", hashes, files), sums)
+signed <- sort(c(files, basename(manifest)), method = "radix")
+hashes <- unname(tools::sha256sum(file.path(extdata, signed)))
+writeLines(sprintf("%s  %s", hashes, signed), sums)
 
 cat(sprintf("MANIFEST.csv: %d datasets (%s)\n", nrow(rows),
             paste(sprintf("%s=%d", names(table(rows$first_release)),
                           as.integer(table(rows$first_release))), collapse = ", ")))
-cat(sprintf("SHA256SUMS:   %d entries\n", length(files)))
+cat(sprintf("SHA256SUMS:   %d entries (%d datasets + MANIFEST.csv)\n",
+            length(signed), length(files)))
 cat("Verify with: cd inst/extdata && shasum -a 256 -c SHA256SUMS\n")
