@@ -16,8 +16,9 @@
 \arguments{
 \item{x}{a fitted `lcda_grasp_result`, `lcda_gr_result` or `lcda_ecg_result`.}
 
-\item{y}{optional [igraph::igraph] to draw on; defaults to the graph stored
-in `x`.}
+\item{y}{optional [igraph::igraph] to draw on, with the same vertex set;
+defaults to the graph stored in `x`. It is simplified before drawing, as
+described above.}
 
 \item{...}{further arguments passed to [plot_partition()].}
 }
@@ -26,10 +27,20 @@ invisibly, a list with the `layout` used and the community `colors`.
 }
 \description{
 `plot()` methods for the objects returned by [lcda_grasp()], [lcda_gr()] and
-[lcda_ecg()]. The result carries the (simplified) graph it was fitted on, so
-`plot(res)` is enough; pass a graph as the second argument to draw the same
-partition on a different vertex layout or on the unsimplified original.
+[lcda_ecg()]. The result carries the graph it was fitted on, so `plot(res)`
+is enough; pass a graph as the second argument to draw the same partition on
+a different graph over the same vertex set.
 }
+\section{What is drawn}{
+
+The stored `x$graph` is the graph **as the kernels saw it**: [as_csr()]
+collapses multi-edges, so a multigraph is drawn (and was optimised) as its
+simple counterpart. Passing your own graph as `y` does not change that; it
+too is simplified before drawing, so that the figure always shows the graph
+the modularity was computed on. Vertex count and vertex order are preserved,
+only parallel edges are merged.
+}
+
 \examples{
 g <- igraph::make_graph("Zachary")
 res <- lcda_grasp(g, B = 20, seed = 1)

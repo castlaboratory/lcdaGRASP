@@ -23,7 +23,9 @@ community, and the output records that.}
 results produced by this package, which carry their own (simplified) graph.}
 
 \item{truth}{optional ground-truth community labels (a vector of length
-`vcount(graph)`, or a `communities` object). Enables the recovery metrics.}
+`vcount(graph)`, or a `communities` object). Enables the recovery metrics.
+The labels you supply are preserved: `truth_dominant` and `truth_label`
+report `"X"`, not the integer code `as.factor()` gives it.}
 
 \item{level}{one of `"overall"`, `"community"`, `"leader"`; see *Levels*.}
 
@@ -57,7 +59,13 @@ precomputed datasets in [lcda_data()].
   \item{`"overall"`}{One row per metric, in tidy long form with columns
     `algorithm`, `scope`, `metric`, `value`. `scope` groups the metrics into
     `"partition"`, `"leaders"`, `"recovery"` (only when `truth` is given),
-    `"search"`, and `"consensus"` (LCDA-ECG only). Long form is used because
+    `"search"`, and `"consensus"` (LCDA-ECG only). The two lexicographic
+    metrics in `"search"` appear only for [lcda_gr()], the one algorithm that
+    instruments the tie-break; they are absent, rather than reported as a
+    measured-looking zero, for [lcda_grasp()]. `elapsed_sec` times the search
+    only: it starts after the graph has been converted by [as_csr()], so it
+    is slightly smaller than timing the whole call from the outside (measured
+    at 0.3-2% on the paper's benchmarks). Long form is used because
     the metric set is heterogeneous and grows with the input; pivot with
     `tidyr::pivot_wider()` for a paper-style row.}
   \item{`"community"`}{One row per community: `size`, its `leader`, the
@@ -88,9 +96,14 @@ near 0.5 means the leaders are no better than chance.
 \section{Weighted graphs}{
 
 All edge sums are taken over the graph's `weight` attribute when present, so
-on a weighted graph the "edge" columns are weight sums and `degree` columns
-are strengths. `Q` is weight-aware; the NCE leader score is deliberately
-structural (unweighted), matching the algorithms.
+on a weighted graph the "edge" columns (`internal_edges`, `boundary_edges`,
+`total_edge_weight`) are weight sums and the `degree` columns are strengths.
+`Q` and `conductance` are weight-aware and stay in their usual ranges.
+Two quantities are deliberately **structural** (computed from edge counts,
+ignoring weights), because a weight sum in their numerator would push them
+out of their defining range: `internal_density`, which is a proportion of
+the possible pairs and therefore always in \[0, 1\], and the NCE leader
+score, which matches how the algorithms themselves treat weights.
 }
 
 \examples{

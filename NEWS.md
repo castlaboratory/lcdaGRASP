@@ -54,6 +54,20 @@ is untouched, and every addition below is reporting and plotting.
   `graph` (the simplified graph the kernels actually saw). Because the result
   is self-contained, `lcda_metrics(res)` and `plot(res)` need no second
   argument. The `print()` methods report the runtime and point at both.
+  `elapsed` times the search only, starting after the `as_csr()` conversion,
+  so it is 0.3-2% smaller than timing the whole call from outside.
+
+Two reporting choices worth knowing, both made so that no number is published
+where none was measured:
+
+* The lexicographic metrics (`lex_decisive_n`, `lex_decisive_pct`) are emitted
+  **only for `lcda_gr()`**, the one algorithm that instruments the tie-break.
+  For `lcda_grasp()` and `lcda_ecg()` they are absent rather than reported as a
+  measured-looking `0`.
+* `internal_density` is always **structural** (a proportion of the possible
+  pairs, hence always in `[0, 1]`) even on a weighted graph, where
+  `internal_edges` and `boundary_edges` are weight sums. `Q` and `conductance`
+  remain weight-aware.
 
 ## Notes
 

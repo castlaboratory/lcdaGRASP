@@ -40,7 +40,11 @@
       best_iter = object$best$iter, elapsed = object$elapsed,
       trace_Q = object$trace_Q, trace_H = object$trace_H,
       params = object$params,
-      lex_decisive = length(.lcda_or(object$lex_decisive_iters, integer(0))))
+      # Only lcda_gr() instruments the lexicographic tie-break. Leaving this
+      # NULL for lcda_grasp() keeps the metric absent rather than reporting a
+      # measured-looking 0 where no measurement was taken.
+      lex_decisive = if (is.null(object$lex_decisive_iters)) NULL
+                     else length(object$lex_decisive_iters))
   } else if (inherits(object, "lcda_ecg_result")) {
     algo <- "LCDA-ECG"
     membership <- object$membership
@@ -138,10 +142,18 @@
 .lcda_truth <- function(truth, n) {
   if (is.null(truth)) return(NULL)
   if (inherits(truth, "communities")) truth <- igraph::membership(truth)
-  truth <- as.integer(as.factor(truth))
-  if (length(truth) != n)
-    cli::cli_abort("{.arg truth} has length {length(truth)} but the graph has {n} vertices.")
-  truth
+  f <- as.factor(truth)
+  if (length(f) != n)
+    cli::cli_abort("{.arg truth} has length {length(f)} but the graph has {n} vertices.")
+  # Integer codes drive igraph::compare(); the original labels ride along so
+  # the reported ground-truth label is the user's own ("X"), not its code (1).
+  structure(as.integer(f), labels = levels(f))
+}
+
+# map integer codes back to the labels the user supplied
+.truth_label <- function(codes, truth) {
+  lab <- attr(truth, "labels")
+  if (is.null(lab)) codes else lab[codes]
 }
 
 # --- the public surface ------------------------------------------------------
@@ -166,7 +178,13 @@
 #'   \item{`"overall"`}{One row per metric, in tidy long form with columns
 #'     `algorithm`, `scope`, `metric`, `value`. `scope` groups the metrics into
 #'     `"partition"`, `"leaders"`, `"recovery"` (only when `truth` is given),
-#'     `"search"`, and `"consensus"` (LCDA-ECG only). Long form is used because
+#'     `"search"`, and `"consensus"` (LCDA-ECG only). The two lexicographic
+#'     metrics in `"search"` appear only for [lcda_gr()], the one algorithm that
+#'     instruments the tie-break; they are absent, rather than reported as a
+#'     measured-looking zero, for [lcda_grasp()]. `elapsed_sec` times the search
+#'     only: it starts after the graph has been converted by [as_csr()], so it
+#'     is slightly smaller than timing the whole call from the outside (measured
+#'     at 0.3-2% on the paper's benchmarks). Long form is used because
 #'     the metric set is heterogeneous and grows with the input; pivot with
 #'     `tidyr::pivot_wider()` for a paper-style row.}
 #'   \item{`"community"`}{One row per community: `size`, its `leader`, the
@@ -193,9 +211,14 @@
 #'
 #' @section Weighted graphs:
 #' All edge sums are taken over the graph's `weight` attribute when present, so
-#' on a weighted graph the "edge" columns are weight sums and `degree` columns
-#' are strengths. `Q` is weight-aware; the NCE leader score is deliberately
-#' structural (unweighted), matching the algorithms.
+#' on a weighted graph the "edge" columns (`internal_edges`, `boundary_edges`,
+#' `total_edge_weight`) are weight sums and the `degree` columns are strengths.
+#' `Q` and `conductance` are weight-aware and stay in their usual ranges.
+#' Two quantities are deliberately **structural** (computed from edge counts,
+#' ignoring weights), because a weight sum in their numerator would push them
+#' out of their defining range: `internal_density`, which is a proportion of
+#' the possible pairs and therefore always in \[0, 1\], and the NCE leader
+#' score, which matches how the algorithms themselves treat weights.
 #'
 #' @param object a fitted [lcda_grasp()], [lcda_gr()] or [lcda_ecg()] result; an
 #'   igraph `communities` object (e.g. from [igraph::cluster_louvain()]); a
@@ -206,6 +229,8 @@
 #'   results produced by this package, which carry their own (simplified) graph.
 #' @param truth optional ground-truth community labels (a vector of length
 #'   `vcount(graph)`, or a `communities` object). Enables the recovery metrics.
+#'   The labels you supply are preserved: `truth_dominant` and `truth_label`
+#'   report `"X"`, not the integer code `as.factor()` gives it.
 #' @param level one of `"overall"`, `"community"`, `"leader"`; see *Levels*.
 #' @param node_score optional numeric vector of length `vcount(graph)` holding
 #'   an external per-node signal against which to score the leaders; see
@@ -249,6 +274,12 @@ lcda_metrics <- function(object, graph = NULL, truth = NULL,
   if (!is.null(node_score)) {
     if (!is.numeric(node_score) || length(node_score) != s$csr$n)
       cli::cli_abort("{.arg node_score} must be a numeric vector of length {s$csr$n}.")
+    # A single NA silently poisons every rank and percentile in its community,
+    # and the summary means for the whole graph. Refuse rather than report it.
+    if (anyNA(node_score) || any(!is.finite(node_score)))
+      cli::cli_abort(c(
+        "{.arg node_score} must be finite: found {sum(is.na(node_score) | !is.finite(node_score))} non-finite value{?s}.",
+        i = "Impute or drop them first; a single {.val NA} would poison its whole community's ranking."))
   }
   switch(level,
     overall   = .lcda_metrics_overall(s, truth, node_score),
@@ -305,13 +336,14 @@ lcda_metrics <- function(object, graph = NULL, truth = NULL,
   }
 
   if (!is.null(truth)) {
+    tc <- as.integer(truth)      # bare codes, no attributes, for the C kernels
     out[[length(out) + 1L]] <- add("recovery",
-      nmi = igraph::compare(truth, mem, method = "nmi"),
-      ari = igraph::compare(truth, mem, method = "adjusted.rand"),
-      rand = igraph::compare(truth, mem, method = "rand"),
-      vi = igraph::compare(truth, mem, method = "vi"),
-      split_join = igraph::compare(truth, mem, method = "split.join"),
-      n_communities_truth = length(unique(truth)))
+      nmi = igraph::compare(tc, mem, method = "nmi"),
+      ari = igraph::compare(tc, mem, method = "adjusted.rand"),
+      rand = igraph::compare(tc, mem, method = "rand"),
+      vi = igraph::compare(tc, mem, method = "vi"),
+      split_join = igraph::compare(tc, mem, method = "split.join"),
+      n_communities_truth = length(unique(tc)))
   }
 
   ex <- s$extras
@@ -335,7 +367,11 @@ lcda_metrics <- function(object, graph = NULL, truth = NULL,
     if (!is.null(ex$is_overlap)) c(overlap_nodes = sum(ex$is_overlap),
                                    overlap_frac = mean(ex$is_overlap)),
     if (!is.null(ex$leaders_central)) c(
-      leaders_agree_with_central = sum(sort(lead) == sort(ex$leaders_central))))
+      # size of the intersection, NOT a positional comparison of two sorted
+      # vectors: the consensus and central leader sets can differ in length and
+      # agree on a subset that sits at different positions.
+      leaders_agree_with_central = length(intersect(lead, ex$leaders_central)),
+      leaders_agree_frac = length(intersect(lead, ex$leaders_central)) / length(lead)))
   if (length(consensus)) out[[length(out) + 1L]] <- add("consensus", consensus)
 
   do.call(rbind, out)
@@ -354,10 +390,20 @@ lcda_metrics <- function(object, graph = NULL, truth = NULL,
   vol <- .group_sum(ef$w, cs, d)                       # sum of degrees/strengths
   keep <- cs == cd
   internal2 <- .group_sum(ef$w[keep], cs[keep], d)     # 2 * internal weight
+  # Structural (unweighted) twin of internal2, used for the density: a density
+  # must be a proportion of the *possible pairs*, so mixing a weight sum into
+  # its numerator would let it exceed 1 on a weighted graph.
+  internal2_count <- .group_sum(rep(1, sum(keep)), cs[keep], d)
   cut <- vol - internal2
   denom <- pmin(vol, two_m - vol)
 
   leader_of <- rep(NA_integer_, d)
+  if (anyDuplicated(mem[lead])) {
+    dup <- unique(mem[lead][duplicated(mem[lead])])
+    cli::cli_warn(c(
+      "Community {.val {dup}} has more than one leader; the community level shows only the last.",
+      i = "Use {.code level = \"leader\"} to see all of them."))
+  }
   leader_of[mem[lead]] <- lead
   deg <- .group_sum(ef$w, ef$src, csr$n)
 
@@ -373,7 +419,11 @@ lcda_metrics <- function(object, graph = NULL, truth = NULL,
     # sum is twice the total boundary weight.
     internal_edges = internal2 / 2,
     boundary_edges = cut,
-    internal_density = ifelse(sizes > 1, (internal2 / 2) / (sizes * (sizes - 1) / 2), NA_real_),
+    # always a proportion of the possible pairs, hence always in [0, 1], even
+    # when `internal_edges` above is a weight sum
+    internal_density = ifelse(sizes > 1,
+                              (internal2_count / 2) / (sizes * (sizes - 1) / 2),
+                              NA_real_),
     conductance    = ifelse(denom > 0, cut / denom, NA_real_),
     # additive decomposition of modularity: these sum exactly to Q
     q_contribution = internal2 / two_m - (vol / two_m)^2)
@@ -389,7 +439,7 @@ lcda_metrics <- function(object, graph = NULL, truth = NULL,
     pur <- vapply(seq_len(d), function(k) {
       tb <- table(truth[mem == k]); max(tb) / sum(tb)
     }, numeric(1))
-    out$truth_dominant <- dom
+    out$truth_dominant <- .truth_label(dom, truth)
     out$purity <- pur
   }
   out
@@ -414,10 +464,13 @@ lcda_metrics <- function(object, graph = NULL, truth = NULL,
 
   # where does the leader sit in its own community's distribution of a score?
   # (used for within-community degree, and for any external score supplied)
+  # split() once instead of scanning `mem` per leader: the naive form is
+  # O(d * n) and costs ~0.8 s at d = 5000, n = 20000.
+  by_comm <- split(seq_len(n), factor(mem, levels = seq_len(max(mem))))
   rank_pct <- function(score) {
     r <- integer(length(lead)); p <- numeric(length(lead))
     for (i in seq_along(lead)) {
-      peers <- score[mem == mem[lead[i]]]
+      peers <- score[by_comm[[mem[lead[i]]]]]
       r[i] <- sum(peers > score[lead[i]]) + 1L
       p[i] <- if (length(peers) > 1) mean(peers <= score[lead[i]]) else 1
     }
@@ -459,6 +512,6 @@ lcda_metrics <- function(object, graph = NULL, truth = NULL,
   if (!is.null(ex$confidence)) out$confidence <- ex$confidence[lead]
   if (!is.null(ex$leaders_central))
     out$is_also_central <- lead %in% ex$leaders_central
-  if (!is.null(truth)) out$truth_label <- truth[lead]
+  if (!is.null(truth)) out$truth_label <- .truth_label(truth[lead], truth)
   out[order(out$community), ]
 }

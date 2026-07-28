@@ -18,7 +18,8 @@
 `lcda_ecg_result`.}
 
 \item{graph}{optional [igraph::igraph] to draw on; defaults to the graph
-stored in `object`.}
+stored in `object`. Simplified before drawing, exactly as in
+[plot.lcda_grasp_result()].}
 
 \item{layout}{optional layout matrix or layout function; defaults to
 Fruchterman-Reingold.}

@@ -216,13 +216,22 @@ lcda_plot_communities <- function(graph,
 #' Plot a fitted LCDA result as a community-and-leader map
 #'
 #' `plot()` methods for the objects returned by [lcda_grasp()], [lcda_gr()] and
-#' [lcda_ecg()]. The result carries the (simplified) graph it was fitted on, so
-#' `plot(res)` is enough; pass a graph as the second argument to draw the same
-#' partition on a different vertex layout or on the unsimplified original.
+#' [lcda_ecg()]. The result carries the graph it was fitted on, so `plot(res)`
+#' is enough; pass a graph as the second argument to draw the same partition on
+#' a different graph over the same vertex set.
+#'
+#' @section What is drawn:
+#' The stored `x$graph` is the graph **as the kernels saw it**: [as_csr()]
+#' collapses multi-edges, so a multigraph is drawn (and was optimised) as its
+#' simple counterpart. Passing your own graph as `y` does not change that; it
+#' too is simplified before drawing, so that the figure always shows the graph
+#' the modularity was computed on. Vertex count and vertex order are preserved,
+#' only parallel edges are merged.
 #'
 #' @param x a fitted `lcda_grasp_result`, `lcda_gr_result` or `lcda_ecg_result`.
-#' @param y optional [igraph::igraph] to draw on; defaults to the graph stored
-#'   in `x`.
+#' @param y optional [igraph::igraph] to draw on, with the same vertex set;
+#'   defaults to the graph stored in `x`. It is simplified before drawing, as
+#'   described above.
 #' @param ... further arguments passed to [plot_partition()].
 #' @return invisibly, a list with the `layout` used and the community `colors`.
 #' @seealso [plot_partition()], [lcda_plot_communities()], [lcda_metrics()].
@@ -312,7 +321,8 @@ plot.lcda_ecg_result <- function(x, y = NULL, ...) .lcda_plot_result(x, y, ...)
 #' @param object a fitted `lcda_grasp_result`, `lcda_gr_result` or
 #'   `lcda_ecg_result`.
 #' @param graph optional [igraph::igraph] to draw on; defaults to the graph
-#'   stored in `object`.
+#'   stored in `object`. Simplified before drawing, exactly as in
+#'   [plot.lcda_grasp_result()].
 #' @param layout optional layout matrix or layout function; defaults to
 #'   Fruchterman-Reingold.
 #' @param ... further arguments passed to the internal renderer
