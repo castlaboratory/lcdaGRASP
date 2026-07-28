@@ -61,7 +61,11 @@ overloading one version string:
   a *future* version, full coverage by both manifests, metadata
   agreement, and matching SHA-256 checksums.
 
-## lcdaGRASP 0.3.1
+- `MANIFEST.csv` is itself listed in `SHA256SUMS`, so the
+  release-identity manifest is covered by the same integrity check as
+  the data it describes; and `data-raw/999_manifest.R` now warns instead
+  of silently falling back to the current version when it cannot reach
+  git to derive `first_release`.
 
 ### Fixes
 
@@ -74,6 +78,11 @@ overloading one version string:
   [`geom_ribbon()`](https://ggplot2.tidyverse.org/reference/geom_ribbon.html)
   dropped every row. The dispersion is now computed before the mean, and
   the bands render again.
+
+## lcdaGRASP 0.3.1
+
+### Fixes
+
 - [`lcda_ecg()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_ecg.md)
   now passes the chosen `centrality` to the repair and local-search
   steps (previously the consensus leader was always eigenvector-based).
