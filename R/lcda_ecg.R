@@ -53,7 +53,11 @@
 #'   \code{overlap = TRUE} it
 #'   additionally carries \code{overlap_membership} (a length-n list of the
 #'   community ids each node belongs to) and \code{is_overlap} (logical, the
-#'   bridge nodes).
+#'   bridge nodes). It also carries the wall-clock \code{elapsed} time in
+#'   seconds and the (simplified) input \code{graph}, so that
+#'   \code{\link{lcda_metrics}()} and \code{\link{plot.lcda_ecg_result}()} can be
+#'   called on the result alone.
+#' @seealso \code{\link{lcda_metrics}()}, \code{\link{plot.lcda_ecg_result}()}.
 #' @examples
 #' g <- igraph::make_graph("Zachary")
 #' res <- lcda_ecg(g, B = 24, overlap = TRUE, tau = 0.6, seed = 1)
@@ -76,6 +80,7 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
   g   <- csr$igraph                                   # simplified, undirected
   n   <- csr$n
   el  <- igraph::as_edgelist(g, names = FALSE)        # m x 2, 1-based
+  t0  <- proc.time()[["elapsed"]]
   coassoc    <- numeric(nrow(el))
   lead_count <- integer(n)
 
@@ -151,6 +156,7 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
     is_overlap <- vapply(overlap_membership, length, integer(1)) > 1L
   }
 
+  elapsed <- proc.time()[["elapsed"]] - t0
   if (verbose) cli::cli_alert_success(
     "LCDA-ECG: Q = {round(Q, 6)}, {length(leaders)} communities, mean confidence {round(mean(conf), 3)}{if (overlap) paste0(', ', sum(is_overlap), ' overlap nodes') else ''}")
 
@@ -160,6 +166,7 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
          lead_count = lead_count, Q = Q,
          Q_consensus_weighted = Q_consensus_weighted,
          overlap_membership = overlap_membership, is_overlap = is_overlap,
+         elapsed = elapsed, graph = g,
          params = list(B = B, w_min = w_min, variant = variant,
                        centrality = centrality, similarity = similarity,
                        overlap = overlap, tau = tau)),
@@ -174,9 +181,11 @@ print.lcda_ecg_result <- function(x, ...) {
     "modularity Q (input)" = "{format(x$Q, digits = 6)}",
     "Q (consensus weights)" = "{format(x$Q_consensus_weighted, digits = 6)}",
     "pool size B"          = "{x$params$B}",
-    "mean node confidence" = "{format(mean(x$confidence), digits = 3)}")
+    "mean node confidence" = "{format(mean(x$confidence), digits = 3)}",
+    "elapsed (s)"          = "{format(x$elapsed, digits = 4)}")
   if (isTRUE(x$params$overlap))
     items <- c(items, "overlap nodes" = "{sum(x$is_overlap)} (tau = {x$params$tau})")
   cli::cli_dl(items)
+  cli::cli_alert_info("{.fn lcda_metrics} for the full metric table; {.fn plot} for the community-leader map.")
   invisible(x)
 }

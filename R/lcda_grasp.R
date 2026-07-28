@@ -418,12 +418,17 @@ lex_dominates <- function(Q_new, H_new, Q_old, H_old, tol = 1e-12) {
 #' @param verbose logical; show a cli progress bar and a final summary.
 #' @param seed integer RNG seed, or `NA` to leave the RNG untouched.
 #' @return an object of class `lcda_grasp_result`: best partition, Q/H traces,
-#'   and the parameters used.
+#'   the parameters used, the wall-clock `elapsed` time in seconds, and the
+#'   (simplified) input `graph`, so that [lcda_metrics()] and [plot()] can be
+#'   called on the result alone.
+#' @seealso [lcda_metrics()] for the paper's metric surface computed from a
+#'   result, and [plot.lcda_grasp_result()] for the community-and-leader map.
 #' @examples
 #' g <- igraph::make_graph("Zachary")
 #' res <- lcda_grasp(g, B = 20, seed = 1)
 #' res$best$Q
 #' res$best$leaders
+#' res$elapsed                       # wall-clock seconds
 #' @export
 lcda_grasp <- function(g,
                        alpha_c = 0.1, alpha_s = 0.3,
@@ -439,6 +444,7 @@ lcda_grasp <- function(g,
   if (!is.na(seed)) set.seed(seed)
   csr <- .as_csr(g)
   g <- csr$igraph   # use the simplified graph so H (degree/n) matches the CSR
+  t0 <- proc.time()[["elapsed"]]
   best <- list(Q = -Inf, H = -Inf, membership = NULL, leaders = NULL, iter = NA)
   trace_Q <- numeric(B)
   trace_H <- numeric(B)
@@ -459,6 +465,7 @@ lcda_grasp <- function(g,
     }
     if (verbose) cli::cli_progress_update()
   }
+  elapsed <- proc.time()[["elapsed"]] - t0
   if (verbose) {
     cli::cli_progress_done()
     cli::cli_alert_success(
@@ -466,6 +473,7 @@ lcda_grasp <- function(g,
   }
   structure(
     list(best = best, trace_Q = trace_Q, trace_H = trace_H,
+         elapsed = elapsed, graph = g,
          params = list(alpha_c = alpha_c, alpha_s = alpha_s, variant = variant,
                        B = B, centrality = centrality, similarity = similarity)),
     class = "lcda_grasp_result")
@@ -496,7 +504,10 @@ lcda_grasp <- function(g,
 #' @param verbose logical; show a cli progress bar and a final summary.
 #' @param seed integer RNG seed, or `NA` to leave the RNG untouched.
 #' @return an object of class `lcda_gr_result`: best partition, traces, the
-#'   reactive pool state, and the H-decisive iterations.
+#'   reactive pool state, the H-decisive iterations, the wall-clock `elapsed`
+#'   time in seconds, and the (simplified) input `graph`, so that
+#'   [lcda_metrics()] and [plot()] can be called on the result alone.
+#' @seealso [lcda_metrics()], [plot.lcda_gr_result()].
 #' @examples
 #' g <- igraph::make_graph("Zachary")
 #' res <- lcda_gr(g, B = 30, seed = 1)
@@ -524,6 +535,7 @@ lcda_gr <- function(g,
   csr <- .as_csr(g)
   g <- csr$igraph   # use the simplified graph so H (degree/n) matches the CSR
 
+  t0 <- proc.time()[["elapsed"]]
   Psi <- tibble::tibble(
     alpha_c = stats::runif(m, alpha_c_range[1], alpha_c_range[2]),
     alpha_s = stats::runif(m, alpha_s_range[1], alpha_s_range[2])
@@ -572,6 +584,7 @@ lcda_gr <- function(g,
     pk_history[it, ] <- p_k
     if (verbose) cli::cli_progress_update()
   }
+  elapsed <- proc.time()[["elapsed"]] - t0
   if (verbose) {
     cli::cli_progress_done()
     cli::cli_alert_success(
@@ -582,6 +595,7 @@ lcda_gr <- function(g,
     list(best = best, trace_Q = trace_Q, trace_H = trace_H, trace_k = trace_k,
          pk_history = pk_history, Psi = Psi, mu_k = mu_k, n_k = n_k,
          lex_decisive_iters = lex_decisive,
+         elapsed = elapsed, graph = g,
          params = list(B = B, m = m, y = y, variant = variant,
                        centrality = centrality, similarity = similarity)),
     class = "lcda_gr_result")
@@ -597,8 +611,10 @@ print.lcda_grasp_result <- function(x, ...) {
     "best Q"         = "{format(x$best$Q, digits = 6)}",
     "best H"         = "{format(x$best$H, digits = 4)}",
     "best iteration" = "{x$best$iter}",
-    "communities"    = "{length(x$best$leaders)}"
+    "communities"    = "{length(x$best$leaders)}",
+    "elapsed (s)"    = "{format(x$elapsed, digits = 4)}"
   ))
+  cli::cli_alert_info("{.fn lcda_metrics} for the full metric table; {.fn plot} for the community-leader map.")
   invisible(x)
 }
 
@@ -612,7 +628,9 @@ print.lcda_gr_result <- function(x, ...) {
     "best Q"           = "{format(x$best$Q, digits = 6)}",
     "best H"           = "{format(x$best$H, digits = 4)}",
     "best iter / pair" = "{x$best$iter} / {x$best$k}",
-    "H-decisive updates" = "{length(x$lex_decisive_iters)} ({sprintf('%.1f%%', pct)} of B)"
+    "H-decisive updates" = "{length(x$lex_decisive_iters)} ({sprintf('%.1f%%', pct)} of B)",
+    "elapsed (s)"        = "{format(x$elapsed, digits = 4)}"
   ))
+  cli::cli_alert_info("{.fn lcda_metrics} for the full metric table; {.fn plot} for the community-leader map.")
   invisible(x)
 }

@@ -25,10 +25,23 @@ export(centrality_closeness)
 # (similarity_*_cpp, rcl_*_cpp). No 1-based R wrappers exist yet, so they
 # are not exported. Add thin boundary wrappers before exposing them.
 
+# --- metrics surface (everything the paper's tables report)
+export(lcda_metrics)
+
 # --- S3 print methods
 S3method(print, lcda_grasp_result)
 S3method(print, lcda_gr_result)
 S3method(print, lcda_ecg_result)
+
+# --- S3 plot methods: the community-and-leader map
+S3method(plot, lcda_grasp_result)
+S3method(plot, lcda_gr_result)
+S3method(plot, lcda_ecg_result)
+
+# --- ggplot2 is only Suggested, so autoplot methods use delayed registration
+S3method(ggplot2::autoplot, lcda_grasp_result)
+S3method(ggplot2::autoplot, lcda_gr_result)
+S3method(ggplot2::autoplot, lcda_ecg_result)
 
 # --- statistics
 export(kruskal_then_permute)
@@ -41,15 +54,19 @@ export(graph_from_edgelist_simple)
 export(lcda_data)
 export(lcda_provenance)
 export(plot_partition)
+export(lcda_plot_communities)
 export(plot_grasp_trajectory)
 export(plot_reactive_pk)
 
 importFrom(igraph, "graph_from_adjacency_matrix", "as_adjacency_matrix",
            "betweenness", "closeness", "neighbors",
-           "ecount", "vcount", "is_directed", "is_simple", "simplify")
+           "ecount", "vcount", "is_directed", "is_simple", "simplify",
+           "compare", "layout_with_fr", "as_edgelist", "vertex_attr",
+           "vertex_attr_names", "plot.igraph")
 importFrom(Matrix, "Matrix", "sparseMatrix")
-importFrom(stats, "kruskal.test", "p.adjust", "runif", "setNames", "var")
-importFrom(graphics, "plot", "lines", "matplot")
-importFrom(grDevices, "hcl.colors")
+importFrom(stats, "kruskal.test", "median", "p.adjust", "runif", "sd",
+           "setNames", "var")
+importFrom(graphics, "plot", "legend", "lines", "matplot")
+importFrom(grDevices, "adjustcolor", "hcl.colors")
 importFrom(utils, "combn")
 importFrom(methods, "is")

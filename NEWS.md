@@ -1,3 +1,58 @@
+# lcdaGRASP (development version)
+
+## New features
+
+* `lcda_metrics()` — **one metric surface for everything the paper reports**.
+  Given a fitted result (and, optionally, a ground truth) it returns a tidy
+  table with modularity `Q`, the NCE leader score in both its global and its
+  community-conditioned form, recovery indices (NMI, ARI, Rand, VI,
+  split-join), the number and size distribution of the communities, wall-clock
+  runtime, and the search diagnostics (trace dispersion, best iteration, and
+  how often the lexicographic tie-break on `H` was decisive).
+  `level = "community"` and `level = "leader"` give the per-community and
+  per-leader breakdowns, including each community's additive contribution to
+  `Q` (they sum exactly to `Q`), its conductance and purity, and each leader's
+  within-community degree rank and percentile. Baselines that carry no leaders
+  (an `igraph` `communities` object, a bare membership vector) are accepted and
+  scored the same way, with derived leaders clearly flagged, so a paper-style
+  comparison table can be assembled from one function. (#45)
+
+  `node_score =` reproduces the paper's external leader validation on any
+  graph: pass a per-vertex outside signal and the leaders are ranked within
+  their own community by it, with the mean percentile and the top-1 / top-3 hit
+  rates summarised in a `leader_score` scope. The participation coefficient
+  (the statistic the paper uses to characterise bridge nodes) and the ensemble
+  overlap fraction are reported as well.
+
+* **Community-and-leader maps drawn by the package** (#44):
+  - `lcda_plot_communities()` runs the whole pipeline on a bare graph — detect
+    communities, designate leaders, render the figure — in one call, and
+    returns the fitted result so it can be piped into `lcda_metrics()`.
+  - `plot()` methods for `lcda_grasp_result`, `lcda_gr_result` and
+    `lcda_ecg_result` plot a fitted result directly.
+  - `ggplot2::autoplot()` methods return the same figure as a `ggplot` object
+    (\pkg{ggplot2} stays a *Suggested* dependency; the base-graphics path has
+    no extra requirements).
+  - `plot_partition()` gained `layout`, `leader_labels`, `legend`,
+    `legend_max`, `vertex_size`, `leader_size`, `palette`, `shade_edges`,
+    `mark_communities` and `main`. It now labels leaders, shades
+    intra-community edges by community, greys the inter-community ones, draws
+    a community/leader legend, and returns the layout and colours used so a
+    companion figure can reuse them. The previous call signature still works.
+
+* `lcda_grasp()`, `lcda_gr()` and `lcda_ecg()` results now carry `elapsed`
+  (wall-clock seconds, the runtime column of the paper's timing tables) and
+  `graph` (the simplified graph the kernels actually saw). Because the result
+  is self-contained, `lcda_metrics(res)` and `plot(res)` need no second
+  argument. The `print()` methods report the runtime and point at both.
+
+## Notes
+
+* The package version is deliberately left at 0.3.1: the shipped
+  `inst/extdata` datasets record the version that generated them and
+  `tests/testthat/test-data-versions.R` enforces the match, so the bump belongs
+  to a release commit that also regenerates the data.
+
 # lcdaGRASP 0.3.1
 
 ## Fixes
