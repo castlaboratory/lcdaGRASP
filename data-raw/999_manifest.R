@@ -30,9 +30,11 @@
   hit <- NULL
   for (d in cands) {
     desc <- file.path(d, "DESCRIPTION")
-    if (file.exists(desc) &&
-        any(grepl("^Package: lcdaGRASP", readLines(desc, warn = FALSE)))) {
-      hit <- normalizePath(d); break
+    is_pkg <- file.exists(desc) &&
+      any(grepl("^Package: lcdaGRASP", readLines(desc, warn = FALSE)))
+    if (is_pkg) {
+      hit <- normalizePath(d)
+      break
     }
   }
   if (is.null(hit)) stop("Could not locate the lcdaGRASP package directory.")
