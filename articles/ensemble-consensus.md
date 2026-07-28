@@ -25,7 +25,7 @@ res
 #> Q (consensus weights): 0.588951
 #> pool size B: 32
 #> mean node confidence: 0.83
-#> elapsed (s): 0.259
+#> elapsed (s): 0.188
 #> overlap nodes: 6 (tau = 0.6)
 #> ℹ `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.
 cat("consensus leaders:", res$leaders, "\n")

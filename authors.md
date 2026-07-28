@@ -15,7 +15,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/castlaboratory/lcdaGRASP/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/castlaboratory/lcdaGRASP/blob/v0.3.2/inst/CITATION)
 
 Ospina R, Silva G, Matos Junior FJ, Leite A, Ochi LS (2026). “A GRASP
 Framework for Community and Leader Detection in Complex Networks.”
