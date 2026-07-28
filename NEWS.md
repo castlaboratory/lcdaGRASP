@@ -53,6 +53,11 @@ version string:
 
 ## Fixes
 
+* Vignette `robustness-and-limits`: the two uncertainty ribbons (NMI vs mixing,
+  and leader spreading advantage) were silently missing. Both `summarise()`
+  calls overwrote a column with its own mean before taking `sd()` of it, so the
+  dispersion evaluated to `NA` and `geom_ribbon()` dropped every row. The
+  dispersion is now computed before the mean, and the bands render again.
 * `lcda_ecg()` now passes the chosen `centrality` to the repair and local-search
   steps (previously the consensus leader was always eigenvector-based).
 * `seed = NULL` (and `NA`) is accepted and means "leave the RNG untouched";
