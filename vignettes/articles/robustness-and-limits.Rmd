@@ -235,8 +235,10 @@ than point estimates alone.
 # Reproducibility and data provenance
 
 Every figure here is read from datasets shipped with the package; nothing is
-simulated at build time. Each records the package version and generation date
-and ships with a SHA-256 checksum (matching `inst/extdata/SHA256SUMS`):
+simulated at build time. Each dataset records the package version that **generated** it (not
+necessarily the version you installed: the generators are re-run only when the
+algorithms change), the release it first shipped in, and a SHA-256 checksum
+matching `inst/extdata/SHA256SUMS`:
 
 ```{r provenance}
 do.call(rbind, lapply(c("lfr_robustness", "eda_replicates", "degeneracy"),

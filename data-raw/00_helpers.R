@@ -82,6 +82,23 @@ BENCHMARKS <- tibble::tribble(
 
 # ---- metadata (Box lens: always state context/source/sample/limitations) ---
 
+# Exact source state that produced a dataset. `pkg_version` alone is ambiguous
+# because data is often generated from a development tree that still carries
+# the previous released version (this is what happened between v0.3.1 and
+# 0.3.2); the commit SHA disambiguates it. NA when git is unavailable, and
+# suffixed "-dirty" when the tree had uncommitted changes.
+.git_state <- function() {
+  git <- function(...) {
+    out <- suppressWarnings(system2("git", c("-C", shQuote(PKG_DIR), ...),
+                                    stdout = TRUE, stderr = FALSE))
+    if (!is.null(attr(out, "status")) && attr(out, "status") != 0) character() else out
+  }
+  sha <- git("rev-parse", "--short=12", "HEAD")
+  if (!length(sha) || !nzchar(sha[1])) return(NA_character_)
+  dirty <- length(git("status", "--porcelain", "--untracked-files=no")) > 0
+  paste0(sha[1], if (dirty) "-dirty" else "")
+}
+
 make_meta <- function(title, description, seed, ..., limitations = character()) {
   list(
     title         = title,
@@ -89,6 +106,7 @@ make_meta <- function(title, description, seed, ..., limitations = character()) 
     generated_on  = as.character(Sys.Date()),
     generated_at  = as.character(Sys.time()),
     pkg_version   = as.character(utils::packageVersion("lcdaGRASP")),
+    git_commit    = .git_state(),
     R_version     = R.version.string,
     igraph_version= as.character(utils::packageVersion("igraph")),
     seed          = seed,

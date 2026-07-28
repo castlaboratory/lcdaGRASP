@@ -1,6 +1,10 @@
 ## Submission
 
-New submission of lcdaGRASP 0.3.1.
+New submission of lcdaGRASP 0.3.2.
+
+(0.3.1 was tagged on GitHub but never submitted to CRAN. 0.3.2 is the first
+version whose `DESCRIPTION` matches the full set of shipped datasets; see
+NEWS.md.)
 
 ## R CMD check results
 
@@ -20,7 +24,7 @@ The source tarball is ~400 KB (the Python virtual environment used only by the
 
 ## Test environments
 
-* local: macOS (aarch64), R 4.6.0 — `devtools::test()`: 111 pass, 0 fail.
+* local: macOS (aarch64), R 4.6.0 — `devtools::test()`: 120 pass, 0 fail.
 * GitHub Actions: Ubuntu, macOS, Windows (R release) — all green.
 * win-builder (devel and release): pending.
 
