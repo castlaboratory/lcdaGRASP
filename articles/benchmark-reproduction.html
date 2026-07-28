@@ -88,8 +88,11 @@ numbers on the five benchmark networks while keeping the <strong>whole
 distribution</strong> over replications, and we compare against
 <code>igraph</code>’s Louvain <em>and</em> Leiden under a like-for-like
 multi-restart protocol.</p>
-<p><strong>Source.</strong> Newman netdata collection
-(websites.umich.edu/~mejn) + igraph::make_graph(‘Zachary’)</p>
+<p><strong>Source.</strong> Classical benchmark networks: karate
+(Zachary 1977, via igraph::make_graph(‘Zachary’)), dolphins (Lusseau et
+al. 2003), football (Girvan &amp; Newman 2002), polbooks (Krebs,
+unpublished), polblogs (Adamic &amp; Glance 2005). GML files from the
+Newman netdata collection (websites.umich.edu/~mejn).</p>
 <p><strong>Generated.</strong> 2026-05-31 with lcdaGRASP 0.3.1, R
 version 4.6.0 (2026-04-24) (seed 20260527, 30 reps).</p>
 <p><strong>Limitations.</strong></p>
@@ -327,8 +330,8 @@ matching <code>inst/extdata/SHA256SUMS</code>:</p>
 <span><span class="co">#&gt; 1 repro_benchmarks        0.3.1   2026-05-31         0.3.1      0.3.2</span></span>
 <span><span class="co">#&gt; 2    repro_summary        0.3.1   2026-05-31         0.3.1      0.3.2</span></span>
 <span><span class="co">#&gt;                                                             sha256</span></span>
-<span><span class="co">#&gt; 1 566986748aa3a254b96255249b32dbbef3aa66cf21699e4befad6b2dd44b617d</span></span>
-<span><span class="co">#&gt; 2 0a140370d6b7ce2272808592c0c82d3945a4ae21b328638c2cc3ba18f77cdbbe</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 2e086d88f2ebd85a67eec35c9bf6c9da1515d8f59e8b57f33ccc76ad7af0aba5</span></span>
+<span><span class="co">#&gt; 2 1c69543fc7808ea9cd9c4b410b4fb74d1f5d7ee2410a7c2ab1fd8695d5ee091a</span></span></code></pre></div>
 <p>Regenerate with <code>data-raw/10_repro_benchmarks.R</code> (single
 documented seed, 30 restarts).</p>
 <p><strong>Honest reading.</strong> On the four small networks the

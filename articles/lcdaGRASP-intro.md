@@ -52,7 +52,7 @@ print(res)
 #> best H: 0.84
 #> best iteration: 4
 #> communities: 3
-#> elapsed (s): 0.202
+#> elapsed (s): 0.204
 #> ℹ `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.
 ```
 
@@ -87,7 +87,7 @@ print(res_r)
 #> best H: 0.7377
 #> best iter / pair: 5 / 17
 #> H-decisive updates: 0 (0.0% of B)
-#> elapsed (s): 0.934
+#> elapsed (s): 0.939
 #> ℹ `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.
 plot_reactive_pk(res_r)
 ```

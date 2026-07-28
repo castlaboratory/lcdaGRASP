@@ -481,11 +481,11 @@ do.call(rbind, lapply(c("doe_screening", "doe_rsm", "pool_sensitivity",
 #> 4      prop6_summary        0.3.1   2026-05-31         0.3.1      0.3.2
 #> 5 prop6_trajectories        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
-#> 1 c234866d721849cef733b649fe45b38266dd57f31fb560ae538f399ae9652651
-#> 2 d99ff5f6b05eb69362af64453c7fb77612fc1e2c3250c9e68e0deb49b9a78d17
-#> 3 e7cf34cf748280eae1dfb042a7e6ee9fa67fd6cb6b99b36121d170388d1f38b6
-#> 4 cdd1df0582a9edc1cf006e757bdfad140a3833e79316503d5babee3cb5584059
-#> 5 534f7e98fa547273eb701acb1a4e9937851bf1152c8f73fd01258161b2cbb6eb
+#> 1 a5b9f5adb375fde4e19a4f2e79042446e27850594119962dadd153e80748e756
+#> 2 fa633cdae20fa769f9d9667f3a4a63f6e9f8a449c0bc6d98143bffe5e183808f
+#> 3 09e6def858f54ae428965183677ee8b84470da005af6486a7f50125563c2101a
+#> 4 b5d8ad6849a740601e718bfeae9590ccc09f12ee8e1a4067f9096b69374fa298
+#> 5 ed9eb7c9f214cf30e5224a774ec9ecc7111c10197114233455f5ef9e2179eadb
 ```
 
 Regenerate with `data-raw/20_doe_experiment.R`,

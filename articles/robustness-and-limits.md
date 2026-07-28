@@ -318,9 +318,9 @@ do.call(rbind, lapply(c("lfr_robustness", "eda_replicates", "degeneracy"),
 #> 2 eda_replicates        0.3.1   2026-05-31         0.3.1      0.3.2
 #> 3     degeneracy        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
-#> 1 74f90ed93192d1c022e3194420a5b0695ec4555abdfd77b84e6ffc630cd222f6
-#> 2 d151c78e9c653bc57829279b774bab310df7be1c2ee246d4c13fa75675276edc
-#> 3 997dae8d28e25527cf7732b6ac109283cb8d80904b0b90a775d3d609b6ecbd79
+#> 1 255da4a8af35fcb90173eb1e52ed931dbf4deba9c436b873724d5619506c599e
+#> 2 4ae5d53c96d4962cc18ec7d4605a6a61197acdb15ce92b4ee29d8816f5ded28e
+#> 3 2d94a87c44287c36f726b61ab377bac19ae97a3faa3612bab2da6dc785777b1b
 ```
 
 Regenerate with `data-raw/30_lfr_robustness.R`, `data-raw/70_eda.R` and

@@ -8,8 +8,11 @@ the **whole distribution** over replications, and we compare against
 `igraph`’s Louvain *and* Leiden under a like-for-like multi-restart
 protocol.
 
-**Source.** Newman netdata collection (websites.umich.edu/~mejn) +
-igraph::make_graph(‘Zachary’)
+**Source.** Classical benchmark networks: karate (Zachary 1977, via
+igraph::make_graph(‘Zachary’)), dolphins (Lusseau et al. 2003), football
+(Girvan & Newman 2002), polbooks (Krebs, unpublished), polblogs (Adamic
+& Glance 2005). GML files from the Newman netdata collection
+(websites.umich.edu/~mejn).
 
 **Generated.** 2026-05-31 with lcdaGRASP 0.3.1, R version 4.6.0
 (2026-04-24) (seed 20260527, 30 reps).
@@ -158,8 +161,8 @@ do.call(rbind, lapply(c("repro_benchmarks", "repro_summary"), lcda_provenance))
 #> 1 repro_benchmarks        0.3.1   2026-05-31         0.3.1      0.3.2
 #> 2    repro_summary        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
-#> 1 566986748aa3a254b96255249b32dbbef3aa66cf21699e4befad6b2dd44b617d
-#> 2 0a140370d6b7ce2272808592c0c82d3945a4ae21b328638c2cc3ba18f77cdbbe
+#> 1 2e086d88f2ebd85a67eec35c9bf6c9da1515d8f59e8b57f33ccc76ad7af0aba5
+#> 2 1c69543fc7808ea9cd9c4b410b4fb74d1f5d7ee2410a7c2ab1fd8695d5ee091a
 ```
 
 Regenerate with `data-raw/10_repro_benchmarks.R` (single documented

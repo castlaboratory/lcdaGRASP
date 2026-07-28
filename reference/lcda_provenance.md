@@ -65,5 +65,5 @@ lcda_provenance("repro_summary")
 #>         dataset generated_by generated_on first_release shipped_in
 #> 1 repro_summary        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
-#> 1 0a140370d6b7ce2272808592c0c82d3945a4ae21b328638c2cc3ba18f77cdbbe
+#> 1 1c69543fc7808ea9cd9c4b410b4fb74d1f5d7ee2410a7c2ab1fd8695d5ee091a
 ```

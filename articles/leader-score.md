@@ -79,7 +79,7 @@ lcda_provenance("nce_alternatives")
 #>            dataset generated_by generated_on first_release shipped_in
 #> 1 nce_alternatives        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
-#> 1 4c84047682a77fd82555cc1b791668406d186afdecfa3ef453e3c2379c878d09
+#> 1 19271bb3e20da57a7bf0bd51045f7fc92f925b2993d11d29ec0763a1c72f92a3
 ```
 
 Regenerate with `data-raw/80_nce.R` (single documented seed).

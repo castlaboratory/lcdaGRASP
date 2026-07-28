@@ -25,7 +25,7 @@ res
 #> Q (consensus weights): 0.588951
 #> pool size B: 32
 #> mean node confidence: 0.83
-#> elapsed (s): 0.264
+#> elapsed (s): 0.259
 #> overlap nodes: 6 (tau = 0.6)
 #> ℹ `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.
 cat("consensus leaders:", res$leaders, "\n")
@@ -135,9 +135,9 @@ do.call(rbind, lapply(c("lcda_ecg", "overlap_lcda_ecg", "stability_pool"),
 #> 2 overlap_lcda_ecg        0.3.1   2026-05-31         0.3.1      0.3.2
 #> 3   stability_pool        0.3.1   2026-05-31         0.3.1      0.3.2
 #>                                                             sha256
-#> 1 172581aeea1a12d65fc8941a43bb6bb746db032c39efe30a5bb18975330a98e8
-#> 2 4ef193c4d6be50dac15a62599cb41e34a79dfef47103f21d44d5713ed7dc7250
-#> 3 a0d9318110e5a826fb9711e6bd54a9a6091dee28218f1b4a9d7a4a90d6cb5386
+#> 1 21a96e3f8a41022f1402b8060666cd4a9b7814341e90e3d614badfde6ba7d031
+#> 2 9e87fd947cefe6331fa4e88fde3460b44eb919dd11f932d3f0c3ed9e9e3be90b
+#> 3 468b06a04023591fd3e009f6833c2eff1ba6bdca0018363dd183586e643c595f
 ```
 
 Regenerate with `data-raw/97_lcda_ecg.R`,

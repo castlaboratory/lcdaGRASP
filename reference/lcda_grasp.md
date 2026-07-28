@@ -78,5 +78,5 @@ res$best$Q
 res$best$leaders
 #> [1] 34  1  6
 res$elapsed                       # wall-clock seconds
-#> [1] 0.124
+#> [1] 0.117
 ```
