@@ -114,6 +114,7 @@ meta <- make_meta(
                       "plus the IC-spread advantage of the LCDA leaders over an equal-size top-degree",
                       "seed set as a function of mu. Tests whether the leader-utility advantage grows",
                       "as communities strengthen (mu decreases)."),
+  network_source = SRC_LFR,
   seed = 20260529, reps = REPS, n = N, mc = MC, p_ic = PIC,
   generator = "canonical LFR (Lancichinetti-Fortunato-Radicchi 2008) via networkx 3.6.1 (.venv-lfr); tau1=2.5, tau2=1.5, avg_degree=12, comm in [20,60]",
   limitations = c(

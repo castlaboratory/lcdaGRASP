@@ -48,6 +48,7 @@ results <- grid |>
 meta <- make_meta(
   title = "Replicated (Q, H) for EDA (Tukey lens)",
   description = "30 replications per (graph x algorithm x centrality x similarity) of best Q and H, with timing. Real benchmark networks (Karate/Dolphins/Football/Books).",
+  network_source = src_newman(c("karate", "dolphins", "football", "polbooks")),
   seed = 1, reps = REPS,
   limitations = c("PolBlogs omitted here for runtime; covered in the benchmark-reproduction dataset.",
                   "alpha fixed at the paper defaults (0.1, 0.3) for the fixed-GRASP arm."))

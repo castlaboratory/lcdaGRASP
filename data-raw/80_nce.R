@@ -70,6 +70,7 @@ for (gname in names(graphs)) {
 meta <- make_meta(
   title = "NCE leader-score alternatives (global vs community-conditioned)",
   description = "How often the designated leader changes when switching from the paper's global NCE to the proposed community-conditioned (local) NCE. A non-trivial change fraction means the NCE choice materially decides who is called a leader.",
+  network_source = paste(src_newman(c("karate", "dolphins", "polbooks")), SRC_SBM, "-- SBM(300, 5 blocks, p_in=0.12, p_out=0.02)"),
   seed = 1, reps = 10,
   limitations = c("Leaders are re-picked as the in-community argmax of each score, holding the partition fixed.",
                   "Mix uses lambda=0.5; the trade-off is not optimised."))

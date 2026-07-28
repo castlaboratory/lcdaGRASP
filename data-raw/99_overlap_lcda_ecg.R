@@ -131,6 +131,7 @@ meta <- make_meta(
   description = paste("Soft co-association assignment yields overlapping communities. Validated on LFR:",
                       "hard-core recovery preserved, and overlap nodes are structural bridges (higher",
                       "participation coefficient). No overlapping ground truth (networkx LFR is disjoint)."),
+  network_source = paste(SRC_LFR, "-- plus a qualitative run on", SRC_ZACHARY),
   seed = 20260529, tau = TAU, mus = MUS, ngraph = NGR, b_ensemble = BENS,
   limitations = c("No planted overlap (networkx LFR is disjoint); validity shown via bridge structure, not overlapping-NMI.",
                   "tau controls overlap aggressiveness; reported at a single value.",

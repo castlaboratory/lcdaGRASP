@@ -55,6 +55,7 @@ for (gname in names(graphs)) {
 meta <- make_meta(
   title = "Modularity degeneracy audit (Good et al. 2010)",
   description = "Number of distinct near-best partitions (Q within epsilon of the max over B constructions) and their mean pairwise NMI, per network. Mean NMI well below 1 at small epsilon = the reported partition is one of many equivalent ones.",
+  network_source = paste(src_newman(c("karate", "dolphins", "polbooks")), SRC_SBM, "-- SBM(800, 2 blocks, p_in=0.06, p_out=0.005)"),
   seed = 1000, B = B,
   limitations = c("Real networks for karate/dolphins/polbooks; an SBM proxy stands in for PolBlogs scale.",
                   "Degeneracy is assessed only among the partitions the metaheuristic actually visited."))

@@ -75,6 +75,7 @@ meta <- make_meta(
                       "C++/Rcpp kernels. Political Blogs collapsed to a weighted simple graph",
                       "(sum of weights = paper's directed edge count), so weighted modularity matches",
                       "the paper's scale. Replaces the duplicated LCDA-GR rows with genuine numbers."),
+  network_source = paste(src_newman("polblogs"), "Collapsed to an undirected simple graph whose edge weights are the directed multiplicities."),
   seed = 20260529, nrep = NREP,
   limitations = c("Times are the package's C++/Rcpp kernels (faster than a pure-R implementation).",
                   "Closeness now uses harmonic centrality on the disconnected graph (robust fallback)."))

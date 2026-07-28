@@ -71,6 +71,7 @@ screening <- screen_grid |>
 meta_screen <- make_meta(
   title = "DoE screening: full factorial (variant x centrality x similarity x 2-level alpha)",
   description = "LCDA-GRASP best Q over a 2x2x2x3x3 factorial, replicated, on 4 benchmark networks. Drives ANOVA / effect (Pareto) analysis to identify which factors matter.",
+  network_source = src_newman(SCREEN_NETS),
   seed = 424242, reps = SCREEN_REPS, B = B_SCREEN,
   coding = list(alpha_c = c(`-1` = ac_lo, `+1` = ac_hi),
                 alpha_s = c(`-1` = as_lo, `+1` = as_hi)),
@@ -129,6 +130,7 @@ rsm <- rsm_grid |>
 meta_rsm <- make_meta(
   title = "DoE response surface: rotatable CCD in (alpha_c, alpha_s)",
   description = "LCDA-GRASP best Q over a 13-point central composite design (4 factorial + 4 axial + 5 center) in coded (alpha_c, alpha_s), replicated, on all 5 networks, for variants 1 and 2. Drives the second-order model + canonical analysis in the vignette.",
+  network_source = src_newman(BENCHMARKS$network),
   seed = 424242, reps = RSM_REPS, B = B_RSM, ccd_alpha = ccd_alpha,
   coding = list(alpha_c = c(center = ac_c0, half_range = ac_hr),
                 alpha_s = c(center = as_c0, half_range = as_hr)),

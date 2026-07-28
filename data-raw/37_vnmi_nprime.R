@@ -83,6 +83,7 @@ meta <- make_meta(
                       "n' for sparse LFR (deg 12), dense LFR (deg 50) and Political Blogs.",
                       "Characterises the cost-based default n'=300: how far Q has converged and",
                       "how time grows with n'."),
+  network_source = paste0(SRC_LFR, " -- sparse (avg degree 12) and dense (avg degree 60) regimes. Real-network regime: largest connected component of polblogs. ", src_newman("polblogs")),
   seed = 20260529, n_primes = NPRIMES, reps = REPS, n_lfr = N_LFR, alpha_c = AC, alpha_s = AS,
   limitations = c(
     "Single mu=0.3 for the LFR regimes; alpha_c/alpha_s at the paper defaults.",

@@ -92,6 +92,7 @@ meta <- make_meta(
   description = paste("Per-community leader coverage (<=2 hops) and within-community IC influence,",
                       "comparing LCDA's jointly-detected leader against the two-stage pipeline",
                       "(strong community detector + per-community top-eigenvector leader)."),
+  network_source = src_newman(NETS),
   seed = 20260529, mc = MC, p_ic = PIC,
   limitations = c("Leaders for two-stage use eigenvector centrality (the paper's recommended centrality).",
                   "Communities differ across methods, so this is an end-to-end pipeline comparison, not a fixed-community ablation.",

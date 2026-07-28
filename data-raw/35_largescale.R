@@ -58,6 +58,7 @@ meta <- make_meta(
   description = paste("NMI vs planted truth and wall-clock time for Louvain/Leiden/ECG/LCDA-GR/",
                       "LCDA-ECG on LFR networks up to n =", max(NS), ". Demonstrates scaling and",
                       "that the ensemble-consensus advantage persists (and grows) at scale."),
+  network_source = SRC_LFR,
   seed = 20260529, ns = NS, reps = REPS, mu = MU, b_gr = B_GR, b_ecg = B_ECG,
   limitations = c("Single mu=0.3; LFR (planted, disjoint) -- not a real attributed network.",
                   "ECG timing not recorded (Python subprocess); recovery only.",

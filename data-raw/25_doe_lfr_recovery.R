@@ -128,6 +128,7 @@ meta <- make_meta(
                       "modularity. Phase 1 screens variant/centrality/similarity; Phase 2 fits a",
                       "rotatable CCD in (alpha_c, alpha_s) at the best cell. Bounds the recovery gap",
                       "to Leiden/Louvain under optimised parameters."),
+  network_source = SRC_LFR,
   seed = 20260529, n = N, ngraph = NGRAPH, mus = MUS, b_screen = B_SCR, b_rsm = B_RSM,
   best_cell = paste(best_cell$variant, best_cell$centrality, best_cell$similarity),
   limitations = c(
