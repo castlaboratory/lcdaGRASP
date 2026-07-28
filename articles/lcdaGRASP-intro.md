@@ -52,6 +52,8 @@ print(res)
 #> best H: 0.84
 #> best iteration: 4
 #> communities: 3
+#> elapsed (s): 0.202
+#> ℹ `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.
 ```
 
 Set `verbose = TRUE` for a `cli` progress bar and a one-line summary:
@@ -85,6 +87,8 @@ print(res_r)
 #> best H: 0.7377
 #> best iter / pair: 5 / 17
 #> H-decisive updates: 0 (0.0% of B)
+#> elapsed (s): 0.934
+#> ℹ `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.
 plot_reactive_pk(res_r)
 ```
 
@@ -115,6 +119,124 @@ out$letters
 #>   a   b   c 
 #> "a" "b" "b"
 ```
+
+## From a result to the paper’s numbers
+
+[`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md)
+turns a fitted result into the quantities the paper’s tables report. The
+default level is a tidy long table grouped by *scope*: the partition (Q,
+community count, size distribution), the leaders (the NCE score in both
+forms, leader degrees, coverage), the search (runtime, the best
+iteration, trace dispersion, and how often the lexicographic tie-break
+on `H` was actually decisive), and — when a ground truth is supplied —
+recovery.
+
+``` r
+
+m <- lcda_metrics(res_r)
+subset(m, scope %in% c("partition", "search"))
+#> # A tibble: 21 × 4
+#>    algorithm scope     metric             value
+#>    <chr>     <chr>     <chr>              <dbl>
+#>  1 LCDA-GR   partition n_nodes           34    
+#>  2 LCDA-GR   partition n_edges           78    
+#>  3 LCDA-GR   partition total_edge_weight 78    
+#>  4 LCDA-GR   partition n_communities      4    
+#>  5 LCDA-GR   partition Q                  0.420
+#>  6 LCDA-GR   partition size_min           5    
+#>  7 LCDA-GR   partition size_median        8.5  
+#>  8 LCDA-GR   partition size_mean          8.5  
+#>  9 LCDA-GR   partition size_max          12    
+#> 10 LCDA-GR   partition size_sd            3.51 
+#> # ℹ 11 more rows
+```
+
+Pass `truth =` for the recovery indices (NMI, ARI, Rand, VI,
+split-join). The Zachary club’s documented split is the natural
+reference here:
+
+``` r
+
+truth <- c(rep(1, 17), rep(2, 17))
+subset(lcda_metrics(res_r, truth = truth), scope == "recovery")
+#> # A tibble: 6 × 4
+#>   algorithm scope    metric               value
+#>   <chr>     <chr>    <chr>                <dbl>
+#> 1 LCDA-GR   recovery nmi                  0.277
+#> 2 LCDA-GR   recovery ari                  0.139
+#> 3 LCDA-GR   recovery rand                 0.576
+#> 4 LCDA-GR   recovery vi                   1.46 
+#> 5 LCDA-GR   recovery split_join          25    
+#> 6 LCDA-GR   recovery n_communities_truth  2
+```
+
+Baselines that carry no leaders are accepted and scored through exactly
+the same code path, with their leaders derived as the top-eigenvector
+node of each community and flagged as such, so a comparison table is one
+[`rbind()`](https://rdrr.io/r/base/cbind.html) away:
+
+``` r
+
+subset(lcda_metrics(cluster_louvain(g), g, truth = truth), scope == "recovery")
+#> # A tibble: 6 × 4
+#>   algorithm   scope    metric               value
+#>   <chr>       <chr>    <chr>                <dbl>
+#> 1 multi level recovery nmi                  0.277
+#> 2 multi level recovery ari                  0.139
+#> 3 multi level recovery rand                 0.576
+#> 4 multi level recovery vi                   1.46 
+#> 5 multi level recovery split_join          25    
+#> 6 multi level recovery n_communities_truth  2
+```
+
+The per-community and per-leader breakdowns answer the questions the
+summary row cannot. Each community’s `q_contribution` sums exactly to Q,
+and each leader’s `degree_pctile_in_community` is the statistic the
+paper’s external leader validation uses.
+
+``` r
+
+lcda_metrics(res_r, level = "community")
+#> # A tibble: 4 × 11
+#>   algorithm community  size leader leader_name leader_degree internal_edges
+#>   <chr>         <int> <int>  <int> <chr>               <dbl>          <dbl>
+#> 1 LCDA-GR           1    11      1 1                      16             23
+#> 2 LCDA-GR           2    12     34 34                     17             21
+#> 3 LCDA-GR           3     6     25 25                      3              7
+#> 4 LCDA-GR           4     5      6 6                       4              6
+#> # ℹ 4 more variables: boundary_edges <dbl>, internal_density <dbl>,
+#> #   conductance <dbl>, q_contribution <dbl>
+lcda_metrics(res_r, level = "leader")
+#> # A tibble: 4 × 14
+#>   algorithm community leader leader_name community_size degree degree_within
+#>   <chr>         <int>  <int> <chr>                <int>  <dbl>         <dbl>
+#> 1 LCDA-GR           1      1 1                       11     16            10
+#> 2 LCDA-GR           2     34 34                      12     17            11
+#> 3 LCDA-GR           3     25 25                       6      3             3
+#> 4 LCDA-GR           4      6 6                        5      4             3
+#> # ℹ 7 more variables: degree_between <dbl>, eigen_centrality <dbl>,
+#> #   nce_node <dbl>, participation <dbl>, degree_rank_in_community <int>,
+#> #   degree_pctile_in_community <dbl>, source <chr>
+```
+
+## The community-and-leader map
+
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html) on a fitted
+result draws the partition with the elected leaders highlighted; the
+result carries the graph it was fitted on, so nothing else is needed.
+[`lcda_plot_communities()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_plot_communities.md)
+does the whole pipeline (detect communities, designate leaders, draw)
+from a bare graph in one call, and
+[`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
+returns the same figure as a `ggplot` object.
+
+``` r
+
+set.seed(1)
+plot(res_r)
+```
+
+![](lcdaGRASP-intro_files/figure-html/map-1.png)
 
 ## Community-conditioned NCE
 

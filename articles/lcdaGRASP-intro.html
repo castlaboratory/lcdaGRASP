@@ -133,7 +133,9 @@ and a <code>verbose</code> flag on every substantive function.</p>
 <span><span class="co">#&gt; best Q: 0.402038</span></span>
 <span><span class="co">#&gt; best H: 0.84</span></span>
 <span><span class="co">#&gt; best iteration: 4</span></span>
-<span><span class="co">#&gt; communities: 3</span></span></code></pre></div>
+<span><span class="co">#&gt; communities: 3</span></span>
+<span><span class="co">#&gt; elapsed (s): 0.202</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.</span></span></code></pre></div>
 <p>Set <code>verbose = TRUE</code> for a <code>cli</code> progress bar
 and a one-line summary:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -161,6 +163,8 @@ and a one-line summary:</p>
 <span><span class="co">#&gt; best H: 0.7377</span></span>
 <span><span class="co">#&gt; best iter / pair: 5 / 17</span></span>
 <span><span class="co">#&gt; H-decisive updates: 0 (0.0% of B)</span></span>
+<span><span class="co">#&gt; elapsed (s): 0.934</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.</span></span>
 <span><span class="fu"><a href="../reference/plot_reactive_pk.html">plot_reactive_pk</a></span><span class="op">(</span><span class="va">res_r</span><span class="op">)</span></span></code></pre></div>
 <p><img src="lcdaGRASP-intro_files/figure-html/reactive-1.png" class="r-plt" alt="" width="672"></p>
 <p>The print method reports the fraction of iterations in which the
@@ -189,6 +193,104 @@ contrasts and a compact-letter display:</p>
 <span><span class="co">#&gt; "a" "b" "b"</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="from-a-result-to-the-papers-numbers">From a result to the paper’s numbers<a class="anchor" aria-label="anchor" href="#from-a-result-to-the-papers-numbers"></a>
+</h2>
+<p><code><a href="../reference/lcda_metrics.html">lcda_metrics()</a></code> turns a fitted result into the quantities
+the paper’s tables report. The default level is a tidy long table
+grouped by <em>scope</em>: the partition (Q, community count, size
+distribution), the leaders (the NCE score in both forms, leader degrees,
+coverage), the search (runtime, the best iteration, trace dispersion,
+and how often the lexicographic tie-break on <code>H</code> was actually
+decisive), and — when a ground truth is supplied — recovery.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="va">res_r</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">scope</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"partition"</span>, <span class="st">"search"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 21 × 4</span></span></span>
+<span><span class="co">#&gt;    algorithm scope     metric             value</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> LCDA-GR   partition n_nodes           34    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> LCDA-GR   partition n_edges           78    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> LCDA-GR   partition total_edge_weight 78    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> LCDA-GR   partition n_communities      4    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> LCDA-GR   partition Q                  0.420</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> LCDA-GR   partition size_min           5    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> LCDA-GR   partition size_median        8.5  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> LCDA-GR   partition size_mean          8.5  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> LCDA-GR   partition size_max          12    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> LCDA-GR   partition size_sd            3.51 </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 11 more rows</span></span></span></code></pre></div>
+<p>Pass <code>truth =</code> for the recovery indices (NMI, ARI, Rand,
+VI, split-join). The Zachary club’s documented split is the natural
+reference here:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">17</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">17</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="fu"><a href="../reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="va">res_r</span>, truth <span class="op">=</span> <span class="va">truth</span><span class="op">)</span>, <span class="va">scope</span> <span class="op">==</span> <span class="st">"recovery"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   algorithm scope    metric               value</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> LCDA-GR   recovery nmi                  0.277</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> LCDA-GR   recovery ari                  0.139</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> LCDA-GR   recovery rand                 0.576</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> LCDA-GR   recovery vi                   1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> LCDA-GR   recovery split_join          25    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> LCDA-GR   recovery n_communities_truth  2</span></span></code></pre></div>
+<p>Baselines that carry no leaders are accepted and scored through
+exactly the same code path, with their leaders derived as the
+top-eigenvector node of each community and flagged as such, so a
+comparison table is one <code><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind()</a></code> away:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="fu"><a href="../reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/cluster_louvain.html" class="external-link">cluster_louvain</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>, <span class="va">g</span>, truth <span class="op">=</span> <span class="va">truth</span><span class="op">)</span>, <span class="va">scope</span> <span class="op">==</span> <span class="st">"recovery"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   algorithm   scope    metric               value</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> multi level recovery nmi                  0.277</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> multi level recovery ari                  0.139</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> multi level recovery rand                 0.576</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> multi level recovery vi                   1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> multi level recovery split_join          25    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> multi level recovery n_communities_truth  2</span></span></code></pre></div>
+<p>The per-community and per-leader breakdowns answer the questions the
+summary row cannot. Each community’s <code>q_contribution</code> sums
+exactly to Q, and each leader’s <code>degree_pctile_in_community</code>
+is the statistic the paper’s external leader validation uses.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="va">res_r</span>, level <span class="op">=</span> <span class="st">"community"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 11</span></span></span>
+<span><span class="co">#&gt;   algorithm community  size leader leader_name leader_degree internal_edges</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> LCDA-GR           1    11      1 1                      16             23</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> LCDA-GR           2    12     34 34                     17             21</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> LCDA-GR           3     6     25 25                      3              7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> LCDA-GR           4     5      6 6                       4              6</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: boundary_edges &lt;dbl&gt;, internal_density &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   conductance &lt;dbl&gt;, q_contribution &lt;dbl&gt;</span></span></span>
+<span><span class="fu"><a href="../reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="va">res_r</span>, level <span class="op">=</span> <span class="st">"leader"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 14</span></span></span>
+<span><span class="co">#&gt;   algorithm community leader leader_name community_size degree degree_within</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> LCDA-GR           1      1 1                       11     16            10</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> LCDA-GR           2     34 34                      12     17            11</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> LCDA-GR           3     25 25                       6      3             3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> LCDA-GR           4      6 6                        5      4             3</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: degree_between &lt;dbl&gt;, eigen_centrality &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   nce_node &lt;dbl&gt;, participation &lt;dbl&gt;, degree_rank_in_community &lt;int&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   degree_pctile_in_community &lt;dbl&gt;, source &lt;chr&gt;</span></span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="the-community-and-leader-map">The community-and-leader map<a class="anchor" aria-label="anchor" href="#the-community-and-leader-map"></a>
+</h2>
+<p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> on a fitted result draws the partition with the
+elected leaders highlighted; the result carries the graph it was fitted
+on, so nothing else is needed. <code><a href="../reference/lcda_plot_communities.html">lcda_plot_communities()</a></code> does
+the whole pipeline (detect communities, designate leaders, draw) from a
+bare graph in one call, and <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">ggplot2::autoplot()</a></code> returns the
+same figure as a <code>ggplot</code> object.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res_r</span><span class="op">)</span></span></code></pre></div>
+<p><img src="lcdaGRASP-intro_files/figure-html/map-1.png" class="r-plt" alt="" width="672"></p>
+</div>
+<div class="section level2">
 <h2 id="community-conditioned-nce">Community-conditioned NCE<a class="anchor" aria-label="anchor" href="#community-conditioned-nce"></a>
 </h2>
 <p>The paper’s NCE uses the <em>global</em> connection probability
@@ -196,7 +298,7 @@ contrasts and a compact-letter display:</p>
 alternative <code><a href="../reference/nce_local_score.html">nce_local_score()</a></code> measuring within-community
 connectivity entropy; the two can differ materially (see the <em>Leader
 score</em> article).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">H_global</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nce_score.html">nce_score</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">res_r</span><span class="op">$</span><span class="va">best</span><span class="op">$</span><span class="va">leaders</span><span class="op">)</span></span>
 <span><span class="va">H_local</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nce_local_score.html">nce_local_score</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">res_r</span><span class="op">$</span><span class="va">best</span><span class="op">$</span><span class="va">membership</span>, <span class="va">res_r</span><span class="op">$</span><span class="va">best</span><span class="op">$</span><span class="va">leaders</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"H (global, paper):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">H_global</span>, <span class="fl">4</span><span class="op">)</span>,</span>
@@ -209,7 +311,7 @@ score</em> article).</p>
 <p>The companion <em>Articles</em> render from precomputed results
 shipped under <code>inst/extdata/</code>, so they never re-run a
 simulation. List them with:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lcda_data.html">lcda_data</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 28 × 1</span></span></span>
 <span><span class="co">#&gt;    dataset              </span></span>

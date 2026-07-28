@@ -85,7 +85,12 @@ modularity `Q` (weight-aware; comparable to `lcda_grasp`/`lcda_gr`), and
 i.e. the objective the consensus optimised). When `overlap = TRUE` it
 additionally carries `overlap_membership` (a length-n list of the
 community ids each node belongs to) and `is_overlap` (logical, the
-bridge nodes).
+bridge nodes). It also carries the wall-clock `elapsed` time in seconds
+and the (simplified) input `graph`, so that
+[`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md)
+and
+[`plot.lcda_ecg_result()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.md)
+can be called on the result alone.
 
 ## Details
 
@@ -94,6 +99,11 @@ modularity objective and the local search inside each pool construction,
 but the similarity, centrality and NCE leader score remain *structural*
 (unweighted). The consensus re-clustering uses the ECG co-association
 weights, not the input weights.
+
+## See also
+
+[`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md),
+[`plot.lcda_ecg_result()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.md).
 
 ## Examples
 

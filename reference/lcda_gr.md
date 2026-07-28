@@ -71,7 +71,10 @@ lcda_gr(
 ## Value
 
 an object of class \`lcda_gr_result\`: best partition, traces, the
-reactive pool state, and the H-decisive iterations.
+reactive pool state, the H-decisive iterations, the wall-clock
+\`elapsed\` time in seconds, and the (simplified) input \`graph\`, so
+that \[lcda_metrics()\] and \[plot()\] can be called on the result
+alone.
 
 ## Details
 
@@ -79,6 +82,10 @@ Weighted graphs: a numeric \`weight\` edge attribute is honoured by the
 modularity objective and the local search, but the construction
 (similarity and centrality) and the NCE leader score remain
 \*structural\* (unweighted).
+
+## See also
+
+\[lcda_metrics()\], \[plot.lcda_gr_result()\].
 
 ## Examples
 

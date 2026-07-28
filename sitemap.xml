@@ -14,6 +14,7 @@
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/news/index.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/as_csr.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/as_graph.html</loc></url>
+<url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/autoplot.lcda.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/centrality_betweenness.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/centrality_closeness.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/centrality_eigen.html</loc></url>
@@ -26,6 +27,8 @@
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/lcda_gr.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/lcda_grasp.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/lcda_local_search.html</loc></url>
+<url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.html</loc></url>
+<url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/lcda_plot_communities.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/lcda_provenance.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/lcda_repair.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/lex_dominates.html</loc></url>
@@ -33,6 +36,7 @@
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/nce_local_score.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/nce_score.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/permutation_test.html</loc></url>
+<url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/plot_grasp_trajectory.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/plot_partition.html</loc></url>
 <url><loc>https://castlaboratory.github.io/lcdaGRASP/reference/plot_reactive_pk.html</loc></url>

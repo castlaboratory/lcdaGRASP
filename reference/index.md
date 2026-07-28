@@ -28,6 +28,14 @@ search).
   : First-improvement local search, with automatic VNMI dispatch for n
   \> 300.
 
+## Reporting
+
+Everything the paper’s tables report, computed from a fitted result: one
+tidy metric table, plus the per-community and per-leader breakdowns.
+
+- [`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md)
+  : Paper-grade metrics for a community-and-leader solution
+
 ## Quality scores
 
 Modularity, the NCE leader score (global and community-conditioned), and
@@ -78,8 +86,20 @@ The non-parametric procedure used in the paper’s experiments.
 
 ## Plotting
 
+The community-and-leader map, plus the search-diagnostic figures.
+
+- [`lcda_plot_communities()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_plot_communities.md)
+  : Detect communities and leaders on a graph, then plot them
 - [`plot_partition()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_partition.md)
-  : Plot a leader-community partition (leaders drawn larger).
+  : Plot a community partition with its leaders highlighted
+- [`plot(`*`<lcda_grasp_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.md)
+  [`plot(`*`<lcda_gr_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.md)
+  [`plot(`*`<lcda_ecg_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.md)
+  : Plot a fitted LCDA result as a community-and-leader map
+- [`autoplot(`*`<lcda_grasp_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/autoplot.lcda.md)
+  [`autoplot(`*`<lcda_gr_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/autoplot.lcda.md)
+  [`autoplot(`*`<lcda_ecg_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/autoplot.lcda.md)
+  : Community-and-leader map as a ggplot object
 - [`plot_grasp_trajectory()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_grasp_trajectory.md)
   : Plot the Q trajectory across GRASP iterations, with running maximum.
 - [`plot_reactive_pk()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_reactive_pk.md)

@@ -51,7 +51,9 @@ lcda_grasp(
 ## Value
 
 an object of class \`lcda_grasp_result\`: best partition, Q/H traces,
-and the parameters used.
+the parameters used, the wall-clock \`elapsed\` time in seconds, and the
+(simplified) input \`graph\`, so that \[lcda_metrics()\] and \[plot()\]
+can be called on the result alone.
 
 ## Details
 
@@ -59,6 +61,12 @@ Weighted graphs: a numeric \`weight\` edge attribute is honoured by the
 modularity objective and the local search, but the construction
 (similarity and centrality) and the NCE leader score remain
 \*structural\* (unweighted).
+
+## See also
+
+\[lcda_metrics()\] for the paper's metric surface computed from a
+result, and \[plot.lcda_grasp_result()\] for the community-and-leader
+map.
 
 ## Examples
 
@@ -69,4 +77,6 @@ res$best$Q
 #> [1] 0.4020381
 res$best$leaders
 #> [1] 34  1  6
+res$elapsed                       # wall-clock seconds
+#> [1] 0.124
 ```

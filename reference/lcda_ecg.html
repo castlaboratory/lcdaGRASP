@@ -143,7 +143,10 @@ affinity. Only used when <code>overlap = TRUE</code>.</p></dd>
   <code>overlap = TRUE</code> it
   additionally carries <code>overlap_membership</code> (a length-n list of the
   community ids each node belongs to) and <code>is_overlap</code> (logical, the
-  bridge nodes).</p>
+  bridge nodes). It also carries the wall-clock <code>elapsed</code> time in
+  seconds and the (simplified) input <code>graph</code>, so that
+  <code><a href="lcda_metrics.html">lcda_metrics()</a></code> and <code><a href="plot.lcda.html">plot.lcda_ecg_result()</a></code> can be
+  called on the result alone.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -152,6 +155,10 @@ modularity objective and the local search inside each pool construction, but
 the similarity, centrality and NCE leader score remain <em>structural</em>
 (unweighted). The consensus re-clustering uses the ECG co-association weights,
 not the input weights.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="lcda_metrics.html">lcda_metrics()</a></code>, <code><a href="plot.lcda.html">plot.lcda_ecg_result()</a></code>.</p></div>
     </div>
 
     <div class="section level2">

@@ -68,5 +68,5 @@ sol <- lcda_repair(csr, sol)
 sol <- lcda_local_search(csr, sol)
 c(communities = sol$d, leaders = length(sol$leaders))
 #> communities     leaders 
-#>           2           2 
+#>           3           3 
 ```

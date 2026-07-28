@@ -98,13 +98,20 @@
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>an object of class `lcda_grasp_result`: best partition, Q/H traces,
-  and the parameters used.</p>
+  the parameters used, the wall-clock `elapsed` time in seconds, and the
+  (simplified) input `graph`, so that [lcda_metrics()] and [plot()] can be
+  called on the result alone.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Weighted graphs: a numeric `weight` edge attribute is honoured by the
 modularity objective and the local search, but the construction (similarity
 and centrality) and the NCE leader score remain *structural* (unweighted).</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>[lcda_metrics()] for the paper's metric surface computed from a
+  result, and [plot.lcda_grasp_result()] for the community-and-leader map.</p></div>
     </div>
 
     <div class="section level2">
@@ -115,6 +122,8 @@ and centrality) and the NCE leader score remain *structural* (unweighted).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4020381</span>
 <span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">best</span><span class="op">$</span><span class="va">leaders</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 34  1  6</span>
+<span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">elapsed</span>                       <span class="co"># wall-clock seconds</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.124</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -2,13 +2,117 @@
 
 ## lcdaGRASP 0.3.2
 
-This release exists to give a version number to the four datasets that
-were merged **after** the `v0.3.1` tag. Between `v0.3.1` (commit
-`09cb457`) and this release, six commits added new shipped data while
-`DESCRIPTION` still read `0.3.1`, so two different contents were both
-installable as “0.3.1” and anyone installing from the `v0.3.1` release
-did not get the data behind Section 5.5 of the companion paper. No
-algorithm behaviour changes here.
+This release adds the reporting surface
+([`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md))
+and the community-and-leader maps, and gives a version number to the
+four datasets that were merged **after** the `v0.3.1` tag. Between
+`v0.3.1` (commit `09cb457`) and this release, six commits added new
+shipped data while `DESCRIPTION` still read `0.3.1`, so two different
+contents were both installable as “0.3.1” and anyone installing from the
+`v0.3.1` release did not get the data behind Section 5.5 of the
+companion paper. **No algorithm behaviour changes here**: the search
+itself is untouched, and every addition below is reporting and plotting.
+
+### New features
+
+- [`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md)
+  — **one metric surface for everything the paper reports**. Given a
+  fitted result (and, optionally, a ground truth) it returns a tidy
+  table with modularity `Q`, the NCE leader score in both its global and
+  its community-conditioned form, recovery indices (NMI, ARI, Rand, VI,
+  split-join), the number and size distribution of the communities,
+  wall-clock runtime, and the search diagnostics (trace dispersion, best
+  iteration, and how often the lexicographic tie-break on `H` was
+  decisive). `level = "community"` and `level = "leader"` give the
+  per-community and per-leader breakdowns, including each community’s
+  additive contribution to `Q` (they sum exactly to `Q`), its
+  conductance and purity, and each leader’s within-community degree rank
+  and percentile. Baselines that carry no leaders (an `igraph`
+  `communities` object, a bare membership vector) are accepted and
+  scored the same way, with derived leaders clearly flagged, so a
+  paper-style comparison table can be assembled from one function.
+  ([\#45](https://github.com/castlaboratory/lcdaGRASP/issues/45))
+
+  `node_score =` reproduces the paper’s external leader validation on
+  any graph: pass a per-vertex outside signal and the leaders are ranked
+  within their own community by it, with the mean percentile and the
+  top-1 / top-3 hit rates summarised in a `leader_score` scope. The
+  participation coefficient (the statistic the paper uses to
+  characterise bridge nodes) and the ensemble overlap fraction are
+  reported as well.
+
+- **Community-and-leader maps drawn by the package**
+  ([\#44](https://github.com/castlaboratory/lcdaGRASP/issues/44)):
+
+  - [`lcda_plot_communities()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_plot_communities.md)
+    runs the whole pipeline on a bare graph — detect communities,
+    designate leaders, render the figure — in one call, and returns the
+    fitted result so it can be piped into
+    [`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md).
+  - [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
+    `lcda_grasp_result`, `lcda_gr_result` and `lcda_ecg_result` plot a
+    fitted result directly.
+  - [`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
+    methods return the same figure as a `ggplot` object ( stays a
+    *Suggested* dependency; the base-graphics path has no extra
+    requirements).
+  - [`plot_partition()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_partition.md)
+    gained `layout`, `leader_labels`, `legend`, `legend_max`,
+    `vertex_size`, `leader_size`, `palette`, `shade_edges`,
+    `mark_communities` and `main`. It now labels leaders, shades
+    intra-community edges by community, greys the inter-community ones,
+    draws a community/leader legend, and returns the layout and colours
+    used so a companion figure can reuse them. The previous call
+    signature still works.
+
+- [`lcda_grasp()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_grasp.md),
+  [`lcda_gr()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_gr.md)
+  and
+  [`lcda_ecg()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_ecg.md)
+  results now carry `elapsed` (wall-clock seconds, the runtime column of
+  the paper’s timing tables) and `graph` (the simplified graph the
+  kernels actually saw). Because the result is self-contained,
+  `lcda_metrics(res)` and `plot(res)` need no second argument. The
+  [`print()`](https://rdrr.io/r/base/print.html) methods report the
+  runtime and point at both. `elapsed` times the search only, starting
+  after the
+  [`as_csr()`](https://castlaboratory.github.io/lcdaGRASP/reference/as_csr.md)
+  conversion, so it is 0.3-2% smaller than timing the whole call from
+  outside.
+
+Two reporting choices worth knowing, both made so that no number is
+published where none was measured:
+
+- The lexicographic metrics (`lex_decisive_n`, `lex_decisive_pct`) are
+  emitted **only for
+  [`lcda_gr()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_gr.md)**,
+  the one algorithm that instruments the tie-break. For
+  [`lcda_grasp()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_grasp.md)
+  and
+  [`lcda_ecg()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_ecg.md)
+  they are absent rather than reported as a measured-looking `0`.
+- `internal_density` is always **structural** (a proportion of the
+  possible pairs, hence always in `[0, 1]`) even on a weighted graph,
+  where `internal_edges` and `boundary_edges` are weight sums. `Q` and
+  `conductance` remain weight-aware.
+
+### Notes
+
+- **Fitted results now hold a reference to their graph.** This is what
+  makes `lcda_metrics(res)` and `plot(res)` work without a second
+  argument, but it matters if you
+  [`saveRDS()`](https://rdrr.io/r/base/readRDS.html) a pool of results:
+  the graph dominates the serialised size (measured on `n = 20000`: 1.60
+  MB of a 1.69 MB result). In memory it is free (R shares the object);
+  on disk it is not. Drop it with `res$graph <- NULL` before saving a
+  large pool, and pass the graph explicitly to
+  [`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md)
+  / [`plot()`](https://rdrr.io/r/graphics/plot.default.html) afterwards.
+- `res$graph` is the **simplified** graph (multi-edges collapsed, as
+  [`as_csr()`](https://castlaboratory.github.io/lcdaGRASP/reference/as_csr.md)
+  does), not necessarily the object you passed in. Metrics are computed
+  on it deliberately, so that `Q` matches the value the objective
+  actually optimised.
 
 ### New datasets (added after the `v0.3.1` tag)
 

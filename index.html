@@ -107,7 +107,28 @@
 <span></span>
 <span><span class="va">res_e</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lcda_ecg.html">lcda_ecg</a></span><span class="op">(</span><span class="va">g</span>, B <span class="op">=</span> <span class="fl">64</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>                <span class="co"># ensemble consensus</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res_e</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="from-a-graph-to-a-table-and-a-figure">From a graph to a table and a figure<a class="anchor" aria-label="anchor" href="#from-a-graph-to-a-table-and-a-figure"></a>
+</h3>
+<p>Every quantity the paper’s tables report is available from a fitted result via <code><a href="reference/lcda_metrics.html">lcda_metrics()</a></code>, and the community-and-leader map is drawn by the package itself — no precomputed dataset needed:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lcda_gr.html">lcda_gr</a></span><span class="op">(</span><span class="va">g</span>, B <span class="op">=</span> <span class="fl">150</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>                                <span class="co"># Q, H, sizes, runtime, search</span></span>
+<span><span class="fu"><a href="reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="va">res</span>, truth <span class="op">=</span> <span class="va">ground_truth</span><span class="op">)</span>          <span class="co"># + NMI / ARI / VI / split-join</span></span>
+<span><span class="fu"><a href="reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="va">res</span>, level <span class="op">=</span> <span class="st">"community"</span><span class="op">)</span>           <span class="co"># size, cut, conductance, Q share</span></span>
+<span><span class="fu"><a href="reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="va">res</span>, level <span class="op">=</span> <span class="st">"leader"</span><span class="op">)</span>              <span class="co"># degree, centrality, NCE, rank</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>                                        <span class="co"># communities coloured, leaders marked</span></span>
+<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>                           <span class="co"># the same figure as a ggplot</span></span>
+<span></span>
+<span><span class="co"># or the whole pipeline in one call, from a bare graph</span></span>
+<span><span class="fu"><a href="reference/lcda_plot_communities.html">lcda_plot_communities</a></span><span class="op">(</span><span class="va">g</span>, method <span class="op">=</span> <span class="st">"ecg"</span>, args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>B <span class="op">=</span> <span class="fl">64</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p>Baselines are scored through the same surface, so a comparison table is one <code><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind()</a></code> away:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/lcda_metrics.html">lcda_metrics</a></span><span class="op">(</span><span class="fu"><a href="https://r.igraph.org/reference/cluster_louvain.html" class="external-link">cluster_louvain</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>, <span class="va">g</span>, truth <span class="op">=</span> <span class="va">ground_truth</span><span class="op">)</span></span></code></pre></div>
 <p>Precomputed simulation results back the articles and are listed with <code><a href="reference/lcda_data.html">lcda_data()</a></code>; load one with <code>lcda_data("repro_summary")</code>.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="articles">Articles<a class="anchor" aria-label="anchor" href="#articles"></a>
@@ -170,8 +191,8 @@
 <div class="section level2">
 <h2 id="rebuild-the-data-and-the-site">Rebuild the data and the site<a class="anchor" aria-label="anchor" href="#rebuild-the-data-and-the-site"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/run_all_data.R              <span class="co"># regenerate inst/extdata/*.rds (slow, once)</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'pkgdown::build_site(".")'</span>        <span class="co"># build docs/</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/run_all_data.R              <span class="co"># regenerate inst/extdata/*.rds (slow, once)</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'pkgdown::build_site(".")'</span>        <span class="co"># build docs/</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>

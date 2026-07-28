@@ -103,6 +103,22 @@
         </dt>
         <dd>First-improvement local search, with automatic VNMI dispatch for n &gt; 300.</dd>
       </dl></div><div class="section level2">
+      <h2 id="reporting">Reporting<a class="anchor" aria-label="anchor" href="#reporting"></a></h2>
+
+      <div class="section-desc"><p>Everything the paper’s tables report, computed from a fitted result: one tidy metric table, plus the per-community and per-leader breakdowns.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="lcda_metrics.html">lcda_metrics()</a></code>
+
+        </dt>
+        <dd>Paper-grade metrics for a community-and-leader solution</dd>
+      </dl></div><div class="section level2">
       <h2 id="quality-scores">Quality scores<a class="anchor" aria-label="anchor" href="#quality-scores"></a></h2>
 
       <div class="section-desc"><p>Modularity, the NCE leader score (global and community-conditioned), and the lexicographic objective.</p></div>
@@ -195,7 +211,7 @@
       </dl></div><div class="section level2">
       <h2 id="plotting">Plotting<a class="anchor" aria-label="anchor" href="#plotting"></a></h2>
 
-
+      <div class="section-desc"><p>The community-and-leader map, plus the search-diagnostic figures.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -204,10 +220,31 @@
 
       <dl><dt>
 
+          <code><a href="lcda_plot_communities.html">lcda_plot_communities()</a></code>
+
+        </dt>
+        <dd>Detect communities and leaders on a graph, then plot them</dd>
+
+        <dt>
+
           <code><a href="plot_partition.html">plot_partition()</a></code>
 
         </dt>
-        <dd>Plot a leader-community partition (leaders drawn larger).</dd>
+        <dd>Plot a community partition with its leaders highlighted</dd>
+
+        <dt>
+
+          <code><a href="plot.lcda.html">plot(<i>&lt;lcda_grasp_result&gt;</i>)</a></code> <code><a href="plot.lcda.html">plot(<i>&lt;lcda_gr_result&gt;</i>)</a></code> <code><a href="plot.lcda.html">plot(<i>&lt;lcda_ecg_result&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Plot a fitted LCDA result as a community-and-leader map</dd>
+
+        <dt>
+
+          <code><a href="autoplot.lcda.html">autoplot(<i>&lt;lcda_grasp_result&gt;</i>)</a></code> <code><a href="autoplot.lcda.html">autoplot(<i>&lt;lcda_gr_result&gt;</i>)</a></code> <code><a href="autoplot.lcda.html">autoplot(<i>&lt;lcda_ecg_result&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Community-and-leader map as a ggplot object</dd>
 
         <dt>
 

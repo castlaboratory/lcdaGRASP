@@ -49,6 +49,38 @@ res_e <- lcda_ecg(g, B = 64, seed = 1)                # ensemble consensus
 print(res_e)
 ```
 
+### From a graph to a table and a figure
+
+Every quantity the paper’s tables report is available from a fitted
+result via
+[`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md),
+and the community-and-leader map is drawn by the package itself — no
+precomputed dataset needed:
+
+``` r
+
+res <- lcda_gr(g, B = 150, seed = 1)
+
+lcda_metrics(res)                                # Q, H, sizes, runtime, search
+lcda_metrics(res, truth = ground_truth)          # + NMI / ARI / VI / split-join
+lcda_metrics(res, level = "community")           # size, cut, conductance, Q share
+lcda_metrics(res, level = "leader")              # degree, centrality, NCE, rank
+
+plot(res)                                        # communities coloured, leaders marked
+ggplot2::autoplot(res)                           # the same figure as a ggplot
+
+# or the whole pipeline in one call, from a bare graph
+lcda_plot_communities(g, method = "ecg", args = list(B = 64), seed = 1)
+```
+
+Baselines are scored through the same surface, so a comparison table is
+one [`rbind()`](https://rdrr.io/r/base/cbind.html) away:
+
+``` r
+
+lcda_metrics(cluster_louvain(g), g, truth = ground_truth)
+```
+
 Precomputed simulation results back the articles and are listed with
 [`lcda_data()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_data.md);
 load one with `lcda_data("repro_summary")`.
@@ -109,6 +141,14 @@ search).
   : First-improvement local search, with automatic VNMI dispatch for n
   \> 300.
 
+## Reporting
+
+Everything the paper’s tables report, computed from a fitted result: one
+tidy metric table, plus the per-community and per-leader breakdowns.
+
+- [`lcda_metrics()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_metrics.md)
+  : Paper-grade metrics for a community-and-leader solution
+
 ## Quality scores
 
 Modularity, the NCE leader score (global and community-conditioned), and
@@ -159,8 +199,20 @@ The non-parametric procedure used in the paper’s experiments.
 
 ## Plotting
 
+The community-and-leader map, plus the search-diagnostic figures.
+
+- [`lcda_plot_communities()`](https://castlaboratory.github.io/lcdaGRASP/reference/lcda_plot_communities.md)
+  : Detect communities and leaders on a graph, then plot them
 - [`plot_partition()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_partition.md)
-  : Plot a leader-community partition (leaders drawn larger).
+  : Plot a community partition with its leaders highlighted
+- [`plot(`*`<lcda_grasp_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.md)
+  [`plot(`*`<lcda_gr_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.md)
+  [`plot(`*`<lcda_ecg_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/plot.lcda.md)
+  : Plot a fitted LCDA result as a community-and-leader map
+- [`autoplot(`*`<lcda_grasp_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/autoplot.lcda.md)
+  [`autoplot(`*`<lcda_gr_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/autoplot.lcda.md)
+  [`autoplot(`*`<lcda_ecg_result>`*`)`](https://castlaboratory.github.io/lcdaGRASP/reference/autoplot.lcda.md)
+  : Community-and-leader map as a ggplot object
 - [`plot_grasp_trajectory()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_grasp_trajectory.md)
   : Plot the Q trajectory across GRASP iterations, with running maximum.
 - [`plot_reactive_pk()`](https://castlaboratory.github.io/lcdaGRASP/reference/plot_reactive_pk.md)

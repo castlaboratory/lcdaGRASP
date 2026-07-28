@@ -32,5 +32,5 @@ scalar modularity Q.
 g <- igraph::make_graph("Zachary")
 cl <- igraph::cluster_louvain(g)
 modularity_score(g, igraph::membership(cl))
-#> [1] 0.395217
+#> [1] 0.4197896
 ```
