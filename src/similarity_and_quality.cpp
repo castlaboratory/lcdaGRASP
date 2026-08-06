@@ -176,20 +176,14 @@ double nce_local_cpp(IntegerVector adj_indptr,
 
 // ---------- Eigenvector centrality via power iteration --------------
 
-// Eigenvector centrality (eq. 2), power iteration on the adjacency.
-//
-// Returns the unit-L1-normalised positive eigenvector corresponding to
-// the spectral radius. For disconnected graphs the result corresponds
-// to the largest connected component's eigenvector embedded in the
-// full space; isolated nodes get score 0.
-// [[Rcpp::export]]
-NumericVector eigen_centrality_cpp(IntegerVector adj_indptr,
-                                   IntegerVector adj_indices,
-                                   int max_iter = 1000,
-                                   double tol = 1e-10) {
-  const int n = adj_indptr.size() - 1;
-  NumericVector x(n, 1.0 / std::sqrt((double)n));
-  NumericVector y(n);
+// Shared power-iteration core, templated on the index container so the same
+// arithmetic (same operations, same order, hence bit-identical doubles) runs
+// on a full-graph IntegerVector CSR and on the std::vector<int> sub-CSRs the
+// repair kernel extracts. `x` must arrive initialised (uniform 1/sqrt(n)).
+template <typename IVec, typename XVec>
+static void eigen_power_core(const IVec& adj_indptr, const IVec& adj_indices,
+                             int n, XVec& x, int max_iter, double tol) {
+  std::vector<double> y(n);
   for (int it = 0; it < max_iter; ++it) {
     // y = A x
     double max_y = 0.0;
@@ -200,7 +194,7 @@ NumericVector eigen_centrality_cpp(IntegerVector adj_indptr,
       y[i] = s;
       if (std::fabs(s) > max_y) max_y = std::fabs(s);
     }
-    if (max_y == 0.0) return x;        // empty graph: stay at uniform
+    if (max_y == 0.0) return;          // empty graph: stay at uniform
     // normalise to ||y||_inf = 1 to keep numbers bounded
     double diff = 0.0;
     for (int i = 0; i < n; ++i) {
@@ -214,7 +208,84 @@ NumericVector eigen_centrality_cpp(IntegerVector adj_indptr,
   double s1 = 0.0;
   for (int i = 0; i < n; ++i) s1 += x[i];
   if (s1 > 0.0) for (int i = 0; i < n; ++i) x[i] /= s1;
+}
+
+// Eigenvector centrality (eq. 2), power iteration on the adjacency.
+//
+// Returns the unit-L1-normalised positive eigenvector corresponding to
+// the spectral radius. For disconnected graphs the result corresponds
+// to the largest connected component's eigenvector embedded in the
+// full space; isolated nodes get score 0.
+// [[Rcpp::export]]
+NumericVector eigen_centrality_cpp(IntegerVector adj_indptr,
+                                   IntegerVector adj_indices,
+                                   int max_iter = 1000,
+                                   double tol = 1e-10) {
+  const int n = adj_indptr.size() - 1;
+  NumericVector x(n, 1.0 / std::sqrt((double)n));
+  eigen_power_core(adj_indptr, adj_indices, n, x, max_iter, tol);
   return x;
+}
+
+// ---------- repair: one leader per community (eigen path) ------------
+
+// Recomputes the eigenvector centrality WITHIN each community and returns the
+// 1-based index of the top-scoring member, per community id ascending --
+// exactly what the R loop in lcda_repair() does via igraph::induced_subgraph +
+// as_csr + eigen, but extracting each community's sub-CSR directly from the
+// parent CSR (issue #46: the igraph subgraph materialisation was 64% of the
+// whole pipeline at n=2e4). Bit-identical by construction: members ascend
+// (which(mem == cc)), parent neighbour lists ascend (CsparseMatrix), and the
+// monotone id remap preserves order, so the sub-CSR equals the one as_csr()
+// builds and the shared eigen_power_core sees the same input; the leader is
+// the FIRST maximum, matching which.max().
+// [[Rcpp::export]]
+IntegerVector repair_leaders_eigen_cpp(IntegerVector adj_indptr,
+                                       IntegerVector adj_indices,
+                                       IntegerVector membership) {
+  const int n = membership.size();
+  int max_id = 0;
+  for (int v = 0; v < n; ++v) if (membership[v] > max_id) max_id = membership[v];
+
+  // Bucket members per community id; buckets ascend because v does.
+  std::vector<std::vector<int>> members(max_id + 1);
+  for (int v = 0; v < n; ++v)
+    if (membership[v] >= 1) members[membership[v]].push_back(v);
+
+  std::vector<int> pos(n, -1);              // parent id -> local id, reused
+  std::vector<int> sub_indptr, sub_indices;
+  std::vector<double> x;
+  std::vector<int> leaders;
+  leaders.reserve(max_id);
+
+  for (int cc = 1; cc <= max_id; ++cc) {
+    const std::vector<int>& mem_cc = members[cc];
+    const int k = (int)mem_cc.size();
+    if (k == 0) continue;                   // id not present (sort(unique(mem)))
+    if (k == 1) { leaders.push_back(mem_cc[0] + 1); continue; }
+
+    for (int j = 0; j < k; ++j) pos[mem_cc[j]] = j;
+    sub_indptr.assign(k + 1, 0);
+    sub_indices.clear();
+    for (int j = 0; j < k; ++j) {
+      const int u = mem_cc[j];
+      for (int p = adj_indptr[u]; p < adj_indptr[u+1]; ++p) {
+        const int w = pos[adj_indices[p]];
+        if (w >= 0) sub_indices.push_back(w);
+      }
+      sub_indptr[j + 1] = (int)sub_indices.size();
+    }
+
+    x.assign(k, 1.0 / std::sqrt((double)k));
+    eigen_power_core(sub_indptr, sub_indices, k, x, 1000, 1e-10);
+
+    int best = 0;
+    for (int j = 1; j < k; ++j) if (x[j] > x[best]) best = j;
+    leaders.push_back(mem_cc[best] + 1);
+
+    for (int j = 0; j < k; ++j) pos[mem_cc[j]] = -1;
+  }
+  return IntegerVector(leaders.begin(), leaders.end());
 }
 
 // ---------- RCL builders --------------------------------------------

@@ -203,6 +203,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// repair_leaders_eigen_cpp
+IntegerVector repair_leaders_eigen_cpp(IntegerVector adj_indptr, IntegerVector adj_indices, IntegerVector membership);
+RcppExport SEXP _lcdaGRASP_repair_leaders_eigen_cpp(SEXP adj_indptrSEXP, SEXP adj_indicesSEXP, SEXP membershipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type adj_indptr(adj_indptrSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type adj_indices(adj_indicesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type membership(membershipSEXP);
+    rcpp_result_gen = Rcpp::wrap(repair_leaders_eigen_cpp(adj_indptr, adj_indices, membership));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcl_max_cpp
 IntegerVector rcl_max_cpp(NumericVector scores, double alpha);
 RcppExport SEXP _lcdaGRASP_rcl_max_cpp(SEXP scoresSEXP, SEXP alphaSEXP) {
@@ -242,6 +255,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lcdaGRASP_nce_score_cpp", (DL_FUNC) &_lcdaGRASP_nce_score_cpp, 2},
     {"_lcdaGRASP_nce_local_cpp", (DL_FUNC) &_lcdaGRASP_nce_local_cpp, 4},
     {"_lcdaGRASP_eigen_centrality_cpp", (DL_FUNC) &_lcdaGRASP_eigen_centrality_cpp, 4},
+    {"_lcdaGRASP_repair_leaders_eigen_cpp", (DL_FUNC) &_lcdaGRASP_repair_leaders_eigen_cpp, 3},
     {"_lcdaGRASP_rcl_max_cpp", (DL_FUNC) &_lcdaGRASP_rcl_max_cpp, 2},
     {"_lcdaGRASP_rcl_min_cpp", (DL_FUNC) &_lcdaGRASP_rcl_min_cpp, 2},
     {NULL, NULL, 0}

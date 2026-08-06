@@ -284,6 +284,20 @@ lcda_construct <- function(csr,
 lcda_repair <- function(csr, construction, centrality = "eigen", verbose = FALSE) {
   .check_csr(csr)
   mem <- construction$membership          # 1-based community ids
+
+  # Fast path for the default centrality (issue #46): one C++ pass extracts
+  # each community's sub-CSR directly from the parent CSR and runs the same
+  # power iteration -- bit-identical to the igraph::induced_subgraph loop
+  # below, which at n=2e4 was ~64% of the whole pipeline's wall-clock.
+  # Betweenness/closeness delegate to igraph and keep the original loop.
+  if (centrality == "eigen" && !anyNA(mem)) {
+    new_leaders <- repair_leaders_eigen_cpp(csr$indptr, csr$indices,
+                                            as.integer(mem))
+    if (verbose) cli::cli_alert_info("repaired {length(new_leaders)} leader{?s}")
+    construction$leaders <- new_leaders
+    return(construction)
+  }
+
   cent_fn <- .dispatch_centrality(centrality)
   # Iterate the community ids actually present (iterating 0..d-1 would mix
   # 0-based ids against the 1-based `mem` and hit empty communities).

@@ -53,6 +53,10 @@ eigen_centrality_cpp <- function(adj_indptr, adj_indices, max_iter = 1000L, tol 
     .Call(`_lcdaGRASP_eigen_centrality_cpp`, adj_indptr, adj_indices, max_iter, tol)
 }
 
+repair_leaders_eigen_cpp <- function(adj_indptr, adj_indices, membership) {
+    .Call(`_lcdaGRASP_repair_leaders_eigen_cpp`, adj_indptr, adj_indices, membership)
+}
+
 rcl_max_cpp <- function(scores, alpha) {
     .Call(`_lcdaGRASP_rcl_max_cpp`, scores, alpha)
 }

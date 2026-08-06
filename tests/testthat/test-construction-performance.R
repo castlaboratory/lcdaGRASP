@@ -30,6 +30,43 @@ test_that("two-hop similarity kernels equal the brute-force intersection", {
   }
 })
 
+test_that("C++ repair equals the igraph induced_subgraph loop", {
+  # lcda_repair's eigen fast path extracts each community's sub-CSR directly
+  # from the parent CSR. The reference below is the original loop verbatim
+  # (igraph::induced_subgraph + as_csr + eigen + which.max); both must agree
+  # exactly, leaders included, on graphs with singleton, edgeless and
+  # multi-component communities.
+  old_repair <- function(csr, mem) {
+    out <- integer(0)
+    for (cc in sort(unique(mem))) {
+      mb <- which(mem == cc)
+      if (length(mb) == 1L) { out <- c(out, mb); next }
+      sub <- igraph::induced_subgraph(csr$igraph, mb)
+      cl <- lcdaGRASP:::centrality_eigen(as_csr(sub))
+      idx <- if (length(cl) == 0L || !any(is.finite(cl))) 1L else which.max(cl)
+      out <- c(out, mb[idx])
+    }
+    out
+  }
+  for (s in 1:4) {
+    set.seed(s)
+    g <- igraph::sample_gnp(150, 0.04)
+    csr <- as_csr(g)
+    set.seed(s + 40)
+    sol <- lcda_construct(csr, 0.2, 0.3)
+    expect_identical(lcda_repair(csr, sol)$leaders,
+                     old_repair(csr, sol$membership))
+  }
+  # membership with a gap in the ids and an edgeless community
+  g <- igraph::make_graph(c(1,2, 2,3, 4,5), directed = FALSE) +
+    igraph::vertices(6, 7)
+  csr <- as_csr(g)
+  sol <- list(membership = c(1L, 1L, 1L, 3L, 3L, 4L, 4L), leaders = integer(0),
+              d = 3L)
+  expect_identical(lcda_repair(csr, sol)$leaders,
+                   old_repair(csr, sol$membership))
+})
+
 test_that("hoisted centrality gives the same construction as the internal one", {
   g <- igraph::sample_gnp(200, 0.05)
   csr <- as_csr(g)
