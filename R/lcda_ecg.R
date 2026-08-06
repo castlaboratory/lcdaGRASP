@@ -84,12 +84,16 @@ lcda_ecg <- function(g, B = 64, w_min = 0.05,
   coassoc    <- numeric(nrow(el))
   lead_count <- integer(n)
 
+  # Deterministic per graph: hoisted out of the B-iteration loop (issue #46).
+  cent_global <- if (variant == 1) .dispatch_centrality(centrality)(csr) else NULL
+
   if (verbose) cli::cli_progress_bar("LCDA-ECG pool", total = B, clear = FALSE)
   for (b in seq_len(B)) {
     a_c <- stats::runif(1, alpha_c_range[1], alpha_c_range[2])
     a_s <- stats::runif(1, alpha_s_range[1], alpha_s_range[2])
     sol <- lcda_construct(csr, a_c, a_s, variant = variant,
-                          centrality = centrality, similarity = similarity)
+                          centrality = centrality, similarity = similarity,
+                          cent = cent_global)
     sol <- lcda_repair(csr, sol, centrality = centrality)
     sol <- lcda_local_search(csr, sol, centrality = centrality)
     mem <- sol$membership
