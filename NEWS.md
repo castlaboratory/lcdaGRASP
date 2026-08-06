@@ -2,6 +2,18 @@
 
 ## Performance
 
+* **`lcda_repair()` no longer materialises an igraph subgraph per community**
+  (#46, step 2). For the default `centrality = "eigen"`, one C++ pass
+  (`repair_leaders_eigen_cpp()`) extracts each community's sub-CSR directly
+  from the parent CSR and runs the same power iteration — bit-identical to
+  the previous `igraph::induced_subgraph()` loop, which profiling showed was
+  ~64% of the whole pipeline's wall-clock at `n = 2×10⁴` after the
+  construction fix. End-to-end `lcda_grasp(B = 10)` at `n = 2×10⁴`:
+  21.9 s → 10.3 s (**4.7× cumulative** vs the 48.4 s before #46), identical
+  `Q`. Betweenness/closeness keep the original igraph loop. The post-change
+  profile is balanced across the C++ kernels (construction 35%, local search
+  35%, repair 23%) with the R-side overhead gone.
+
 * **The greedy construction is 3–4× faster at scale, with bit-identical
   results** (#46). Three changes, none touching the RNG stream or any value:
   * the HPI/Dice/Jaccard kernels now count common neighbours via a two-hop
