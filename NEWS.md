@@ -1,3 +1,27 @@
+# lcdaGRASP (development version)
+
+## Performance
+
+* **The greedy construction is 3–4× faster at scale, with bit-identical
+  results** (#46). Three changes, none touching the RNG stream or any value:
+  * the HPI/Dice/Jaccard kernels now count common neighbours via a two-hop
+    walk from the leader (`O(deg²)` per round, independent of the pool size)
+    instead of a per-pair sorted merge (`O(pool · deg)` per round) — the term
+    that made construction scale as ~`n^1.8`;
+  * the two `setdiff()` pool updates in `lcda_construct()` were replaced by
+    positional removal (the picked entries are already known by index);
+  * the deterministic variant-1 global centrality is computed **once per
+    `lcda_grasp()`/`lcda_gr()`/`lcda_ecg()` call** and passed down via the new
+    `cent` argument of `lcda_construct()`, instead of once per pool iteration
+    (the eigen power iteration was ~a third of every construction).
+
+  Measured on SBM graphs (avg degree ~15, communities of 250): construction
+  10.5 s → 3.6 s at `n = 4×10⁴` (2.9×), empirical exponent 1.61 → 1.29;
+  end-to-end `lcda_grasp(B = 10)` at `n = 2×10⁴`: 48.4 s → 21.9 s (2.2×),
+  identical `Q`. Construction at `n = 10⁵` now takes ~15 s. A regression test
+  (`test-construction-performance.R`) pins the kernels to a brute-force
+  reference and the hoisted centrality to the internal path.
+
 # lcdaGRASP 0.3.2
 
 This release adds the reporting surface (`lcda_metrics()`) and the

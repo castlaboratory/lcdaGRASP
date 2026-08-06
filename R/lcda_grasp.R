@@ -171,6 +171,11 @@ centrality_closeness <- function(csr) {
 #' @param centrality one of "eigen", "betweenness", "closeness".
 #' @param similarity one of "hpi", "dice", "jaccard".
 #' @param verbose logical; emit a cli trace of the construction.
+#' @param cent optional numeric vector of length `csr$n`: a precomputed global
+#'   centrality, used only by `variant = 1`. The global centrality is
+#'   deterministic per graph, so the outer GRASP loops compute it once and pass
+#'   it here instead of recomputing it at every one of the `B` iterations;
+#'   results are identical either way.
 #'
 #' @return list(membership, leaders, d) - membership a 1-based vector, leaders
 #'   a 1-based integer vector of leader indices, d the number of communities.
@@ -189,7 +194,8 @@ lcda_construct <- function(csr,
                            variant = 1,
                            centrality = "eigen",
                            similarity = "hpi",
-                           verbose = FALSE) {
+                           verbose = FALSE,
+                           cent = NULL) {
   .check_csr(csr)
   if (!variant %in% c(1, 2)) cli::cli_abort("{.arg variant} must be 1 or 2, not {.val {variant}}.")
   .check_unit(alpha_c, "alpha_c"); .check_unit(alpha_s, "alpha_s")
@@ -198,7 +204,12 @@ lcda_construct <- function(csr,
   leaders <- integer(0)
   Q_remaining <- seq_len(n) - 1L     # 0-based remaining pool
 
-  if (variant == 1) cent_global <- .dispatch_centrality(centrality)(csr)
+  if (variant == 1) {
+    if (is.null(cent)) cent <- .dispatch_centrality(centrality)(csr)
+    if (length(cent) != n)
+      cli::cli_abort("{.arg cent} must have length {.val {n}} (one score per node).")
+    cent_global <- cent
+  }
   sim_fn <- .dispatch_similarity(similarity)
 
   comm_id <- 0L
@@ -224,7 +235,11 @@ lcda_construct <- function(csr,
     L <- Q_remaining[pick + 1L]                        # 0-based node id
     leaders <- c(leaders, L + 1L)                      # store 1-based
     membership[L + 1L] <- comm_id
-    Q_remaining <- setdiff(Q_remaining, L)
+    # Drop by position, not by setdiff(): the picked entries are already known
+    # by index, and setdiff's hash-and-unique pass over the whole pool at every
+    # round was a measurable share of the construction time (issue #46).
+    # Q_remaining is unique and ordered, so the result is identical.
+    Q_remaining <- Q_remaining[-(pick + 1L)]
 
     if (length(Q_remaining) == 0) break
 
@@ -232,7 +247,8 @@ lcda_construct <- function(csr,
     rcl_S_idx <- rcl_min_cpp(sim_vals, alpha_s)        # 0-based into Q_remaining
     members <- Q_remaining[rcl_S_idx + 1L]
     membership[members + 1L] <- comm_id
-    Q_remaining <- setdiff(Q_remaining, members)
+    if (length(rcl_S_idx) > 0)
+      Q_remaining <- Q_remaining[-(rcl_S_idx + 1L)]
     if (verbose) cli::cli_alert_info(
       "community {comm_id + 1L}: leader node {L + 1L}, +{length(members)} member{?s}")
     comm_id <- comm_id + 1L
@@ -449,10 +465,16 @@ lcda_grasp <- function(g,
   trace_Q <- numeric(B)
   trace_H <- numeric(B)
 
+  # The variant-1 global centrality is deterministic per graph: compute it once
+  # here, not once per iteration inside lcda_construct (issue #46 -- on large
+  # graphs the eigen power iteration was a third of every construction).
+  cent_global <- if (variant == 1) .dispatch_centrality(centrality)(csr) else NULL
+
   if (verbose) cli::cli_progress_bar("LCDA-GRASP", total = B, clear = FALSE)
   for (it in seq_len(B)) {
     sol <- lcda_construct(csr, alpha_c, alpha_s, variant = variant,
-                          centrality = centrality, similarity = similarity)
+                          centrality = centrality, similarity = similarity,
+                          cent = cent_global)
     sol <- lcda_repair(csr, sol, centrality = centrality)
     sol <- lcda_local_search(csr, sol, centrality = centrality)
     Q <- sol$Q
@@ -549,13 +571,17 @@ lcda_gr <- function(g,
   pk_history <- matrix(NA_real_, nrow = B, ncol = m)
   lex_decisive <- integer(0)   # iters where H broke a Q-tie
 
+  # Deterministic per graph: hoisted out of the B-iteration loop (issue #46).
+  cent_global <- if (variant == 1) .dispatch_centrality(centrality)(csr) else NULL
+
   if (verbose) cli::cli_progress_bar("LCDA-GR", total = B, clear = FALSE)
   for (it in seq_len(B)) {
     k <- sample.int(m, 1, prob = p_k)
     a_c <- Psi$alpha_c[k]; a_s <- Psi$alpha_s[k]
 
     sol <- lcda_construct(csr, a_c, a_s, variant = variant,
-                          centrality = centrality, similarity = similarity)
+                          centrality = centrality, similarity = similarity,
+                          cent = cent_global)
     sol <- lcda_repair(csr, sol, centrality = centrality)
     sol <- lcda_local_search(csr, sol, centrality = centrality)
     Q <- sol$Q

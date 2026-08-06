@@ -16,21 +16,23 @@ using namespace Rcpp;
 
 // ---------- common neighbourhood -------------------------------------
 
-// Returns |Γ(u) ∩ Γ(v)| using a sorted-merge over the CSR neighbour lists.
-// Both lists are assumed sorted ascending (the caller is responsible).
-static int common_neighbours(int u, int v,
-                             const IntegerVector& indptr,
-                             const IntegerVector& indices) {
-  int pu = indptr[u], pu_end = indptr[u+1];
-  int pv = indptr[v], pv_end = indptr[v+1];
-  int c = 0;
-  while (pu < pu_end && pv < pv_end) {
-    int a = indices[pu], b = indices[pv];
-    if      (a < b) ++pu;
-    else if (a > b) ++pv;
-    else { ++c; ++pu; ++pv; }
+// Common-neighbour counts of EVERY node against a fixed leader L, via a
+// two-hop walk from L: counts[w] accumulates one unit per path L—u—w, so
+// counts[w] = |Γ(L) ∩ Γ(w)|. Cost O(Σ_{u∈Γ(L)} deg(u)), independent of the
+// pool size. This replaces a per-pair sorted merge whose O(pool·deg) cost,
+// summed over the ~n/c construction rounds, made the greedy construction
+// scale superlinearly (the n^1.8 bottleneck of issue #46). Counts are exact
+// integers, so the similarity values are bit-identical to the merge version.
+static std::vector<int> common_counts_from(int L,
+                                           const IntegerVector& indptr,
+                                           const IntegerVector& indices) {
+  const int n = indptr.size() - 1;
+  std::vector<int> counts(n, 0);
+  for (int p = indptr[L]; p < indptr[L+1]; ++p) {
+    const int u = indices[p];
+    for (int q = indptr[u]; q < indptr[u+1]; ++q) counts[indices[q]]++;
   }
-  return c;
+  return counts;
 }
 
 // ---------- similarity vs leader L -----------------------------------
@@ -44,11 +46,12 @@ NumericVector similarity_hpi_cpp(IntegerVector adj_indptr,
   int kL = adj_indptr[L+1] - adj_indptr[L];
   int n_pool = pool.size();
   NumericVector out(n_pool);
+  const std::vector<int> counts = common_counts_from(L, adj_indptr, adj_indices);
   for (int i = 0; i < n_pool; ++i) {
     int v = pool[i];
     if (v == L) { out[i] = 1.0; continue; }
     int kv = adj_indptr[v+1] - adj_indptr[v];
-    int c  = common_neighbours(L, v, adj_indptr, adj_indices);
+    int c  = counts[v];
     int denom = std::min(kL, kv);
     out[i] = (denom == 0) ? 0.0 : (double)c / (double)denom;
   }
@@ -64,11 +67,12 @@ NumericVector similarity_dice_cpp(IntegerVector adj_indptr,
   int kL = adj_indptr[L+1] - adj_indptr[L];
   int n_pool = pool.size();
   NumericVector out(n_pool);
+  const std::vector<int> counts = common_counts_from(L, adj_indptr, adj_indices);
   for (int i = 0; i < n_pool; ++i) {
     int v = pool[i];
     if (v == L) { out[i] = 1.0; continue; }
     int kv = adj_indptr[v+1] - adj_indptr[v];
-    int c  = common_neighbours(L, v, adj_indptr, adj_indices);
+    int c  = counts[v];
     int denom = kL + kv;
     out[i] = (denom == 0) ? 0.0 : 2.0 * c / (double)denom;
   }
@@ -84,11 +88,12 @@ NumericVector similarity_jaccard_cpp(IntegerVector adj_indptr,
   int kL = adj_indptr[L+1] - adj_indptr[L];
   int n_pool = pool.size();
   NumericVector out(n_pool);
+  const std::vector<int> counts = common_counts_from(L, adj_indptr, adj_indices);
   for (int i = 0; i < n_pool; ++i) {
     int v = pool[i];
     if (v == L) { out[i] = 1.0; continue; }
     int kv = adj_indptr[v+1] - adj_indptr[v];
-    int c  = common_neighbours(L, v, adj_indptr, adj_indices);
+    int c  = counts[v];
     int denom = kL + kv - c;
     out[i] = (denom == 0) ? 0.0 : (double)c / (double)denom;
   }
