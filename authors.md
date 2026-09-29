@@ -5,13 +5,14 @@
 - **André Leite**. Author, maintainer.
   [](https://orcid.org/0000-0002-4718-9766)
 
-- **Raydonal Ospina**. Author.
+- **Raydonal Ospina**. Author. [](https://orcid.org/0000-0002-9884-9090)
 
 - **Geiza Silva**. Author.
 
 - **Francisco Jucelino Matos Junior**. Author.
 
 - **Luiz Satoru Ochi**. Author.
+  [](https://orcid.org/0000-0002-5007-4513)
 
 ## Citation
 
