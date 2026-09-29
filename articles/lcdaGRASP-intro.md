@@ -52,7 +52,7 @@ print(res)
 #> best H: 0.84
 #> best iteration: 4
 #> communities: 3
-#> elapsed (s): 0.012
+#> elapsed (s): 0.013
 #> ℹ `lcda_metrics()` for the full metric table; `plot()` for the community-leader map.
 ```
 
