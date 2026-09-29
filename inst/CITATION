@@ -5,7 +5,7 @@ bibentry(
   title   = "A GRASP Framework for Community and Leader Detection in Complex Networks",
   author  = c(person("Raydonal", "Ospina"), person("Geiza", "Silva"),
               person(c("Francisco","Jucelino"), "Matos Junior"),
-              person("Andre", "Leite"), person(c("Luiz","Satoru"), "Ochi")),
+              person("André", "Leite"), person(c("Luiz","Satoru"), "Ochi")),
   journal = "Knowledge-Based Systems (preprint, submitted)",
   year    = "2026",
   note    = "Companion R package: lcdaGRASP"
@@ -16,7 +16,7 @@ bibentry(
   title   = "lcdaGRASP: GRASP and Reactive GRASP Algorithms for Joint Community and Leader Detection",
   author  = c(person("Raydonal", "Ospina"), person("Geiza", "Silva"),
               person(c("Francisco","Jucelino"), "Matos Junior"),
-              person("Andre", "Leite"), person(c("Luiz","Satoru"), "Ochi")),
+              person("André", "Leite"), person(c("Luiz","Satoru"), "Ochi")),
   year    = "2026",
   note    = sprintf("R package version %s", meta$Version),
   url     = "https://github.com/castlaboratory/lcdaGRASP"
