@@ -40,9 +40,23 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/castlaboratory/lcdaGRASP/blob/v0.3.2/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/castlaboratory/lcdaGRASP/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="lcdagrasp-development-version">lcdaGRASP (development version)<a class="anchor" aria-label="anchor" href="#lcdagrasp-development-version"></a></h2>
+<div class="section level3">
+<h3 id="performance-development-version">Performance<a class="anchor" aria-label="anchor" href="#performance-development-version"></a></h3>
+<ul><li><p><strong><code><a href="../reference/lcda_repair.html">lcda_repair()</a></code> no longer materialises an igraph subgraph per community</strong> (<a href="https://github.com/castlaboratory/lcdaGRASP/issues/46" class="external-link">#46</a>, step 2). For the default <code>centrality = "eigen"</code>, one C++ pass (<code>repair_leaders_eigen_cpp()</code>) extracts each community’s sub-CSR directly from the parent CSR and runs the same power iteration — bit-identical to the previous <code><a href="https://r.igraph.org/reference/subgraph.html" class="external-link">igraph::induced_subgraph()</a></code> loop, which profiling showed was ~64% of the whole pipeline’s wall-clock at <code>n = 2×10⁴</code> after the construction fix. End-to-end <code>lcda_grasp(B = 10)</code> at <code>n = 2×10⁴</code>: 21.9 s → 10.3 s (<strong>4.7× cumulative</strong> vs the 48.4 s before <a href="https://github.com/castlaboratory/lcdaGRASP/issues/46" class="external-link">#46</a>), identical <code>Q</code>. Betweenness/closeness keep the original igraph loop. The post-change profile is balanced across the C++ kernels (construction 35%, local search 35%, repair 23%) with the R-side overhead gone.</p></li>
+<li>
+<p><strong>The greedy construction is 3–4× faster at scale, with bit-identical results</strong> (<a href="https://github.com/castlaboratory/lcdaGRASP/issues/46" class="external-link">#46</a>). Three changes, none touching the RNG stream or any value:</p>
+<ul><li>the HPI/Dice/Jaccard kernels now count common neighbours via a two-hop walk from the leader (<code>O(deg²)</code> per round, independent of the pool size) instead of a per-pair sorted merge (<code>O(pool · deg)</code> per round) — the term that made construction scale as ~<code>n^1.8</code>;</li>
+<li>the two <code><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff()</a></code> pool updates in <code><a href="../reference/lcda_construct.html">lcda_construct()</a></code> were replaced by positional removal (the picked entries are already known by index);</li>
+<li>the deterministic variant-1 global centrality is computed <strong>once per <code><a href="../reference/lcda_grasp.html">lcda_grasp()</a></code>/<code><a href="../reference/lcda_gr.html">lcda_gr()</a></code>/<code><a href="../reference/lcda_ecg.html">lcda_ecg()</a></code> call</strong> and passed down via the new <code>cent</code> argument of <code><a href="../reference/lcda_construct.html">lcda_construct()</a></code>, instead of once per pool iteration (the eigen power iteration was ~a third of every construction).</li>
+</ul><p>Measured on SBM graphs (avg degree ~15, communities of 250): construction 10.5 s → 3.6 s at <code>n = 4×10⁴</code> (2.9×), empirical exponent 1.61 → 1.29; end-to-end <code>lcda_grasp(B = 10)</code> at <code>n = 2×10⁴</code>: 48.4 s → 21.9 s (2.2×), identical <code>Q</code>. Construction at <code>n = 10⁵</code> now takes ~15 s. A regression test (<code>test-construction-performance.R</code>) pins the kernels to a brute-force reference and the hoisted centrality to the internal path.</p>
+</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.2" id="lcdagrasp-032">lcdaGRASP 0.3.2<a class="anchor" aria-label="anchor" href="#lcdagrasp-032"></a></h2>
 <p>This release adds the reporting surface (<code><a href="../reference/lcda_metrics.html">lcda_metrics()</a></code>) and the community-and-leader maps, and gives a version number to the four datasets that were merged <strong>after</strong> the <code>v0.3.1</code> tag. Between <code>v0.3.1</code> (commit <code>09cb457</code>) and this release, six commits added new shipped data while <code>DESCRIPTION</code> still read <code>0.3.1</code>, so two different contents were both installable as “0.3.1” and anyone installing from the <code>v0.3.1</code> release did not get the data behind Section 5.5 of the companion paper. <strong>No algorithm behaviour changes here</strong>: the search itself is untouched, and every addition below is reporting and plotting.</p>
@@ -150,7 +164,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Andre Leite, Raydonal Ospina, Geiza Silva, Francisco Jucelino Matos Junior, Luiz Satoru Ochi.</p>
+  <p>Developed by André Leite, Raydonal Ospina, Geiza Silva, Francisco Jucelino Matos Junior, Luiz Satoru Ochi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

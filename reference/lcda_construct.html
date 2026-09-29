@@ -40,7 +40,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>LCDA construction - variant 1 (centrality computed once) or 2 (adaptive).</h1>
-      <small class="dont-index">Source: <a href="https://github.com/castlaboratory/lcdaGRASP/blob/v0.3.2/R/lcda_grasp.R" class="external-link"><code>R/lcda_grasp.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/castlaboratory/lcdaGRASP/blob/main/R/lcda_grasp.R" class="external-link"><code>R/lcda_grasp.R</code></a></small>
       <div class="d-none name"><code>lcda_construct.Rd</code></div>
     </div>
 
@@ -57,7 +57,8 @@
 <span>  variant <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  centrality <span class="op">=</span> <span class="st">"eigen"</span>,</span>
 <span>  similarity <span class="op">=</span> <span class="st">"hpi"</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cent <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -92,6 +93,14 @@
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>logical; emit a cli trace of the construction.</p></dd>
 
+
+<dt id="arg-cent">cent<a class="anchor" aria-label="anchor" href="#arg-cent"></a></dt>
+<dd><p>optional numeric vector of length `csr$n`: a precomputed global
+centrality, used only by `variant = 1`. The global centrality is
+deterministic per graph, so the outer GRASP loops compute it once and pass
+it here instead of recomputing it at every one of the `B` iterations;
+results are identical either way.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -121,7 +130,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Andre Leite, Raydonal Ospina, Geiza Silva, Francisco Jucelino Matos Junior, Luiz Satoru Ochi.</p>
+  <p>Developed by André Leite, Raydonal Ospina, Geiza Silva, Francisco Jucelino Matos Junior, Luiz Satoru Ochi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

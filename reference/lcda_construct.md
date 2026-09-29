@@ -13,7 +13,8 @@ lcda_construct(
   variant = 1,
   centrality = "eigen",
   similarity = "hpi",
-  verbose = FALSE
+  verbose = FALSE,
+  cent = NULL
 )
 ```
 
@@ -46,6 +47,14 @@ lcda_construct(
 - verbose:
 
   logical; emit a cli trace of the construction.
+
+- cent:
+
+  optional numeric vector of length \`csr\$n\`: a precomputed global
+  centrality, used only by \`variant = 1\`. The global centrality is
+  deterministic per graph, so the outer GRASP loops compute it once and
+  pass it here instead of recomputing it at every one of the \`B\`
+  iterations; results are identical either way.
 
 ## Value
 

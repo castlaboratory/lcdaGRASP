@@ -2,7 +2,7 @@
 
 ## Authors
 
-- **Andre Leite**. Author, maintainer.
+- **André Leite**. Author, maintainer.
 
 - **Raydonal Ospina**. Author.
 
@@ -15,7 +15,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/castlaboratory/lcdaGRASP/blob/v0.3.2/inst/CITATION)
+[`inst/CITATION`](https://github.com/castlaboratory/lcdaGRASP/blob/main/inst/CITATION)
 
 Ospina R, Silva G, Matos Junior FJ, Leite A, Ochi LS (2026). “A GRASP
 Framework for Community and Leader Detection in Complex Networks.”
@@ -24,7 +24,7 @@ lcdaGRASP.
 
     @Article{,
       title = {A GRASP Framework for Community and Leader Detection in Complex Networks},
-      author = {Raydonal Ospina and Geiza Silva and Francisco Jucelino {Matos Junior} and Andre Leite and Luiz Satoru Ochi},
+      author = {Raydonal Ospina and Geiza Silva and Francisco Jucelino {Matos Junior} and André Leite and Luiz Satoru Ochi},
       journal = {Knowledge-Based Systems (preprint, submitted)},
       year = {2026},
       note = {Companion R package: lcdaGRASP},
@@ -37,7 +37,7 @@ Detection*. R package version 0.3.2,
 
     @Manual{,
       title = {lcdaGRASP: GRASP and Reactive GRASP Algorithms for Joint Community and Leader Detection},
-      author = {Raydonal Ospina and Geiza Silva and Francisco Jucelino {Matos Junior} and Andre Leite and Luiz Satoru Ochi},
+      author = {Raydonal Ospina and Geiza Silva and Francisco Jucelino {Matos Junior} and André Leite and Luiz Satoru Ochi},
       year = {2026},
       note = {R package version 0.3.2},
       url = {https://github.com/castlaboratory/lcdaGRASP},
