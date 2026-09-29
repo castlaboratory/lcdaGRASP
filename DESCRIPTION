@@ -6,10 +6,12 @@ Date: 2026-07-28
 Authors@R: c(
     person("André", "Leite", email = "leite@de.ufpe.br", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4718-9766")),
-    person("Raydonal", "Ospina", role = "aut"),
+    person("Raydonal", "Ospina", role = "aut",
+           comment = c(ORCID = "0000-0002-9884-9090")),
     person("Geiza", "Silva", role = "aut"),
     person("Francisco Jucelino", "Matos Junior", role = "aut"),
-    person("Luiz Satoru", "Ochi", role = "aut")
+    person("Luiz Satoru", "Ochi", role = "aut",
+           comment = c(ORCID = "0000-0002-5007-4513"))
     )
 Description: Implements the LCDA-GRASP and LCDA-GR (Reactive GRASP) algorithms
     for joint community-and-leader detection in complex networks, as proposed
